@@ -1,0 +1,16 @@
+[
+  {
+    "version": "v0.1.0",
+    "title": "First playable prototype",
+    "date": "2026-10-10",
+    "url": "releases/v0.1.0/",
+    "notes": "Original economy, research, infantry movement and simple combat. Separate save slot."
+  },
+  {
+    "version": "v0.2.0",
+    "title": "Council decisions and recovery",
+    "date": "2026-10-10",
+    "url": "releases/v0.2.0/",
+    "notes": "Implement–Decide–Results, settlement votes, treaty renewals, shields, highlights, and campaign checkpoints."
+  }
+]

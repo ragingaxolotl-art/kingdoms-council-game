@@ -22,6 +22,8 @@ jobs:
         with:
           node-version: '22'
       - run: node tests/engine.cjs
+      - run: node tests/phases.cjs
+      - run: node tests/releases.cjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

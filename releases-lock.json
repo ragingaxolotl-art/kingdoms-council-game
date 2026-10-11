@@ -1,0 +1,32 @@
+{
+  "v0.1.0": {
+    "azgaar.js": "11dee63c062f5a4ee39956300d01298c8103e1568bcc2267c380bd043c909e21",
+    "index.html": "68eb24af1b4f293ea811fa55351573550a1ad1338dd33a0f2b62992de3bb28de",
+    "world-core.js": "5efc5db9cebfd0004f3ac0708bfbcfaa00b43181949f3d778fc4b1fd1aa2781d",
+    "style.css": "b6c293b48239b3a59381757b649474962faa0adc7a212dc9c1fed45834a832fe",
+    "engine.js": "f17698d83e4c76ca3eba5e19b891606097c08f3b99505d0693c4e373f925b4f4",
+    "app.js": "8e49290c8d650f52b7d4448308be668f57c70441ce2f8d184eec8fb0f4c83841",
+    "data/gria-template.js": "564bc5a275770e5c2c94c916f6d9d4fb3d67ea6c28b8f4fdadb2d1b2c64e545d",
+    "vendor/d3-delaunay-LICENSE.txt": "582c3022bd01942336095f92b58a90b1be624dc547d987555c6c956512dd24c1",
+    "vendor/Azgaar-LICENSE.txt": "c44f4951b37a818ee45fc8cbb0a195a64bf0aec2ac5b27f3849f5626d318dffc",
+    "vendor/robust-predicates-LICENSE.txt": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+    "vendor/d3-delaunay.min.js": "efc726aa8aea0897f6dda19874709d09fd791781208ed5847ef1fd36f9886b18",
+    "vendor/delaunator-LICENSE.txt": "27043d1a6a0e1985fde12660decbbd3b23c67de900b00609c90d4f0aa492f425"
+  },
+  "v0.2.0": {
+    "app.js": "b4af53738bc9c6d7d063a0afeb9b8ccda61e1c79c5822ba3b330039be53ccac8",
+    "azgaar.js": "11dee63c062f5a4ee39956300d01298c8103e1568bcc2267c380bd043c909e21",
+    "checkpoints.js": "9ba8560084d977a0386e63b04631152cd571d52d382e1905955f5c06142467ec",
+    "data/gria-template.js": "564bc5a275770e5c2c94c916f6d9d4fb3d67ea6c28b8f4fdadb2d1b2c64e545d",
+    "engine.js": "139d007ae071fa2d3d31a23097d9dfbeb4988fd40e50817cd8af58f60ed1729b",
+    "index.html": "3a95978477bfd534b5369dd24b6584cdd75ff1267d7220ff464aa24cea18862a",
+    "stages.js": "a504db67cf052d66d57b3f0683c97921e482689112b23d9df6781fc7c755ea1a",
+    "style.css": "d4d366294926754dd5a13dbe8e49a0fb04a0e3e9b82c89a3f9b6f23ed309ed3d",
+    "vendor/Azgaar-LICENSE.txt": "c44f4951b37a818ee45fc8cbb0a195a64bf0aec2ac5b27f3849f5626d318dffc",
+    "vendor/d3-delaunay-LICENSE.txt": "582c3022bd01942336095f92b58a90b1be624dc547d987555c6c956512dd24c1",
+    "vendor/d3-delaunay.min.js": "efc726aa8aea0897f6dda19874709d09fd791781208ed5847ef1fd36f9886b18",
+    "vendor/delaunator-LICENSE.txt": "27043d1a6a0e1985fde12660decbbd3b23c67de900b00609c90d4f0aa492f425",
+    "vendor/robust-predicates-LICENSE.txt": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+    "world-core.js": "5efc5db9cebfd0004f3ac0708bfbcfaa00b43181949f3d778fc4b1fd1aa2781d"
+  }
+}
