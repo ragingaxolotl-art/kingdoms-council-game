@@ -1,3 +1,9 @@
+# v0.5 — Discoveries and education
+
+Twelve original illustrated achievements show what research unlocks. Agriculture adds food, engineering adds resource production, and armaments add military strength. Changing fields preserves progress. Education consumes money and improves learning; completed fields stop spending research funds. Pictures tell the discovery story without adding physical inventory items.
+
+Validation: research unit checks plus the full browser campaign flow (including image loading, council votes, supply-related controls, saved turns, and mobile layout).
+
 # v0.4.0 — Regiments and supply
 
 Recruit infantry, archers, cavalry or artillery crews. All types draw ten people from the cell; costs differ. Split a regiment or transfer a chosen type to another regiment in the same cell. Unit counts must always add up to the regiment total.
