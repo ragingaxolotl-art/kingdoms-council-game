@@ -1,4 +1,4 @@
-# Council & Crown — v0.7
+# Council & Crown — v0.8
 
 A separate, host-controlled strategy game for sixth graders. The classroom heraldry project is untouched by this repository.
 
@@ -6,6 +6,16 @@ A separate, host-controlled strategy game for sixth graders. The classroom heral
 - [Frozen versions](https://ragingaxolotl-art.github.io/kingdoms-council-game/versions.html)
 - [Teacher guide and GitHub building blocks](https://ragingaxolotl-art.github.io/kingdoms-council-game/guide.html)
 - [Google Doc release log](https://docs.google.com/document/d/10C8coQ2kA-Ke__oLZ-MsJOgsX2qdp4iU8zmbIygRmQc/edit)
+
+## Active research and living settlements (v0.8)
+
+Research has national discoveries and a separate local development queue. National research now spends a resource kit alongside its money budget: agriculture uses food/wood, engineering wood/metal, and armaments metal/cloth. Supplies scale with actual funding; shortages pause discovery progress without charging its money. Economy sees the requested supplies.
+
+R&D can improve a specific mine (+40% metal), farm (+30% food), lumber camp (+35% wood), or weaving workshop (+40% cloth), or develop housing (+120 capacity, +8 happiness) and public health (+6 happiness). Economy grants a separate local-project spending allowance (initially 60 money). These projects require that allowance, the appropriate building and upfront resources, take two or three turns and are limited to one active project per country. Canceling returns the unused time share; capture loses the project and its committed supplies. All three roles have a visible turn checklist.
+
+New starter maps begin with a named capital and two named towns where there is enough land. Existing residents are redistributed into them, conserving population. Imported cities/towns keep their locations and names, with noncapital settlements treated as towns. Existing campaigns gain the new mechanics without free settlements being inserted. During Implement, players can propose further towns/cities and rename their owned settlements and regiments.
+
+At Results, residents gradually move to a neighboring cell at least six happiness points better, with available housing. National morale, shortages, occupation, enemy presence, schools, settlements and local R&D affect happiness. Borders at war block migration. At most about 4% of a source cell moves per turn, while at least 25 residents stay; this is movement, not birth/death growth. Housing limits arrivals. People affect labor, revenue, upkeep and recruiting. Happiness and Population & housing map layers make these changes visible.
 
 ## Current mechanics
 
@@ -25,9 +35,9 @@ The current browser key is `council-crown-game-v0.2` for continuity. Upgrading p
 
 ## Validation
 
-Run every `tests/*.cjs` rule test except `browser.cjs` and `recovery-browser.cjs` with Node. Browser tests require Playwright and Chrome; set `PLAYWRIGHT_MODULE`, `BROWSER_PATH`, and optionally `GAME_URL` for another installation. Serve `dist` with `python3 -m http.server 8025 --bind 127.0.0.1`.
+Run every `tests/*.cjs` rule test except files ending in `browser.cjs` with Node. Browser tests require Playwright and Chrome; set `PLAYWRIGHT_MODULE`, `BROWSER_PATH`, and optionally `GAME_URL` for another installation. Serve `dist` with `python3 -m http.server 8025 --bind 127.0.0.1`.
 
-Checks cover resource/trade conservation, typed casualties, supply cutoffs, multi-army ordering, phases, voting, research, objective alternatives, real archived-save migration, malformed save rejection, Full JSON import, 100-turn development, browser recovery, image loading and responsive layout. Release SHA-256 checks prevent accidental changes to frozen versions. GitHub Pages deployment runs rule checks before publication.
+Checks cover resource/trade conservation, typed casualties, supply cutoffs, multi-army ordering, phases, voting, research, objective alternatives, real archived-save migration, malformed save rejection, Full JSON import, 100-turn development, research supplies and targeted projects, population-conserving migration, renaming, browser recovery, image loading and responsive layout. Release SHA-256 checks prevent accidental changes to frozen versions. GitHub Pages deployment runs rule checks before publication.
 
 ## Scope and sources
 

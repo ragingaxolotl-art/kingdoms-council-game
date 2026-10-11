@@ -13,7 +13,7 @@ Keep the finished classroom simulator separate. Develop this repository only. Gi
 - Add regression and browser tests with each mechanics milestone.
 - Maintain the native Google Doc: https://docs.google.com/document/d/10C8coQ2kA-Ke__oLZ-MsJOgsX2qdp4iU8zmbIygRmQc/edit
 - User authorizes relevant open-source code/libraries and independent design/mechanics choices. Retain licenses and document reuse.
-- Check account usage between milestones. Stop and pause the goal at a safe checkpoint when roughly 25% remains, with 20–30% acceptable. Last check: 46% used / 54% remaining. Do not consume down to zero.
+- Check account usage between milestones. Stop and pause the goal at a safe checkpoint when roughly 25% remains, with 20–30% acceptable. Last check: 47% used / 53% remaining. Do not consume down to zero.
 
 ## Milestones
 - v0.1.0: deployed baseline; frozen local archive preserved.
@@ -22,7 +22,7 @@ Keep the finished classroom simulator separate. Develop this repository only. Gi
 - v0.4.0: mixed troop composition/transfers, connected supply and simultaneous multi-army battles, terrain bonuses; released and deployed successfully.
 - v0.5.0: illustrated research achievements, education costs/learning, saved per-field progress; released and deployed successfully.
 - v0.6.0: implemented and tested the latest user steering: simplify stocks to food, wood, metal, cloth and money (plus only clearly necessary abstractions). Add multiple country objectives achievable through different development paths: prosperity, learning, diplomacy, security. Finish research first, then do this simplification at the next mechanics milestone.
-- v0.7.0: integrated 100-turn strategy tests, strict nested save validation, preserved imported diplomacy, transactional phase calculations, pre-v0.6 original-save download, automatic replacement checkpoints, building explanations and teacher/GitHub guide. Final release verification underway.
+- v0.7.0: integrated 100-turn strategy tests, strict nested save validation, preserved imported diplomacy, transactional phase calculations, pre-v0.6 original-save download, automatic replacement checkpoints, building explanations and teacher/GitHub guide. Released and verified on the live website.
 
 ## Runtime
 Node: /Users/timetravellog/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node
@@ -31,3 +31,6 @@ Chrome: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
 Local preview: python3 -m http.server 8025 --bind 127.0.0.1 (cwd dist). Browser/network operations need escalation on this host.
 GitHub repository: ragingaxolotl-art/kingdoms-council-game
 Publish by pushing main, then check the Pages Actions result and live URL.
+
+## v0.8 user follow-up
+Give R&D active, resource-consuming local projects with different economic outcomes; establish starter towns/cities; move population with happiness and housing; allow owned settlement/regiment names; keep all roles influential and legible. Implemented targeted mining/farming/forestry/weaving/housing/health projects, discovery kits, population-conserving migration, map layers, renaming and role checklists. Rule, browser and 100-turn campaign tests passed. Publish the frozen v0.8 release and update the Google Doc before delivery. Continue honoring the 20–30% remaining-usage stop boundary.
