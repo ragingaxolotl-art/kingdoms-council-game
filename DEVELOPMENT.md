@@ -19,7 +19,7 @@ Keep the finished classroom simulator separate. Develop this repository only. Gi
 - v0.1.0: deployed baseline; frozen local archive preserved.
 - v0.2.0: phases, settlement votes, alliance renewals, shields, highlights, release library, IndexedDB checkpoints. Released and archived; Google Doc updated.
 - v0.3.0: distinct resource stocks and production chains, storage, civilian population and accepted trade with conservation tests.
-- Next: mixed troop composition/transfers, connected supply and simultaneous multi-army battles, terrain and peaceful diplomacy.
+- v0.4.0: mixed troop composition/transfers, connected supply and simultaneous multi-army battles, terrain bonuses; tested and ready to archive.
 - Next: illustrated research achievements and education, balanced economic policies, meaningful long-term campaign goals.
 - Final: integrated long-run tests, import/restore validation, user-friendly explanations, verified published version history.
 

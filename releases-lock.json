@@ -46,5 +46,25 @@
     "vendor/delaunator-LICENSE.txt": "27043d1a6a0e1985fde12660decbbd3b23c67de900b00609c90d4f0aa492f425",
     "vendor/robust-predicates-LICENSE.txt": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
     "world-core.js": "5efc5db9cebfd0004f3ac0708bfbcfaa00b43181949f3d778fc4b1fd1aa2781d"
+  },
+  "v0.4.0": {
+    "app.js": "937f00bb16106ab815d6a6413ebf1d9a533f838d17cf2eade21bc9474f902115",
+    "azgaar.js": "11dee63c062f5a4ee39956300d01298c8103e1568bcc2267c380bd043c909e21",
+    "checkpoints.js": "9ba8560084d977a0386e63b04631152cd571d52d382e1905955f5c06142467ec",
+    "data/gria-template.js": "564bc5a275770e5c2c94c916f6d9d4fb3d67ea6c28b8f4fdadb2d1b2c64e545d",
+    "economy.js": "d551aa88e3906f18fe3515ec58455af45d4b80243f9d4eafcbb921d90e392165",
+    "engine.js": "f85f511ea7361f6a03c388a509365ae347307a5cd29dde1389717481d175c896",
+    "index.html": "1b4535cdf718ea695d1619b220e9f5e653c936a761ab80d1ba3f17512f821b5b",
+    "military-ui.js": "61e9e17db4640272ffe1611e68e5ff42ac61ec3e8b910dca4c72e2356afc9022",
+    "military.js": "11377387bc23d01a38a124c0fd85058850fc5a57d75217293653fdb13653210c",
+    "stages.js": "e3e6ec449b5253cd939c194f9f31c41b7ed34909d9f3c7c7dd21e01f472c6673",
+    "style.css": "cc9454556ac0d714d33c101189415f9e6f4a0646cf30b84945786ea35575286d",
+    "trade-ui.js": "770505eb475ce5bef5028e2b6728a052a106becb51e305037a66448eaddf5a5d",
+    "vendor/Azgaar-LICENSE.txt": "c44f4951b37a818ee45fc8cbb0a195a64bf0aec2ac5b27f3849f5626d318dffc",
+    "vendor/d3-delaunay-LICENSE.txt": "582c3022bd01942336095f92b58a90b1be624dc547d987555c6c956512dd24c1",
+    "vendor/d3-delaunay.min.js": "efc726aa8aea0897f6dda19874709d09fd791781208ed5847ef1fd36f9886b18",
+    "vendor/delaunator-LICENSE.txt": "27043d1a6a0e1985fde12660decbbd3b23c67de900b00609c90d4f0aa492f425",
+    "vendor/robust-predicates-LICENSE.txt": "88d9b4eb60579c191ec391ca04c16130572d7eedc4a86daa58bf28c6e14c9bcd",
+    "world-core.js": "5efc5db9cebfd0004f3ac0708bfbcfaa00b43181949f3d778fc4b1fd1aa2781d"
   }
 }

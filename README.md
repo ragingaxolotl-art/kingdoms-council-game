@@ -1,3 +1,13 @@
+# v0.4.0 — Regiments and supply
+
+Recruit infantry, archers, cavalry or artillery crews. All types draw ten people from the cell; costs differ. Split a regiment or transfer a chosen type to another regiment in the same cell. Unit counts must always add up to the regiment total.
+
+Supply checks require an unblocked path through owned/allied cells to one of your cities, villages or depots within eight cells. Food is carried and consumed; disconnected or underfed troops lose readiness. Forts and elevated/home territory help defenders. Soldiers no longer consume a second national food charge in addition to carried rations.
+
+Combat now resolves every engaged regiment simultaneously in two phases. Skirmish/melee weights are adapted from Azgaar's MIT-licensed Battle Simulator documentation; this is not the full Azgaar engine. Losses are allocated exactly to troop types. Swapping enemy regiments encounter each other; three-army results are tested against reversed list order. All allies remain protected from attacks.
+
+Tests added: military.cjs (recruitment/transfer conservation, supply disconnection, simultaneous multi-army order independence, typed casualty accounting, crossing encounters). Browser tests cover troop transfers as well as earlier workflows.
+
 # Current milestone: v0.3.0 — Resources and trade
 
 The latest game includes Implement → Decide → Results, unanimous settlement votes, shields, country highlights, version archives and automatic IndexedDB checkpoints. Use Versions & changes to play a frozen release; use Restore turn to restore a campaign checkpoint. Each archive has its own browser save key. Downloads remain the portable backup.

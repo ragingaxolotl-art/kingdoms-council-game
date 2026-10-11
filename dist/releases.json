@@ -19,5 +19,12 @@
     "date": "2026-10-10",
     "url": "releases/v0.3.0/",
     "notes": "Timber, stone, iron, production recipes, storage, accepted trade agreements and conserved cargo."
+  },
+  {
+    "version": "v0.4.0",
+    "title": "Regiments and supply",
+    "date": "2026-10-10",
+    "url": "releases/v0.4.0/",
+    "notes": "Mixed troops, transfers, supply routes, depots, forts, and simultaneous multi-army skirmish/melee combat."
   }
 ]
