@@ -1,3 +1,6 @@
 .openai/
 .DS_Store
 node_modules/
+
+# macOS sidecars on external SSDs
+._*

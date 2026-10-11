@@ -13,7 +13,7 @@ Keep the finished classroom simulator separate. Develop this repository only. Gi
 - Add regression and browser tests with each mechanics milestone.
 - Maintain the native Google Doc: https://docs.google.com/document/d/10C8coQ2kA-Ke__oLZ-MsJOgsX2qdp4iU8zmbIygRmQc/edit
 - User authorizes relevant open-source code/libraries and independent design/mechanics choices. Retain licenses and document reuse.
-- Check account usage between milestones. Stop and pause the goal at a safe checkpoint when roughly 25% remains, with 20–30% acceptable. Last check: 47% used / 53% remaining. Do not consume down to zero.
+- Check account usage between milestones. Stop and pause the goal at a safe checkpoint when roughly 25% remains, with 20–30% acceptable. Last check: 49% used / 51% remaining. Do not consume down to zero.
 
 ## Milestones
 - v0.1.0: deployed baseline; frozen local archive preserved.
@@ -33,4 +33,13 @@ GitHub repository: ragingaxolotl-art/kingdoms-council-game
 Publish by pushing main, then check the Pages Actions result and live URL.
 
 ## v0.8 user follow-up
-Give R&D active, resource-consuming local projects with different economic outcomes; establish starter towns/cities; move population with happiness and housing; allow owned settlement/regiment names; keep all roles influential and legible. Implemented targeted mining/farming/forestry/weaving/housing/health projects, discovery kits, population-conserving migration, map layers, renaming and role checklists. Rule, browser and 100-turn campaign tests passed. Publish the frozen v0.8 release and update the Google Doc before delivery. Continue honoring the 20–30% remaining-usage stop boundary.
+Give R&D active, resource-consuming local projects with different economic outcomes; establish starter towns/cities; move population with happiness and housing; allow owned settlement/regiment names; keep all roles influential and legible. Implemented targeted mining/farming/forestry/weaving/housing/health projects, discovery kits, population-conserving migration, map layers, renaming and role checklists. Rule, browser and 100-turn campaign tests passed. v0.8 was frozen, published and recorded in the Google Doc. Continue honoring the 20–30% remaining-usage stop boundary.
+
+## v0.9 user follow-up and SSD location
+Working copy: /Volumes/Extreme SSD/Council-and-Crown/kingdoms-game
+All new saved QA artifacts: /Volumes/Extreme SSD/Council-and-Crown/verification
+The Downloads working copy remains an untouched v0.8 backup. Use the SSD copy for all future development; user explicitly requested SSD storage. External-drive writes need sandbox escalation. Core.filemode is false because the SSD does not preserve Unix executable modes. Ignore macOS ._* sidecars and exclude them from release archives.
+
+Implemented food allocation/ration plans, parallel research shares, six curricula affecting production/work/research/readiness, R&D laws, funded population-conserving conscription, unrest-linked social events and independent natural events. Saved deterministic outcomes, visual dashboards, resource request previews and phase locks. Actual v0.8 migration test, 50-turn varied-policy test, new browser workflow and existing 100-turn achievement strategy pass. The local SSD preview uses port 8031. Freeze and publish v0.9 after final checks, then append the Google Doc.
+
+Current Results order: accepted votes/renewals → production → food shares/civilian consumption → army pay → laws/conscription/happiness/unrest → education → research kits → military food → battles/capture → construction → trades → events → storage/discoveries/rounding → local development → migration → achievements. Movement happens in Decide preparation. Finished buildings and discoveries improve later production.

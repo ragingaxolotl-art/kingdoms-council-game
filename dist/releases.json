@@ -54,5 +54,12 @@
     "date": "2026-10-10",
     "url": "releases/v0.8.0/",
     "notes": "Resource-consuming discoveries and six local R&D projects, Economy development allowances, named starter towns, happiness-driven migration, settlement/regiment renaming, and population map views."
+  },
+  {
+    "version": "v0.9.0",
+    "title": "Choices and consequences",
+    "date": "2026-10-10",
+    "url": "releases/v0.9.0/",
+    "notes": "Visual food allocation and portion plans; research budgets split across three fields; six school curricula; service, work and community-support laws; resource-funded conscription; happiness and unrest; reproducible helpful and difficult social/natural events. Updated dashboards and teacher guide. Includes real v0.8 migration, conservation, policy, event, 50-turn and browser checks. Earlier releases remain unchanged."
   }
 ]
