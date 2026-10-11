@@ -1,3 +1,15 @@
+# Current milestone: v0.3.0 — Resources and trade
+
+The latest game includes Implement → Decide → Results, unanimous settlement votes, shields, country highlights, version archives and automatic IndexedDB checkpoints. Use Versions & changes to play a frozen release; use Restore turn to restore a campaign checkpoint. Each archive has its own browser save key. Downloads remain the portable backup.
+
+Resource stocks now distinguish timber, stone, iron, building materials, equipment, food and money. Biome/elevation/seeded deposits determine cell raw yields. Lumber camps, quarries and mines improve extraction. Settlements and workshops turn 2 timber + 1 stone into 1 material; workshops turn 2 iron + 1 material into 1 equipment. Production stops when an input is missing. A storehouse increases capacity; excess goods are reported as lost and food spoils at 1% per turn.
+
+Trade offers require the recipient's consent in Decide. Accepted agreements attempt three shipments over three turns. Both sides pay atomically or neither pays. Cargo is held in transit for land travel time and paused during war between its endpoints. There is no sea trade or intermediate-country interception yet. Cargo is included in conservation tests. Materials/equipment cards identify manufacturing rather than claiming raw cell production.
+
+Validation: engine.cjs, phases.cjs, economy.cjs, releases.cjs and browser.cjs. The browser suite tests the proposal/acceptance UI as well as existing council flows and recovery.
+
+The older prototype description below is retained for historical context; current behavior above supersedes differences.
+
 # Council & Crown — separate strategy game prototype
 
 A new website independent of `heraldry-battle-simulator`. No classroom source files or saves are shared or modified. GitHub Pages serves `dist/` through the included Actions workflow. The unrelated experimental Sites registration is unused and unpublished; its local metadata is ignored by Git.

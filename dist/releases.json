@@ -12,5 +12,12 @@
     "date": "2026-10-10",
     "url": "releases/v0.2.0/",
     "notes": "Implement–Decide–Results, settlement votes, treaty renewals, shields, highlights, and campaign checkpoints."
+  },
+  {
+    "version": "v0.3.0",
+    "title": "Resources and trade",
+    "date": "2026-10-10",
+    "url": "releases/v0.3.0/",
+    "notes": "Timber, stone, iron, production recipes, storage, accepted trade agreements and conserved cargo."
   }
 ]
