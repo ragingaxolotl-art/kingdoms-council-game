@@ -33,5 +33,12 @@
     "date": "2026-10-10",
     "url": "releases/v0.5.0/",
     "notes": "Twelve illustrated research achievements, funded education and learning, and saved progress in every research field."
+  },
+  {
+    "version": "v0.6.0",
+    "title": "Five resources and kingdom goals",
+    "date": "2026-10-10",
+    "url": "releases/v0.6.0/",
+    "notes": "Money, food, wood, metal and cloth; four shared achievements with alternative development routes; visual progress and compatible old-save migration."
   }
 ]

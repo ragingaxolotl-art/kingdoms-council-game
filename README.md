@@ -1,3 +1,13 @@
+# v0.6 — Five resources and kingdom goals
+
+The current game has five stocks: money, food, wood, metal and cloth. Forests favor wood, deposits favor metal, and grasslands/savannas/wetlands favor fibers and herds for cloth. Weaving workshops and settlements add cloth. Buildings and troop types use different combinations. Cities provide more income, food, cloth and storage; upgrading a village replaces it rather than stacking two settlements.
+
+Four shared achievements offer alternative routes: prosperity through settlement growth or trade; learning through schools or broader discoveries; diplomacy through a wider alliance or more trade; security through forts or military research. Conditions must hold for three results in a row. Progress is visible; badges remain earned and do not end the sandbox.
+
+Old saves migrate once: timber + stone + materials become wood; iron + equipment become metal; old campaigns receive 40 cloth. Old trade quantities and shipments keep their quantities under the new names. Existing settlement proposals retain their old reserved costs. These are simplified classroom abstractions, not physical conversion recipes. Archived v0.5 retains the earlier system and its own save slot. Export a campaign before switching versions.
+
+Verified with rule, trade conservation, objective, old-release migration and browser tests. Goals are preliminary classroom balance targets; they still need playtesting with students. Geography scale, passive income and starting country size affect difficulty.
+
 # v0.5 — Discoveries and education
 
 Twelve original illustrated achievements show what research unlocks. Agriculture adds food, engineering adds resource production, and armaments add military strength. Changing fields preserves progress. Education consumes money and improves learning; completed fields stop spending research funds. Pictures tell the discovery story without adding physical inventory items.

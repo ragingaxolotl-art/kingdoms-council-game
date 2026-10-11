@@ -20,8 +20,8 @@ Keep the finished classroom simulator separate. Develop this repository only. Gi
 - v0.2.0: phases, settlement votes, alliance renewals, shields, highlights, release library, IndexedDB checkpoints. Released and archived; Google Doc updated.
 - v0.3.0: distinct resource stocks and production chains, storage, civilian population and accepted trade with conservation tests.
 - v0.4.0: mixed troop composition/transfers, connected supply and simultaneous multi-army battles, terrain bonuses; released and deployed successfully.
-- v0.5.0: illustrated research achievements, education costs/learning, saved per-field progress; tested; preparing release.
-- Next user steering: simplify stocks to food, wood, metal, cloth and money (plus only clearly necessary abstractions). Add multiple country objectives achievable through different development paths: prosperity, learning, diplomacy, security. Finish research first, then do this simplification at the next mechanics milestone.
+- v0.5.0: illustrated research achievements, education costs/learning, saved per-field progress; released and deployed successfully.
+- v0.6.0: implemented and tested the latest user steering: simplify stocks to food, wood, metal, cloth and money (plus only clearly necessary abstractions). Add multiple country objectives achievable through different development paths: prosperity, learning, diplomacy, security. Finish research first, then do this simplification at the next mechanics milestone.
 - Final: integrated long-run tests, import/restore validation, user-friendly explanations, verified published version history.
 
 ## Runtime

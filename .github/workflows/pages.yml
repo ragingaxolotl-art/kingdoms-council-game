@@ -26,6 +26,8 @@ jobs:
       - run: node tests/economy.cjs
       - run: node tests/military.cjs
       - run: node tests/research.cjs
+      - run: node tests/objectives.cjs
+      - run: node tests/migration.cjs
       - run: node tests/releases.cjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
