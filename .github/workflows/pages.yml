@@ -28,6 +28,7 @@ jobs:
       - run: node tests/research.cjs
       - run: node tests/objectives.cjs
       - run: node tests/migration.cjs
+      - run: node tests/campaign.cjs
       - run: node tests/releases.cjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

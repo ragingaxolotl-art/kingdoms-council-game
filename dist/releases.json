@@ -40,5 +40,12 @@
     "date": "2026-10-10",
     "url": "releases/v0.6.0/",
     "notes": "Money, food, wood, metal and cloth; four shared achievements with alternative development routes; visual progress and compatible old-save migration."
+  },
+  {
+    "version": "v0.7.0",
+    "title": "Campaign checks and recovery",
+    "date": "2026-10-10",
+    "url": "releases/v0.7.0/",
+    "notes": "Validated phase calculations, old-save download, replacement checkpoints, imported diplomacy, building explanations, teacher/GitHub guide and 100-turn achievement tests."
   }
 ]
