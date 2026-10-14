@@ -89,5 +89,12 @@
     "date": "2026-10-14",
     "url": "releases/v0.12.0/",
     "notes": "Economists feed territories during retreat. Happiness changes production, captured land starts at zero happiness, and military food shortages increase incoming damage next round."
+  },
+  {
+    "version": "v0.13.0",
+    "title": "Settlements and siege defenses",
+    "date": "2026-10-14",
+    "url": "releases/v0.13.0/",
+    "notes": "Click a territory to build five settlement levels and three fortification tiers. Production and food needs grow; artillery helps overcome persistent defenses. Capture destroys forts and removes two settlement levels."
   }
 ]
