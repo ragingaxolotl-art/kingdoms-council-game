@@ -1,3 +1,13 @@
+# Latest user direction: v0.10 simplified regiments
+
+The user explicitly requested a smaller Risk-like game and delegated gameplay choices. This supersedes the detailed role/city-vote requirements below for the new default mode. Preserve the complete published v0.9 archive and its resources, curricula and laws.
+
+Current workspace supplied by the user: /Volumes/Cyber Pet Workspace/Codex Projects/WMSA/kingdoms-game. The old Downloads project is a symlink here. Fetch origin before publishing: the older local copy was missing published v0.9, now integrated. Prior SSD paths below are historical.
+
+Implemented grouped territories, whole 100-health RPS units, capped recruitment, captured-land income, 2–4 researched movement, four teacher phases, consent-based alliances, country targets, simultaneous multi-attacker damage, fatigue, retreat and pursuit. New files are regiments-engine.js, regiments-app.js and regiments.css. The new save schema and browser key are separate from the detailed game. Preserve no-table-export classroom requirement.
+
+Validation: new rule tests and browser tests plus all historical rule suites. Headless Playwright use was explicitly authorized after the regular browser tool failed on the moved workspace symlink. Freeze v0.10.0 and verify Pages deployment and native Google Doc release-log update before delivery. Current usage check: 4% used / 96% remaining at start of this milestone.
+
 # Active development goal
 
 Keep the finished classroom simulator separate. Develop this repository only. GitHub Pages is the deployment target; do not use the unused Sites registration. Full biome geography remains the map foundation.
