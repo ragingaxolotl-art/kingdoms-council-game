@@ -82,5 +82,12 @@
     "date": "2026-10-14",
     "url": "releases/v0.11.0/",
     "notes": "Mixed-biome production and mineral deposits; live Economy allocations to Military, Research or Treasury; deliveries after the full round; recruitment at existing controlled settlements; recruits train one round and defend at half strength. Earlier regiment saves migrate without creating resources."
+  },
+  {
+    "version": "v0.12.0",
+    "title": "Food and happiness",
+    "date": "2026-10-14",
+    "url": "releases/v0.12.0/",
+    "notes": "Economists feed territories during retreat. Happiness changes production, captured land starts at zero happiness, and military food shortages increase incoming damage next round."
   }
 ]
