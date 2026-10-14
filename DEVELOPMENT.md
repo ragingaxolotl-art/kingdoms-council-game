@@ -1,3 +1,7 @@
+## v0.14 shared capture ownership
+
+User requested multiple captors choose a recipient during resolution; failed agreement makes every force back up one marker and destroys the city. Added joint siege eligibility after projected ordinary retreats, unanimous per-country recipient votes in the retreat screen across all departments, no default on missing votes, saved/revisable decisions, and deterministic one-adjacent-territory withdrawals on disagreement. Arrival route preferred; existing no-safe-exit surrender rule applies. Ruins become unclaimed; agreed captures retain v0.13 downgrade rules. Schema v5 ledger migration preserves all existing game assets and decisions. Keep original single-country/open-land behavior and immutable archives.
+
 ## v0.13 settlements and map upgrade box
 
 User requested five ordered settlement levels with substantial production boosts, up to five civilian food, three fortifications and harder city capture. Added territory-level development, paid immediate Treasury construction in planning (one action per territory/round), persistent passive siege health, artillery double siege damage, paid repairs, capture removing all fortifications and two settlement levels, and schema v4 migration. User additionally requested clicking a territory to open an upgrade box on the map; this is the primary construction UI, with keyboard selector/Escape support and mobile layout. Existing cities become level 4 and towns 3; imported settlements in one cluster share one level/defense pool. No new accounts/multiplayer or assignment-table export.

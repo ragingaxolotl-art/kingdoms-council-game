@@ -96,5 +96,12 @@
     "date": "2026-10-14",
     "url": "releases/v0.13.0/",
     "notes": "Click a territory to build five settlement levels and three fortification tiers. Production and food needs grow; artillery helps overcome persistent defenses. Capture destroys forts and removes two settlement levels."
+  },
+  {
+    "version": "v0.14.0",
+    "title": "Shared capture agreements",
+    "date": "2026-10-14",
+    "url": "releases/v0.14.0/",
+    "notes": "Joint captors choose a settlement owner unanimously. Disagreement destroys the settlement, leaves unclaimed ruins and withdraws all occupying regiments one adjacent territory."
   }
 ]
