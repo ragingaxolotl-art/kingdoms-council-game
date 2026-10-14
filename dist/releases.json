@@ -75,5 +75,12 @@
     "date": "2026-10-14",
     "url": "releases/v0.10.1/",
     "notes": "Adds recruitable 100-health artillery with neutral matchups against every type. Cavalry keeps its existing advantages. City-capture bonuses are reserved for future city mechanics; current regiment saves remain compatible."
+  },
+  {
+    "version": "v0.11.0",
+    "title": "Economy allocations and training",
+    "date": "2026-10-14",
+    "url": "releases/v0.11.0/",
+    "notes": "Mixed-biome production and mineral deposits; live Economy allocations to Military, Research or Treasury; deliveries after the full round; recruitment at existing controlled settlements; recruits train one round and defend at half strength. Earlier regiment saves migrate without creating resources."
   }
 ]

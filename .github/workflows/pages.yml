@@ -32,6 +32,7 @@ jobs:
       - run: node tests/development.cjs
       - run: node tests/society.cjs
       - run: node tests/regiments.cjs
+      - run: node tests/regiment-economy.cjs
       - run: node tests/releases.cjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

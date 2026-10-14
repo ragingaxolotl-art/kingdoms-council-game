@@ -1,3 +1,7 @@
+## v0.11 economy and training
+
+User chose the four-stock mixed-biome economy and separate Military/Research/Treasury allocations, delivered after a full round. Additional instruction: recruits take another round and can defend at a penalty. Implemented live saved allocations, reserved pending deliveries, separate spendable accounts, area-weighted biome food/wood, modest area-scaled money, fixed visible mineral deposits, coastal food, settlement-only recruitment, readyTurn training and half-strength counterattacks. No new settlement-building UI. Schema v2 migrates existing v1 balances into Treasury without creating funds; original regiments are ready. Existing simplified saves only retained capitals; new Full imports preserve towns as well.
+
 ## v0.10.1 artillery follow-up
 
 User confirmed artillery neutral against all types, intended primarily for future city capture. Added recruitable 100-health artillery with standard movement, costs and damage; no city bonus yet because this mode has no city mechanic. Cavalry still beats archers and loses to spears. Keep the v0.10 browser key and schema for campaign continuity.
