@@ -6,7 +6,7 @@ Current workspace supplied by the user: /Volumes/Cyber Pet Workspace/Codex Proje
 
 Implemented grouped territories, whole 100-health RPS units, capped recruitment, captured-land income, 2–4 researched movement, four teacher phases, consent-based alliances, country targets, simultaneous multi-attacker damage, fatigue, retreat and pursuit. New files are regiments-engine.js, regiments-app.js and regiments.css. The new save schema and browser key are separate from the detailed game. Preserve no-table-export classroom requirement.
 
-Validation: new rule tests and browser tests plus all historical rule suites. Headless Playwright use was explicitly authorized after the regular browser tool failed on the moved workspace symlink. Freeze v0.10.0 and verify Pages deployment and native Google Doc release-log update before delivery. Current usage check: 4% used / 96% remaining at start of this milestone.
+Validation: new rule tests and browser tests plus all historical rule suites. Headless Playwright use was explicitly authorized after the regular browser tool failed on the moved workspace symlink. Released v0.10.0 at commit 4b4fe3e. GitHub Pages run 38645274301 succeeded; the full new browser suite passed against the public URL. The native Google Doc v0.10 section was appended and read back. Original Gria Full JSON validated: 3,562 land cells → 72 territories, 15 countries. Current usage check: 7% used / 93% remaining at completion.
 
 # Active development goal
 
