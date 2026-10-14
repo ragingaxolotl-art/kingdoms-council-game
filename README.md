@@ -1,4 +1,4 @@
-# Council & Crown — v0.10 Regiment game
+# Council & Crown — v0.10.1 Regiment game
 
 A teacher-hosted territory game for sixth graders. The default game now uses large land chunks and whole regiment tokens. The separate heraldry classroom project is unchanged.
 
@@ -19,7 +19,7 @@ A teacher-hosted territory game for sixth graders. The default game now uses lar
 
 Original map polygons remain for biomes; contiguous cells inside each original country become larger territories. Each connected country component gets up to five chunks (roughly one per 18 cells). Capitals begin controlled, other chunks unclaimed. Isolated islands are separate and have no sea route in this version.
 
-Each regiment is one type with 100 starting health. Spears beat cavalry, cavalry beat archers, archers beat spears. Health is surviving troop count; damage persists. Base damage is 30% of starting health, with ×1.5 advantage or ×0.75 disadvantage. A regiment attacks once, sharing damage among the selected country's units in proportion to health. All attackers' contributions add before rounding and applying losses. Resolution order does not grant first-strike advantage.
+Each regiment is one type with 100 starting health. Spears beat cavalry, cavalry beat archers, archers beat spears. Artillery is neutral against every type, including other artillery. It costs the same as spears/cavalry for now; its city-capture role will arrive with city mechanics. Health is surviving troop count; damage persists. Base damage is 30% of starting health, with ×1.5 advantage or ×0.75 disadvantage. A regiment attacks once, sharing damage among the selected country's units in proportion to health. All attackers' contributions add before rounding and applying losses. Resolution order does not grant first-strike advantage.
 
 Mutually accepted allies targeting the same country gain ×1.5; an attacker receiving a direct attack back from its target gets normal coordination damage instead. Type, fatigue and pursuit still apply. Attacking an ally breaks that agreement after the exchange. Alliances persist until broken, while unanswered offers expire next turn.
 
@@ -27,7 +27,7 @@ Movement begins at two adjacent territories, researched up to four. Routes can c
 
 A damaged country with less surviving health than the strongest country at the site retreats; ties hold. Retreat is one adjacent territory without hostile troops and preserves health. If two enemies retreat into the same previously empty space, their encounter waits until the next cycle. During the next cycle, moving retreat-marked units take ×2 damage from a previous attacker if caught; the mark then expires.
 
-Capture requires reaching the ordered destination and being the sole remaining country after retreats. Passing through does not capture. Allied co-occupants also leave ownership disputed. Ownership persists when empty. Each controlled territory yields 8 money + 4 food + 8 local food, wood or metal after retreats. Recruitment costs 50 money, 20 food, and either 20 metal + 5 wood (spears/cavalry) or 20 wood + 5 metal (archers). Movement research costs 60 money, 15 wood and 15 metal and helps next turn.
+Capture requires reaching the ordered destination and being the sole remaining country after retreats. Passing through does not capture. Allied co-occupants also leave ownership disputed. Ownership persists when empty. Each controlled territory yields 8 money + 4 food + 8 local food, wood or metal after retreats. Recruitment costs 50 money, 20 food, and either 20 metal + 5 wood (spears/cavalry/artillery) or 20 wood + 5 metal (archers). Movement research costs 60 money, 15 wood and 15 metal and helps next turn.
 
 ## Saves, scope and classroom use
 

@@ -1,3 +1,7 @@
+## v0.10.1 artillery follow-up
+
+User confirmed artillery neutral against all types, intended primarily for future city capture. Added recruitable 100-health artillery with standard movement, costs and damage; no city bonus yet because this mode has no city mechanic. Cavalry still beats archers and loses to spears. Keep the v0.10 browser key and schema for campaign continuity.
+
 # Latest user direction: v0.10 simplified regiments
 
 The user explicitly requested a smaller Risk-like game and delegated gameplay choices. This supersedes the detailed role/city-vote requirements below for the new default mode. Preserve the complete published v0.9 archive and its resources, curricula and laws.

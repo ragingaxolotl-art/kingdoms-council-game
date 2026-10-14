@@ -68,5 +68,12 @@
     "date": "2026-10-14",
     "url": "releases/v0.10.0/",
     "notes": "Four teacher phases, 100-health unit tokens, RPS advantages, captured-land income, researched movement, mutual alliances, simultaneous country-target combat, retreats and pursuit. Detailed v0.9 remains available with separate saves."
+  },
+  {
+    "version": "v0.10.1",
+    "title": "Neutral artillery regiments",
+    "date": "2026-10-14",
+    "url": "releases/v0.10.1/",
+    "notes": "Adds recruitable 100-health artillery with neutral matchups against every type. Cavalry keeps its existing advantages. City-capture bonuses are reserved for future city mechanics; current regiment saves remain compatible."
   }
 ]

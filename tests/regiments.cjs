@@ -34,3 +34,13 @@ s=structuredClone(generated);for(let turn=0;turn<20;turn++){
  s=R.advance(s);for(const u of s.units.filter(u=>u.hp>0&&u.retreat?.required)){const safe=R.retreatOptions(s,u);if(safe.length)R.retreat(s,u.id,safe[0]);}
  s=R.advance(s);R.validate(JSON.parse(JSON.stringify(s)));s=R.advance(s);
 }assert.equal(s.turn,21);assert.deepEqual(s.moves,[]);assert.deepEqual(s.battles,[]);assert.equal(s.history[0].turn,20);console.log('PASS: interrupted captures, surrender, atomic phase failure, invalid type rejection and 20-turn regiment campaign.');
+
+// Artillery has no type bonus or penalty in either direction, including mirror matches.
+for(const type of Object.keys(R.types)){
+ assert.deepEqual(battle({types:['artillery',type]}).units.map(u=>u.hp),[70,70]);
+ assert.deepEqual(battle({types:[type,'artillery']}).units.map(u=>u.hp),[70,70]);
+}
+assert.deepEqual(battle({types:['cavalry','archers']}).units.map(u=>u.hp),[77,55]);
+assert.deepEqual(battle({types:['cavalry','spears']}).units.map(u=>u.hp),[55,77]);
+s=game();R.recruit(s,0,'artillery',0);assert.equal(s.units[0].hp,100);assert.deepEqual(s.countries[0].stock,{money:150,food:180,wood:195,metal:180});R.order(s,s.units[0].id,2,'capture');s=R.advance(R.advance(R.advance(s)));assert.equal(s.territories[2].owner,0);assert.equal(R.validate(JSON.parse(JSON.stringify(s))).units[0].type,'artillery');
+console.log('PASS: artillery recruitment, neutral matchups in both directions, cavalry strengths, movement/capture and save roundtrip.');

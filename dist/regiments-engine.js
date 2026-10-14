@@ -1,6 +1,6 @@
 /* Council & Crown classroom regiment rules. Pure state transitions; no DOM. */
 const RegimentGame=(()=>{
-const types={spears:{name:'Spears',icon:'♜',beats:'cavalry'},archers:{name:'Archers',icon:'➶',beats:'spears'},cavalry:{name:'Cavalry',icon:'♞',beats:'archers'}};
+const types={spears:{name:'Spears',icon:'♜',beats:'cavalry'},archers:{name:'Archers',icon:'➶',beats:'spears'},cavalry:{name:'Cavalry',icon:'♞',beats:'archers'},artillery:{name:'Artillery',icon:'◉',beats:null}};
 const goods=['money','food','wood','metal'];
 const fail=(ok,msg)=>{if(!ok)throw Error(msg);};
 const pair=(a,b)=>[a,b].sort((x,y)=>x-y).join('-');
