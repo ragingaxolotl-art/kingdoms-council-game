@@ -110,5 +110,12 @@
     "date": "2026-10-14",
     "url": "releases/v0.15.0/",
     "notes": "Adds national discoveries, accepted knowledge sharing, cooperative research, active city facilities, negotiated resource trades, geographic specialties and material-based military equipment."
+  },
+  {
+    "version": "v0.16.0",
+    "title": "Always-open departmental objectives",
+    "date": "2026-10-14",
+    "url": "releases/v0.16.0/",
+    "notes": "Nine separate department objectives, flexible peaceful and mixed victories, shared round-end winners, persistent progress and tested resource-funded balance."
   }
 ]

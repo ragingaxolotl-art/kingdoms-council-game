@@ -1,3 +1,7 @@
+## v0.16 departmental objectives
+
+User corrected the earlier selectable-mission proposal: every objective must always exist, with separate goals for each department so countries can pivot midway. Implemented three goals per department, three awards across two departments for victory, simultaneous round-end winners, permanent achievements, strict schema v7 evidence ledgers, no progress reset on role/strategy changes, and readable stacked progress cards. Trade flow reversals remove credit, funded cooperative research can qualify for exchange, and only useful city actions qualify. Preserve the shared-device and no-assignment-table-export constraints. Rule, browser and actual-resource multi-map balance campaigns cover this milestone; snapshot and caveats are in tests/objective-balance-v0.16.json and README.
+
 ## v0.15 R&D city actions, technology and trade
 
 User approved meaningful R&D active city management, knowledge sharing, faster/cheaper joint research, Economy resource trade and more varied material requirements. Added separate development rule/UI modules, schema v6, national project installments and prerequisites, equipment progression/unlocks, research-gated construction, five local facilities/actions, production history graph, specialty yields/discounts, city-capture archives, consent-based knowledge and joint projects, and conserved Treasury trade escrow. R&D-only interior display is a role view, not secure privacy; existing teacher-hosted model remains. Preserve classroom no-table-export requirement and all historical archives.
