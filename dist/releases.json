@@ -124,5 +124,12 @@
     "date": "2026-10-14",
     "url": "releases/v0.17.0/",
     "notes": "Bilateral attacks and sieges cancel pending exchanges and research cooperation, with clear warnings and recovery after a full quiet round."
+  },
+  {
+    "version": "v0.18.0",
+    "title": "Drag troop orders and happiness heat map",
+    "date": "2026-10-15",
+    "url": "releases/v0.18.0/",
+    "notes": "Military drag orders respect movement limits, preview routes and preserve simultaneous resolution. Happiness now runs from dark red to bright blue."
   }
 ]

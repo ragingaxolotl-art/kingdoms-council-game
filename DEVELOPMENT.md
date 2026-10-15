@@ -1,3 +1,11 @@
+## v0.18 map orders
+
+Military can drag individual regiment tokens during planning. Legal territories and route previews use the existing engine route and movement limit; drops save move/capture orders without resolving early. Enemy, training and resting regiments remain locked. Invalid drops, pointer cancellation and Escape preserve prior orders; country/phase changes cancel a drag. Saved routes remain visible, and the original dropdown controls remain available. Includes the previously requested happiness heat map.
+
+## Happiness heat map (included in v0.18)
+
+Happiness now uses a continuous dark-red (0) to bright-blue (100) scale with a pale neutral midpoint, matching labeled gradient legend, gray water and a selection outline that preserves the territory color. Presentation only: happiness rules, production and campaign saves are unchanged. Implemented in an isolated checkout after checking the publishing chat.
+
 ## v0.17 attack disruption
 
 User requested research and trade disruption when countries attack one another. Added pair-specific attack ledger (schema v8), alliance break, pending-offer cancellation/refunds, joint-bonus cancellation, and exchange cooldown through the next round; quiet round restores, repeat attack extends. Domestic research and previously completed exchanges remain, and unrelated partners are not blocked. Includes unopposed owned-land sieges and captures, while neutral claims and holding remain peaceful. Objective research/cooperation rewards follow the cancelled partnership correctly. Tests cover rules and browser interactions; preserve all frozen releases and update the teacher log.

@@ -122,3 +122,9 @@ Military base recruitment recipes (money/food/wood/metal): spears 50/4/10/30; ar
 Economy trade is negotiated in whole-resource bundles from unreserved Treasury. Proposer resources are escrowed immediately; recipient acceptance checks and pays its bundle before either delivery. Cancellation, rejection and round-end expiry refund pending escrow exactly. Accepted trades cannot be replayed. Incoming resources enter Treasury and retain the existing departmental delivery delay. No fixed exchange rate is imposed.
 
 R&D-only city views are presentation boundaries on the teacher’s shared device, not authenticated student privacy. This milestone does not add multiplayer accounts. Students still make their own Google Docs tables; no report table export exists.
+
+## Military map orders (v0.18)
+
+During planning, choose Military and drag one of your regiment tokens onto a highlighted territory. The map previews its legal route and movement count. Choose Move / hold or Move & capture beside the map before dragging. Dropping saves the order; the token stays in its current territory until the teacher advances all countries. Dashed arrows show saved plans. Invalid drops and Escape preserve the previous order. Training/resting units and other countries remain locked. Find on map zooms to a regiment; the existing Destination and Plan controls remain available for keyboard use. Happiness uses a dark-red-to-bright-blue heat map with a labeled legend.
+
+Verified with movement-controller tests, existing regiment/happiness/archive suites, and browser checks for move/capture dragging, invalid drops and refresh persistence.
