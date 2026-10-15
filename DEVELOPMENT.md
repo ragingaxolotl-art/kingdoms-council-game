@@ -1,3 +1,7 @@
+## v0.17 attack disruption
+
+User requested research and trade disruption when countries attack one another. Added pair-specific attack ledger (schema v8), alliance break, pending-offer cancellation/refunds, joint-bonus cancellation, and exchange cooldown through the next round; quiet round restores, repeat attack extends. Domestic research and previously completed exchanges remain, and unrelated partners are not blocked. Includes unopposed owned-land sieges and captures, while neutral claims and holding remain peaceful. Objective research/cooperation rewards follow the cancelled partnership correctly. Tests cover rules and browser interactions; preserve all frozen releases and update the teacher log.
+
 ## v0.16 departmental objectives
 
 User corrected the earlier selectable-mission proposal: every objective must always exist, with separate goals for each department so countries can pivot midway. Implemented three goals per department, three awards across two departments for victory, simultaneous round-end winners, permanent achievements, strict schema v7 evidence ledgers, no progress reset on role/strategy changes, and readable stacked progress cards. Trade flow reversals remove credit, funded cooperative research can qualify for exchange, and only useful city actions qualify. Preserve the shared-device and no-assignment-table-export constraints. Rule, browser and actual-resource multi-map balance campaigns cover this milestone; snapshot and caveats are in tests/objective-balance-v0.16.json and README.

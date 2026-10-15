@@ -39,6 +39,7 @@ jobs:
       - run: node tests/regiment-development.cjs
       - run: node tests/regiment-objectives.cjs
       - run: node tests/regiment-objectives-balance.cjs
+      - run: node tests/regiment-disruption.cjs
       - run: node tests/releases.cjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

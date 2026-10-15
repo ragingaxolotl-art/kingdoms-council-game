@@ -117,5 +117,12 @@
     "date": "2026-10-14",
     "url": "releases/v0.16.0/",
     "notes": "Nine separate department objectives, flexible peaceful and mixed victories, shared round-end winners, persistent progress and tested resource-funded balance."
+  },
+  {
+    "version": "v0.17.0",
+    "title": "Attacks disrupt trade and joint research",
+    "date": "2026-10-14",
+    "url": "releases/v0.17.0/",
+    "notes": "Bilateral attacks and sieges cancel pending exchanges and research cooperation, with clear warnings and recovery after a full quiet round."
   }
 ]
