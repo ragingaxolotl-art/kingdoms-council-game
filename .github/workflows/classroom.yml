@@ -1,0 +1,23 @@
+name: Check classroom sessions
+on:
+  pull_request:
+  push:
+    branches: [classroom-sessions]
+permissions:
+  contents: read
+jobs:
+  classroom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/build-classroom.cjs
+      - run: git diff --exit-code -- classroom/generated supabase/functions/classroom
+      - run: node --check dist/classroom.js
+      - run: node tests/classroom-session.cjs
+      - run: node tests/classroom-api.mjs
+      - run: node tests/classroom-storage.mjs
+      - run: node tests/classroom-supabase-store.mjs
+      - run: node tests/regiment-objectives.cjs && node tests/regiment-disruption.cjs && node tests/releases.cjs

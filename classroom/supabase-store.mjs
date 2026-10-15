@@ -1,8 +1,9 @@
 export class SupabaseStore {
  constructor(url,secret) { this.url=url;this.secret=secret; }
- async rest(route,options={}) { const response=await fetch(this.url+'/rest/v1/'+route,{...options,headers:{apikey:this.secret,Authorization:'Bearer '+this.secret,'Content-Type':'application/json',...options.headers}});if(!response.ok)throw Error('Database operation failed.');return response.status===204?null:response.json(); }
+ async rest(route,options={}) { const response=await fetch(this.url+'/rest/v1/'+route,{...options,headers:{apikey:this.secret,Authorization:'Bearer '+this.secret,'Content-Type':'application/json',...options.headers}});if(!response.ok)throw Error('Database operation failed.');const text=await response.text();return text?JSON.parse(text):null; }
  clientIP(req) { return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'; }
  async load(id) { const rows=await this.rest('classroom_sessions?id=eq.'+encodeURIComponent(id)+'&select=body');return rows[0]?.body||null; }
+ async head(id) { const rows=await this.rest('classroom_sessions?id=eq.'+encodeURIComponent(id)+'&select=owner_id,body->session->revision,body->session->closed,body->tokens,body->session->members');const r=rows[0];return r?{owner:r.owner_id,revision:r.revision,closed:r.closed,tokens:r.tokens,members:r.members}:null; }
  async list(owner) { const rows=await this.rest('classroom_sessions?owner_id=eq.'+encodeURIComponent(owner)+'&select=id,body->session->name,body->session->closed,body->session->game->turn');return rows.map(r=>({id:r.id,name:r.name,closed:r.closed,year:r.turn})); }
  async insert(row) { await this.rest('classroom_sessions',{method:'POST',headers:{Prefer:'return=minimal'},body:JSON.stringify({id:row.id,owner_id:row.owner,version:row.version,body:row})}); }
  async cas(version,row) { const rows=await this.rest('classroom_sessions?id=eq.'+encodeURIComponent(row.id)+'&version=eq.'+version+'&select=id',{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify({version:row.version,body:row,updated_at:new Date().toISOString()})});return rows.length===1; }

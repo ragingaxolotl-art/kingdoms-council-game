@@ -13,7 +13,7 @@ assert.equal((await call({op:'assign',classId},student)).status,403);
 const cmd={id:crypto.randomUUID(),revision:joined.view.revision,type:'ready',args:{ready:true}};
 let saved=await call({op:'command',classId,command:cmd},student);assert.equal(saved.status,200);assert((await call({op:'command',classId,command:cmd},student)).duplicate);
 assert.equal((await call({op:'command',classId,command:{id:crypto.randomUUID(),revision:saved.view.revision,type:'advance'}},student)).status,403);
-const unchanged=await call({op:'state',classId,revision:saved.view.revision},student);assert(unchanged.unchanged);
+const unchanged=await call({op:'state',classId,revision:saved.view.revision},student);assert(unchanged.unchanged);const teacherHeartbeat=await call({op:'state',classId,revision:saved.view.revision});assert(teacherHeartbeat.unchanged);assert(teacherHeartbeat.connections[member]);
 // Competing writes cannot both replace the same state, even from different clients.
 const current=await state(),commands=[true,false].map(ready=>({op:'command',classId,command:{id:crypto.randomUUID(),revision:current.view.revision,type:'ready',args:{ready}}}));const concurrent=await Promise.all(commands.map(b=>call(b,student)));assert.equal(concurrent.filter(r=>r.status===200).length,1);assert.equal(concurrent.filter(r=>r.status===409).length,1);
 const reset=await assign({memberId:member});assert.equal(reset.status,200);assert.equal((await call({op:'state',classId},student)).status,401);assert.equal((await call({op:'join',classId,pin:assigned.pin},'')).status,401);

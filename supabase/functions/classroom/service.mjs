@@ -16,7 +16,7 @@ export function handler({ store, verifyTeacher, origin, pepper, now = () => Date
       if (req.method === 'OPTIONS') return new Response(null, { status:204, headers });
       C.check(req.method === 'POST', 'Use POST.', 405);
       C.check(Number(req.headers.get('content-length') || 0) <= 35e6, 'Request is too large.', 413);
-      const raw = await req.text(); C.check(raw.length <= 35e6, 'Request is too large.', 413);
+      const reader=req.body?.getReader(); let length=0; const chunks=[]; if(reader)for(;;){const part=await reader.read();if(part.done)break;length+=part.value.byteLength;if(length>35e6){await reader.cancel();C.check(false,'Request is too large.',413);}chunks.push(part.value);}const bytes=new Uint8Array(length);let offset=0;for(const part of chunks){bytes.set(part,offset);offset+=part.length;}const raw=new TextDecoder().decode(bytes);
       let body; try { body = JSON.parse(raw); } catch { C.check(false, 'Invalid JSON.'); }
       const { op, classId } = body;
       let owner;
@@ -28,7 +28,25 @@ export function handler({ store, verifyTeacher, origin, pepper, now = () => Date
         await store.insert(row); return reply({ classId:id, view:C.project(row.session, { teacher:true }, true) });
       }
       C.check(typeof classId === 'string' && /^[a-f0-9-]{36}$/.test(classId), 'Open the class link supplied by your teacher.');
+      // Most polls authenticate against compact metadata, avoiding map/game downloads.
+      if (op === 'state' && Number.isInteger(body.revision) && !body.includeMap) {
+        const head = await store.head(classId); C.check(head, 'Class not found.', 404);
+        if (head.revision === body.revision) {
+          const credential=req.headers.get('x-student-token');
+          if (credential) {
+            const access=head.tokens[await hash(credential)];
+            C.check(access && access.expires > now() && head.members.some(m=>m.id===access.memberId&&!m.disabled), 'Your session ended. Enter your PIN again.', 401);
+            C.check(!head.closed, 'This class is closed.', 403);
+            await store.touch(classId,access.memberId,now());
+            return reply({unchanged:true,revision:head.revision});
+          }
+          await teacher(); C.check(head.owner===owner, 'This class belongs to another teacher.', 403);
+          const presence=await store.presence(classId);
+          return reply({unchanged:true,revision:head.revision,connections:Object.fromEntries(head.members.map(m=>[m.id,now()-(presence[m.id]||0)<12000]))});
+        }
+      }
       let row = await store.load(classId); C.check(row, 'Class not found.', 404);
+      row.session.game = C.R.validate(row.session.game);
       if (op === 'join') {
         C.check(!row.session.closed, 'This class is closed.', 403);
         C.check(typeof body.pin === 'string' && /^\d{6}$/.test(body.pin), 'Enter your six-digit PIN.');
@@ -80,11 +98,12 @@ export function handler({ store, verifyTeacher, origin, pepper, now = () => Date
         const result = C.command(row.session, actor, request);
         if (result.duplicate) return reply({ view:await view(), pinAlreadyIssued:true });
         row.session = result.session;
+        const revokedPins=Object.keys(row.pins).filter(key=>row.pins[key]===memberId);
         row.pins = Object.fromEntries(Object.entries(row.pins).filter(([,id]) => id !== memberId));
         row.tokens = Object.fromEntries(Object.entries(row.tokens).filter(([,t]) => t.memberId !== memberId));
         if (!body.disabled) {
           let ph;
-          do { const n = new Uint32Array(1); do { crypto.getRandomValues(n); } while (n[0] >= 4294000000); pin=String(n[0]%1000000).padStart(6,'0'); ph=await pinHash(classId,pin); } while (row.pins[ph]);
+          do { const n = new Uint32Array(1); do { crypto.getRandomValues(n); } while (n[0] >= 4294000000); pin=String(n[0]%1000000).padStart(6,'0'); ph=await pinHash(classId,pin); } while (row.pins[ph]||revokedPins.includes(ph));
           row.pins[ph]=memberId;
         }
       } else {
