@@ -1,6 +1,6 @@
 ## Student site
 
-Open [Student sign-in](https://ragingaxolotl-art.github.io/kingdoms-council-game/student.html) or [explore the student screens](https://ragingaxolotl-art.github.io/kingdoms-council-game/student.html?preview=1). The practice preview has all three departments and four phases, including final supplies. Live PIN sign-in awaits Supabase project setup. [Teacher classroom](https://ragingaxolotl-art.github.io/kingdoms-council-game/classroom.html) and [classroom deployment notes](classroom/README.md) cover the prepared shared service.
+Open [Student sign-in](https://ragingaxolotl-art.github.io/kingdoms-council-game/student.html) or [explore the student screens](https://ragingaxolotl-art.github.io/kingdoms-council-game/student.html?preview=1). The practice preview has all three departments and four phases, including final supplies. Live PIN sign-in is connected to the classroom service. Teachers use the approved email’s sign-in link; students need only their class link and PIN. [Teacher classroom](https://ragingaxolotl-art.github.io/kingdoms-council-game/classroom.html) and [classroom deployment notes](classroom/README.md) cover the prepared shared service.
 
 ## v0.17 — Attacks disrupt exchange
 

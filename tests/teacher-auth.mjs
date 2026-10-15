@@ -1,0 +1,5 @@
+import assert from 'node:assert/strict';
+import {teacherVerifier} from '../classroom/teacher-auth.mjs';
+let reply={id:'owner-id',email:'Teacher@example.test',email_confirmed_at:'2026-10-15'};let calls=0;
+const verify=teacherVerifier({url:'https://project.test',secret:'server-only-test-secret',allowedEmail:'teacher@example.test',fetcher:async(url,options)=>{calls++;assert.equal(url,'https://project.test/auth/v1/user');assert.equal(options.headers.Authorization,'Bearer signed-session');return {ok:true,json:async()=>reply};}});
+assert.equal(await verify(''),null);assert.equal(calls,0);assert.equal(await verify('Bearer signed-session'),'owner-id');reply.email_confirmed_at=null;assert.equal(await verify('Bearer signed-session'),null);reply={id:'attacker',email:'other@example.test',email_confirmed_at:'2026-10-15',user_metadata:{email:'teacher@example.test',role:'teacher'}};assert.equal(await verify('Bearer signed-session'),null);assert.equal(await teacherVerifier({allowedEmail:'',url:'',secret:''})('Bearer signed-session'),null);console.log('PASS teacher access requires an Auth-verified allowlisted email and ignores user-editable metadata');

@@ -14,4 +14,4 @@ for(const [file,name] of [['regiments-development.js','RegimentDevelopment'],['r
 let core=fs.readFileSync(path.join(root,'classroom/core.cjs'),'utf8').replace("const R = require('../dist/regiments-engine.js');","import R from './regiments-engine.mjs';").replace('module.exports =','export default');fs.writeFileSync(path.join(out,'core.mjs'),core);
 console.log('Built classroom rules from the current checkout.');
 
-const edge=path.join(root,'supabase/functions/classroom');fs.mkdirSync(edge,{recursive:true});for(const f of ['service.mjs','supabase-store.mjs'])fs.copyFileSync(path.join(root,'classroom',f),path.join(edge,f));fs.cpSync(out,path.join(edge,'generated'),{recursive:true});fs.copyFileSync(path.join(root,'classroom/edge.mjs'),path.join(edge,'index.ts'));
+const edge=path.join(root,'supabase/functions/classroom');fs.mkdirSync(edge,{recursive:true});for(const f of ['service.mjs','supabase-store.mjs','teacher-auth.mjs'])fs.copyFileSync(path.join(root,'classroom',f),path.join(edge,f));fs.cpSync(out,path.join(edge,'generated'),{recursive:true});fs.copyFileSync(path.join(root,'classroom/edge.mjs'),path.join(edge,'index.ts'));

@@ -1,10 +1,10 @@
 # Classroom sessions — implementation and deployment
 
-Status: implemented and tested locally on the isolated `classroom-sessions` branch, integrated with v0.18 gameplay. Live Supabase provisioning and production verification are still pending. The existing `index.html` and local game are unchanged.
+Status: implemented and tested locally on the isolated `classroom-sessions` branch, integrated with v0.18 gameplay. Supabase is deployed and public configuration is connected. Live authenticated production verification awaits the teacher’s first email sign-in. The existing `index.html` and local game are unchanged.
 
 ## Teacher walkthrough
 
-1. Open `classroom.html`, choose Teacher, and sign in with your provisioned teacher account.
+1. Open `classroom.html`, choose Teacher, and enter your approved teacher email, and open the one-time sign-in link in your email.
 2. Create a named class. Use a new world, the browser's existing Regiment save, or an uploaded downloaded game. The shared game is independent of the original save.
 3. Expand **Assign a student**, enter a short label or nickname, and select their country and department. Generate the PIN and give it privately to the student. PINs are six digits, unique within the class, and shown once.
 4. Share the class link. Students enter only their PIN. They are assigned their country and department by the server.
@@ -37,12 +37,12 @@ Funding timing is preserved: pending allocations reserve current Treasury resour
 - Form drafts are not reported as saved. An incoming revision preserves current draft fields until the student chooses Review latest; phase changes discard obsolete unsubmitted entries with an explanation. Readiness cannot discard an unsaved form. Local browser reload preserves server-saved decisions.
 - Geometry and game state remain compatible with the existing engine. Generated ESM rule copies are rebuilt from the checkout; do not hand-edit generated files.
 
-## Live deployment (pending connection)
+## Live deployment
 
-1. Provision a Supabase project under the user’s account and apply `supabase/migrations/202610140001_classroom.sql`. The three tables have RLS and no anon/authenticated table grants. Only the service role can read them or call the rate-limit function.
-2. Set private function secrets `CLASSROOM_PIN_PEPPER` (at least 32 random characters) and `CLASSROOM_ORIGIN=https://ragingaxolotl-art.github.io`. Platform `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` remain server-only.
+1. Provision a Supabase project under the user’s account and apply `supabase/migrations/202610140001_classroom.sql`. The four tables have RLS and no anon/authenticated table grants. Only the service role can read them or call the rate-limit function.
+2. The migration generates a private random `pin_pepper`. Set `teacher_email` in the server-only `classroom_private_config` table to the approved teacher email. The handler defaults to the published GitHub Pages origin; `CLASSROOM_PIN_PEPPER` and `CLASSROOM_ORIGIN` may override deployment settings. Platform `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` remain server-only.
 3. Run `node scripts/build-classroom.cjs`, then deploy `supabase/functions/classroom`. `verify_jwt=false` is intentional because students use opaque tokens; the handler itself verifies every protected request. Never remove those handler checks.
-4. Provision the teacher’s confirmed Supabase Auth account. Students are classroom memberships, not Auth accounts. The UI uses teacher email/password sign-in and token refresh. Do not commit teacher passwords, access tokens, service keys or the PIN pepper.
+4. Set Auth Site URL to `https://ragingaxolotl-art.github.io/kingdoms-council-game/classroom.html`. The teacher requests the default email sign-in link; callback tokens are cleared from the URL and identity is verified by the classroom server before the session is saved. The verified email must match private configuration; user-editable metadata grants no access. Students are classroom memberships, not Auth accounts. Do not commit access tokens, service keys or the PIN pepper.
 5. Set only public `api`, `supabaseUrl` and `publishableKey` in `dist/classroom-config.js`. The API URL is the deployed classroom Edge Function. Supabase signup policy and teacher onboarding must be verified during provisioning.
 6. Deploy the classroom front end via the existing GitHub Pages workflow after integration. Until the API is configured, the classroom page clearly says setup is pending and links to the existing local game.
 7. Verify live teacher login, two independent student devices, simultaneous saves, reconnect, PIN revocation, a full year, account isolation, and denied direct database access. Verify production proxy headers used for IP rate limiting. Confirm resource/compute costs with realistic class size.
@@ -62,7 +62,7 @@ node tests/classroom-supabase-store.mjs
 
 Start the local-only preview with `CLASSROOM_PREVIEW_PASSWORD` set to a test password of at least 12 characters, then run `node classroom/preview.mjs`. It binds only `127.0.0.1:8057`. The preview password is deliberately separate from production Supabase authentication. `.classroom-data/` is ignored, kept on the SSD, and persists preview classes across server restarts.
 
-Verified manually with independent teacher/student browser tabs: create class, assign PIN, sign in, save funding, readiness on teacher roster, automatic phase update, food confirmation, student refresh recovery, all-country final decisions, year-end supplies and backend restart recovery. All 20 existing rule/archive suites plus the classroom session suite passed after integrating v0.17; API security/concurrency tests passed separately. Live database migration, Supabase teacher sign-in and deployed-device testing are not yet verified.
+Verified manually with independent teacher/student browser tabs: create class, assign PIN, sign in, save funding, readiness on teacher roster, automatic phase update, food confirmation, student refresh recovery, all-country final decisions, year-end supplies and backend restart recovery. All 20 existing rule/archive suites plus the classroom session suite passed after integrating v0.17; API security/concurrency tests passed separately. Live migration and denied public table access are verified. Supabase teacher sign-in and deployed-device testing await the teacher’s first sign-in.
 
 Interrupted game saves are persisted in session storage before sending and retried with the original action ID after timeouts or server failures. New commands wait for confirmation; retries survive reload and never replay under a changed student assignment. Presence outages do not prevent gameplay. Fault-injection tests cover a committed write with a lost database response and repeated lost client replies.
 
@@ -70,8 +70,8 @@ Interrupted game saves are persisted in session storage before sending and retri
 
 `student.html` is the separate student entry point. It has no teacher tab and uses a separate browser session key, so opening it alongside the teacher dashboard does not load teacher controls. Teacher-generated class links point here. The student role and country always come from the authenticated server projection.
 
-`student.html?preview=1` offers a clearly labeled, read-only walkthrough of all three departments and four phases. Its sample data is generated by `scripts/build-student-demo.cjs` from a fixed synthetic world; it never reads actual classroom records. Both client command handlers and disabled controls prevent demo writes. Live sign-in is unavailable until public backend configuration is set.
+`student.html?preview=1` offers a clearly labeled, read-only walkthrough of all three departments and four phases. Its sample data is generated by `scripts/build-student-demo.cjs` from a fixed synthetic world; it never reads actual classroom records. Both client command handlers and disabled controls prevent demo writes. Live class sign-in uses the configured server.
 
 The shared map uses the published dark-red-to-bright-blue happiness palette, visible territory boundaries, and selectable country colors. Military can drag numbered regiment tokens to destinations projected by the server, or use the legal-destination menu. The server still validates every saved order. Training, resting, foreign-unit and phase restrictions remain in place.
 
-Verification: all 12 role/phase previews rendered without console errors and had no enabled write controls. A disposable local class verified PIN login, separate teacher/student sessions, a dropdown order, a dragged order, reload recovery, teacher advancement without student refresh, and the final supplies report. HTTP authorization/concurrency, durable outbox, storage, route restrictions and archived-release tests are required in CI. Production Supabase provisioning remains pending; do not describe the preview as connected multiplayer.
+Verification: all 12 role/phase previews rendered without console errors and had no enabled write controls. A disposable local class verified PIN login, separate teacher/student sessions, a dropdown order, a dragged order, reload recovery, teacher advancement without student refresh, and the final supplies report. HTTP authorization/concurrency, durable outbox, storage, route restrictions and archived-release tests are required in CI. The practice preview remains read-only. Production provisioning is complete; authenticated live testing remains pending teacher sign-in.

@@ -42,3 +42,15 @@ end;
 $$;
 revoke all on function public.classroom_login_limit(text,integer) from public, anon, authenticated;
 grant execute on function public.classroom_login_limit(text,integer) to service_role;
+
+-- Server-only bootstrap settings. Never exposed to student or teacher browsers.
+create table if not exists public.classroom_private_config (
+ key text primary key,
+ value text not null
+);
+alter table public.classroom_private_config enable row level security;
+revoke all on public.classroom_private_config from public, anon, authenticated;
+grant select on public.classroom_private_config to service_role;
+insert into public.classroom_private_config(key,value)
+values ('pin_pepper',replace(gen_random_uuid()::text || gen_random_uuid()::text,'-',''))
+on conflict(key) do nothing;

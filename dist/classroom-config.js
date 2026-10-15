@@ -1,1 +1,1 @@
-window.CLASSROOM_CONFIG = { api: "", supabaseUrl: "", publishableKey: "" };
+window.CLASSROOM_CONFIG = { api: "https://bnmghtjwolplmdjwgpyl.supabase.co/functions/v1/classroom", supabaseUrl: "https://bnmghtjwolplmdjwgpyl.supabase.co", publishableKey: "sb_publishable_GNzNn5hx-XCJMhTy3DBKsg_O3SvVqJD" };
