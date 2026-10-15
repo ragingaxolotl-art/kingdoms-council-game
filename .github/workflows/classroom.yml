@@ -17,6 +17,7 @@ jobs:
       - run: git diff --exit-code -- classroom/generated supabase/functions/classroom
       - run: node --check dist/classroom.js
       - run: node tests/classroom-session.cjs
+      - run: node tests/classroom-outbox.cjs
       - run: node tests/classroom-api.mjs
       - run: node tests/classroom-storage.mjs
       - run: node tests/classroom-supabase-store.mjs

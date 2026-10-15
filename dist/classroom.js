@@ -9,6 +9,8 @@ const amount=x=>goods.filter(g=>x?.[g]).map(g=>`${x[g]} ${g}`).join(' · ')||'No
 const amounts=x=>`<div class="amounts">${goods.map(g=>`<div class="amount"><strong>${x?.[g]??0}</strong><span>${g}</span></div>`).join('')}</div>`;
 const num=(f,name)=>Number(new FormData(f).get(name)),string=(f,name)=>String(new FormData(f).get(name)||'');
 let auth=JSON.parse(sessionStorage.getItem('cc-classroom-auth')||'null'),classId=new URL(location.href).searchParams.get('class')||'',v=null,cells=[],dirty=false,busy=false,polling=false,online=false,latest=null,selected=null,teacherCountry=0,teacherRole='economy',forceNext=false;
+const outbox=ClassroomOutbox.create(sessionStorage);
+const context=()=>({classId,actor:v.assignment.id,country:v.assignment.country,role:v.assignment.role});
 function notice(text){$('notice').textContent=text;}
 function remember(){if(auth)sessionStorage.setItem('cc-classroom-auth',JSON.stringify(auth));else sessionStorage.removeItem('cc-classroom-auth');}
 async function authFetch(path,body){const res=await fetch(cfg.supabaseUrl+'/auth/v1/'+path,{method:'POST',headers:{'Content-Type':'application/json',apikey:cfg.publishableKey},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw Error(data.msg||data.error_description||'Sign-in failed.');return data;}
@@ -19,7 +21,7 @@ async function api(body,{publicRequest=false}={}){
  const response=await fetch(cfg.api,{method:'POST',headers,body:JSON.stringify({classId,country:teacherCountry,role:teacherRole,...body}),signal:AbortSignal.timeout(15000)});
  const data=await response.json();if(!response.ok){const error=Error(data.error||'Could not save.');error.status=response.status;throw error;}return data;
 }
-function connection(ok){online=ok;$('connection').textContent=ok?'Connected · changes sync automatically':'Reconnecting · decisions paused';document.querySelectorAll('#classroom button[data-write]').forEach(b=>b.disabled=!ok||busy);}
+function connection(ok){online=ok;$('connection').textContent=ok?'Connected · changes sync automatically':'Reconnecting · decisions paused';document.querySelectorAll('#classroom button[data-write]').forEach(b=>b.disabled=!ok||busy||!!outbox.read());}
 function setView(view,force=false){if(v&&view.revision<v.revision)return;if(view.teacher&&(view.assignment.country!==teacherCountry||view.assignment.role!==teacherRole))return;if(view.cells)cells=view.cells;if(v&&dirty&&!force&&v.phase===view.phase&&v.year===view.year&&v.revision!==view.revision){latest=view;notice('The class has new changes. Your unsaved entries are still here. Use “Review latest” before submitting.');if(!$('reviewLatest')){const b=document.createElement('button');b.id='reviewLatest';b.textContent='Review latest';b.onclick=()=>{dirty=false;setView(latest,true);latest=null;notice('Updated. Review your choices before saving.');};$('notice').append(' ',b);}return;}
  if(v&&dirty&&(v.phase!==view.phase||v.year!==view.year))notice('The teacher advanced the class. Unsaved entries from the previous phase were not submitted.');
  const changed=!v||v.revision!==view.revision||v.assignment.country!==view.assignment.country||v.assignment.role!==view.assignment.role||force;v=view;if(changed){dirty=false;render();}else if(v.teacher)renderRoster();connection(true);}
@@ -34,7 +36,27 @@ async function load(force=false){
  }catch(e){if(classId!==requestedClass||auth!==requestedAuth)return;connection(false);if(e.status===401){auth=null;remember();entry();notice(e.message);}else notice(e.message);}
  finally{polling=false;if(forceNext&&auth&&classId&&!busy)load();}
 }
-async function action(type,args={}){if(busy||!online)return;if((type==='ready'&&args.ready||type==='advance')&&dirty){notice('Save your current form before marking ready or advancing.');return;}busy=true;connection(online);const request={id:id(),revision:v.revision,type,args};try{const data=await api({op:'command',command:request});dirty=false;latest=null;setView(data.view,true);notice('Saved.');}catch(e){notice(e.message);if(e.status===409){dirty=false;busy=false;await load(true);}else if(!e.status){sessionStorage.setItem('cc-pending-action',JSON.stringify({classId,actor:v.assignment.id,country:v.assignment.country,role:v.assignment.role,command:request}));connection(false);notice('Connection interrupted. The save may have arrived. Reconnect to check it safely.');}}finally{busy=false;connection(online);}}
+async function recoverAction(){
+ if(busy||!online||!v||!outbox.read())return;
+ busy=true;connection(online);
+ try{
+  const result=await outbox.flush(context(),pending=>api({op:'command',classId:pending.classId,country:pending.country,role:pending.role,command:pending.command}));
+  if(result.kind==='saved'){dirty=false;latest=null;setView(result.data.view,true);notice(result.data.duplicate?'Your earlier action was already saved.':'Saved.');}
+  else if(result.kind==='pending'){connection(false);notice('Checking your earlier save. It may have arrived; wait for confirmation before making another decision.');}
+  else if(result.kind==='signin'){connection(false);notice('Sign in again to confirm your earlier save.');}
+  else if(result.kind==='reassigned'){forceNext=true;notice('Your assignment changed. Review your saved decisions with the teacher; the earlier action will not be retried.');}
+  else if(result.kind==='rejected'){dirty=false;forceNext=true;notice('Review the latest class state before trying again. '+result.error.message);}
+  else if(result.kind==='other')notice('Return to your earlier class and sign-in to confirm its pending save.');
+ }catch(e){notice(e.message);}
+ finally{busy=false;connection(online);if(forceNext)await load(true);}
+}
+async function action(type,args={}){
+ if(busy||!online)return;
+ if(outbox.read()){notice('Wait for your earlier save to be confirmed.');await recoverAction();return;}
+ if((type==='ready'&&args.ready||type==='advance')&&dirty){notice('Save your current form before marking ready or advancing.');return;}
+ try{outbox.enqueue({...context(),command:{id:id(),revision:v.revision,type,args}});}catch(e){notice('Could not prepare a recoverable save: '+e.message);return;}
+ await recoverAction();
+}
 function form(id,fn){const element=$(id);if(!element)return;element.addEventListener('input',()=>{dirty=true;});element.onsubmit=e=>{e.preventDefault();if(latest){notice('Review the latest class changes before saving this form.');return;}fn(element);};}
 function btn(text,type,args={},className=''){return `<button type="button" data-write data-action="${type}" data-args="${esc(JSON.stringify(args))}" class="${className}">${esc(text)}</button>`;}
 function wireActions(root){root.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>action(b.dataset.action,JSON.parse(b.dataset.args)));}
@@ -76,7 +98,7 @@ function renderTeacher(){
 }
 function renderRoster(){if(!$('roster'))return;$('roster').innerHTML=`<div class="table-wrap"><table><thead><tr><th>Student</th><th>Country / department</th><th>Connection</th><th>Progress</th><th>PIN / access</th></tr></thead><tbody>${v.roster.map(m=>`<tr><td>${esc(m.label)}</td><td>${esc(country(m.country))}<br>${roles[m.role]}</td><td>${m.disabled?'Disabled':m.connected?'Connected':'Disconnected'}</td><td>${m.disabled?'—':!m.required?'Waiting':m.ready?'Ready':'Working'}</td><td><button data-edit="${m.id}">Change assignment</button> <button data-reset="${m.id}">${m.disabled?'Enable & issue PIN':'Reset PIN'}</button>${m.disabled?'':` <button data-disable="${m.id}">Disable</button>`}</td></tr>`).join('')}</tbody></table></div><p class="muted">Changing a PIN signs that student out on every device. Students in the same country and department share its decisions.</p>`;
  $('roster').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{const m=v.roster.find(m=>m.id===b.dataset.edit),f=$('assignForm');f.closest('details').open=true;for(const [k,value] of Object.entries({memberId:m.id,label:m.label,country:m.country,role:m.role}))f.elements[k].value=value;f.querySelector('button').textContent='Save assignment & issue new PIN';f.elements.label.focus();});for(const kind of ['reset','disable'])$('roster').querySelectorAll('[data-'+kind+']').forEach(b=>b.onclick=()=>{const m=v.roster.find(m=>m.id===b.dataset[kind]);assign({memberId:m.id,label:m.label,assignedCountry:m.country,assignedRole:m.role,disabled:kind==='disable'});});}
-async function assign(data){if(busy)return;busy=true;try{const out=await api({op:'assign',revision:v.revision,requestId:id(),...data});setView(out.view,true);$('pinResult').innerHTML=out.pin?`<div class="good"><strong>${esc(data.label)} · ${esc(country(data.assignedCountry))} · ${roles[data.assignedRole]}</strong><div class="pin">${out.pin}</div><p>Give this PIN privately to the student. It is shown once; reset it if lost.</p></div>`:'<p>Student access updated.</p>';notice('Assignment saved.');}catch(e){notice(e.message);}finally{busy=false;connection(online);}}
+async function assign(data){if(busy)return;if(outbox.read()){notice('Wait for your earlier save to be confirmed.');return;}busy=true;try{const out=await api({op:'assign',revision:v.revision,requestId:id(),...data});setView(out.view,true);$('pinResult').innerHTML=out.pin?`<div class="good"><strong>${esc(data.label)} · ${esc(country(data.assignedCountry))} · ${roles[data.assignedRole]}</strong><div class="pin">${out.pin}</div><p>Give this PIN privately to the student. It is shown once; reset it if lost.</p></div>`:'<p>Student access updated.</p>';notice('Assignment saved.');}catch(e){notice(e.message);}finally{busy=false;connection(online);}}
 function fields(prefix,stock){return goods.map(g=>`<label>${g}<input name="${prefix}-${g}" type="number" min="0" step="1" required value="${stock?.[g]??0}"></label>`).join('');}
 function bundle(f,prefix){return Object.fromEntries(goods.map(g=>[g,num(f,prefix+'-'+g)]));}
 function renderActions(){const host=$('actions'),c=v.country,role=v.assignment.role,own=v.territories.filter(t=>t.owner===c.id);host.innerHTML='<h2>'+({orders:'Make your plan',decisions:'Your responses',retreat:'Finish this year’s decisions',results:'Review before the next year'})[v.phase]+'</h2>';
@@ -120,8 +142,8 @@ function renderTerritory(){const host=$('territoryDetail'),t=v.territories[selec
  if(v.assignment.role==='research'&&t.settlementLevel){host.innerHTML+=`<h3>City facilities · ${t.facilities.length}/${t.settlementLevel} slots</h3><form id="install"><label>Facility<select name="kind">${opts(Object.entries(D.facilities).filter(([k])=>!t.facilities.includes(k)).map(([k,f])=>[k,f.name+' · '+amount(f.cost)+' · requires '+D.techs[f.tech].name]),'')}</select></label><button data-write>Install facility</button></form>`;form('install',f=>action('install',{territory:t.id,kind:string(f,'kind')}));for(const k of t.facilities){const f=D.facilities[k];host.insertAdjacentHTML('beforeend',`<form id="facility-${k}" class="subcard"><h3>${f.name}</h3><p>${f.action}</p><p>Cost: ${amount(f.actionCost)}</p>${k==='hospital'?`<label>Regiment<select name="unit">${opts(v.units.filter(u=>u.country===v.country.id&&u.territory===t.id&&u.hp<100).map(u=>[u.id,'#'+u.id+' · '+u.hp+' health']),'')}</select></label>`:''}<button data-write>Use ${f.name}</button></form>`);form('facility-'+k,f=>action('cityAction',{territory:t.id,kind:k,unit:k==='hospital'?num(f,'unit'):null}));}}
  wireActions(host);connection(online);
 }
-$('logout').onclick=async()=>{try{if(auth?.kind==='student')await api({op:'logout'});}catch{}auth=null;remember();sessionStorage.removeItem('cc-pending-action');v=null;cells=[];online=false;entry();notice('Signed out.');};
+$('logout').onclick=async()=>{if(busy){notice('Wait for the current save to finish before signing out.');return;}try{if(auth?.kind==='student')await api({op:'logout'});}catch{}auth=null;remember();v=null;cells=[];online=false;entry();notice('Signed out.');};
 window.addEventListener('online',()=>load(true));window.addEventListener('offline',()=>connection(false));
-setInterval(async()=>{if(auth&&classId&&!document.hidden){await load();const raw=sessionStorage.getItem('cc-pending-action');if(online&&raw){const pending=JSON.parse(raw);if(pending.classId===classId&&pending.actor===v.assignment.id&&pending.country===v.assignment.country&&pending.role===v.assignment.role){sessionStorage.removeItem('cc-pending-action');try{const out=await api({op:'command',command:pending.command});setView(out.view,true);notice(out.duplicate?'Your earlier action was already saved.':'Your earlier action is now saved.');}catch(e){notice('Your earlier action was not applied: '+e.message);}}}}},2500);
+setInterval(async()=>{if(auth&&classId&&!document.hidden){await load();await recoverAction();}},2500);
 if(auth&&classId)load(true);else entry();
 })();

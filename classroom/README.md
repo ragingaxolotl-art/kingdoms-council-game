@@ -54,6 +54,7 @@ Use Node 22 or newer:
 ```
 node scripts/build-classroom.cjs
 node tests/classroom-session.cjs
+node tests/classroom-outbox.cjs
 node tests/classroom-api.mjs
 node tests/classroom-storage.mjs
 node tests/classroom-supabase-store.mjs
@@ -62,3 +63,5 @@ node tests/classroom-supabase-store.mjs
 Start the local-only preview with `CLASSROOM_PREVIEW_PASSWORD` set to a test password of at least 12 characters, then run `node classroom/preview.mjs`. It binds only `127.0.0.1:8057`. The preview password is deliberately separate from production Supabase authentication. `.classroom-data/` is ignored, kept on the SSD, and persists preview classes across server restarts.
 
 Verified manually with independent teacher/student browser tabs: create class, assign PIN, sign in, save funding, readiness on teacher roster, automatic phase update, food confirmation, student refresh recovery, all-country final decisions, year-end supplies and backend restart recovery. All 20 existing rule/archive suites plus the classroom session suite passed after integrating v0.17; API security/concurrency tests passed separately. Live database migration, Supabase teacher sign-in and deployed-device testing are not yet verified.
+
+Interrupted game saves are persisted in session storage before sending and retried with the original action ID after timeouts or server failures. New commands wait for confirmation; retries survive reload and never replay under a changed student assignment. Presence outages do not prevent gameplay. Fault-injection tests cover a committed write with a lost database response and repeated lost client replies.

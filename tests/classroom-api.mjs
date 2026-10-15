@@ -16,6 +16,24 @@ assert.equal((await call({op:'command',classId,command:{id:crypto.randomUUID(),r
 const unchanged=await call({op:'state',classId,revision:saved.view.revision},student);assert(unchanged.unchanged);const teacherHeartbeat=await call({op:'state',classId,revision:saved.view.revision});assert(teacherHeartbeat.unchanged);assert(teacherHeartbeat.connections[member]);
 // Competing writes cannot both replace the same state, even from different clients.
 const current=await state(),commands=[true,false].map(ready=>({op:'command',classId,command:{id:crypto.randomUUID(),revision:current.view.revision,type:'ready',args:{ready}}}));const concurrent=await Promise.all(commands.map(b=>call(b,student)));assert.equal(concurrent.filter(r=>r.status===200).length,1);assert.equal(concurrent.filter(r=>r.status===409).length,1);
+// Presence failures are advisory and cannot block a save or login.
+const originalTouch=store.touch,originalPresence=store.presence;
+store.touch=async()=>{throw Error('presence unavailable');};store.presence=async()=>{throw Error('presence unavailable');};
+assert.equal((await call({op:'join',classId,pin:assigned.pin},'')).status,200);
+let outageState=await state();assert.equal(outageState.status,200);
+const outageCommand={id:crypto.randomUUID(),revision:outageState.view.revision,type:'ready',args:{ready:true}};
+assert.equal((await call({op:'command',classId,command:outageCommand},student)).status,200);
+assert.equal((await call({op:'state',classId,revision:(await state()).view.revision},student)).status,200);
+assert.equal((await call({op:'state',classId,revision:(await state()).view.revision})).status,200);
+store.touch=originalTouch;store.presence=originalPresence;
+// A database acknowledgement can fail after commit: retry the same ID safely.
+const beforeUnknown=await state(),originalCAS=store.cas;
+const uncertain={id:crypto.randomUUID(),revision:beforeUnknown.view.revision,type:'ready',args:{ready:false}};
+store.cas=async(...args)=>{await originalCAS.apply(store,args);throw Error('Database response lost');};
+const unknown=await call({op:'command',classId,command:uncertain},student);assert.equal(unknown.status,500);assert(!unknown.error.includes('unchanged'));
+store.cas=originalCAS;
+const recovered=await call({op:'command',classId,command:uncertain},student);assert.equal(recovered.status,200);assert(recovered.duplicate);assert.equal(recovered.view.revision,beforeUnknown.view.revision+1);
+assert.equal((await call(null)).status,400);assert.equal((await call([])).status,400);
 const reset=await assign({memberId:member});assert.equal(reset.status,200);assert.equal((await call({op:'state',classId},student)).status,401);assert.equal((await call({op:'join',classId,pin:assigned.pin},'')).status,401);
 const newLogin=await call({op:'join',classId,pin:reset.pin},'');assert.equal(newLogin.status,200);await assign({memberId:member,disabled:true});assert.equal((await call({op:'state',classId},'student:'+newLogin.token)).status,401);
 let limited;for(let i=0;i<10;i++)limited=await call({op:'join',classId,pin:'999999'},'');assert.equal(limited.status,429);

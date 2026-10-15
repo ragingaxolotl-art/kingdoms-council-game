@@ -18,7 +18,11 @@ export function handler({ store, verifyTeacher, origin, pepper, now = () => Date
       C.check(Number(req.headers.get('content-length') || 0) <= 35e6, 'Request is too large.', 413);
       const reader=req.body?.getReader(); let length=0; const chunks=[]; if(reader)for(;;){const part=await reader.read();if(part.done)break;length+=part.value.byteLength;if(length>35e6){await reader.cancel();C.check(false,'Request is too large.',413);}chunks.push(part.value);}const bytes=new Uint8Array(length);let offset=0;for(const part of chunks){bytes.set(part,offset);offset+=part.length;}const raw=new TextDecoder().decode(bytes);
       let body; try { body = JSON.parse(raw); } catch { C.check(false, 'Invalid JSON.'); }
+      C.check(body && typeof body === 'object' && !Array.isArray(body), 'Send a JSON object.');
       const { op, classId } = body;
+      // Presence is advisory; its outage must never prevent gameplay or conceal a committed save.
+      const touch = async member => { try { await store.touch(classId,member,now()); } catch {} };
+      const presence = async () => { try { return await store.presence(classId); } catch { return {}; } };
       let owner;
       const teacher = async () => { owner ??= await verifyTeacher(req.headers.get('authorization') || ''); C.check(owner, 'Sign in as the teacher.', 401); return owner; };
       if (op === 'list') return reply({ classes: await store.list(await teacher()) });
@@ -37,12 +41,12 @@ export function handler({ store, verifyTeacher, origin, pepper, now = () => Date
             const access=head.tokens[await hash(credential)];
             C.check(access && access.expires > now() && head.members.some(m=>m.id===access.memberId&&!m.disabled), 'Your session ended. Enter your PIN again.', 401);
             C.check(!head.closed, 'This class is closed.', 403);
-            await store.touch(classId,access.memberId,now());
+            await touch(access.memberId);
             return reply({unchanged:true,revision:head.revision});
           }
           await teacher(); C.check(head.owner===owner, 'This class belongs to another teacher.', 403);
-          const presence=await store.presence(classId);
-          return reply({unchanged:true,revision:head.revision,connections:Object.fromEntries(head.members.map(m=>[m.id,now()-(presence[m.id]||0)<12000]))});
+          const seen=await presence();
+          return reply({unchanged:true,revision:head.revision,connections:Object.fromEntries(head.members.map(m=>[m.id,now()-(seen[m.id]||0)<12000]))});
         }
       }
       let row = await store.load(classId); C.check(row, 'Class not found.', 404);
@@ -60,7 +64,7 @@ export function handler({ store, verifyTeacher, origin, pepper, now = () => Date
         row.tokens = Object.fromEntries(Object.entries(row.tokens).filter(([,t]) => t.expires > now()));
         row.tokens[digest] = { memberId, expires:now() + 12 * 60 * 60 * 1000 };
         C.check(await store.cas(row.version, { ...row, version:row.version+1 }), 'Class changed while signing in. Please try again.', 409);
-        await store.touch(classId, memberId, now());
+        await touch(memberId);
         return reply({ token:accessToken, classId, view:C.project(row.session, { id:memberId }, true) });
       }
       let actor;
@@ -70,14 +74,14 @@ export function handler({ store, verifyTeacher, origin, pepper, now = () => Date
         C.check(access && access.expires > now(), 'Your session ended. Enter your PIN again.', 401);
         C.check(!row.session.closed, 'This class is closed.', 403);
         actor = { id:access.memberId }; C.assignment(row.session, actor);
-        await store.touch(classId, actor.id, now());
+        await touch(actor.id);
       } else {
         await teacher(); C.check(row.owner === owner, 'This class belongs to another teacher.', 403);
         actor = { teacher:true, country:body.country ?? 0, role:body.role ?? 'economy' };
       }
       const view = async (includeMap = false) => {
         const out = C.project(row.session, actor, includeMap);
-        if (actor.teacher) { const seen = await store.presence(classId); out.roster.forEach(m => { m.connected = now() - (seen[m.id] || 0) < 12000; }); }
+        if (actor.teacher) { const seen = await presence(); out.roster.forEach(m => { m.connected = now() - (seen[m.id] || 0) < 12000; }); }
         return out;
       };
       if (op === 'state') {
@@ -113,8 +117,9 @@ export function handler({ store, verifyTeacher, origin, pepper, now = () => Date
         row.session = result.session;
         if (result.duplicate) return reply({ view:await view(), duplicate:true });
       }
+      const savedView = await view();
       C.check(await store.cas(row.version, { ...row, version:row.version+1 }), 'Another action arrived first. Refresh and review before submitting again.', 409);
-      return reply({ view:await view(), ...(pin ? { pin } : {}) });
-    } catch (e) { return reply({ error:e.status ? e.message : 'The request could not be completed. Your last saved game is unchanged.' }, e.status || 500); }
+      return reply({ view:savedView, ...(pin ? { pin } : {}) });
+    } catch (e) { return reply({ error:e.status ? e.message : 'The save could not be confirmed. Reconnect to check the latest class state.' }, e.status || 500); }
   };
 }
