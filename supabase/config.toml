@@ -1,0 +1,3 @@
+[functions.classroom]
+# The handler verifies teacher JWTs and student bearer sessions itself.
+verify_jwt = false

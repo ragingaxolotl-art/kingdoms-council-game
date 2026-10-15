@@ -1,0 +1,29 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),C=require('../classroom/core.cjs');
+const ctx=vm.createContext({console});for(const f of ['vendor/d3-delaunay.min.js','data/gria-template.js','world-core.js'])vm.runInContext(fs.readFileSync(__dirname+'/../dist/'+f,'utf8'),ctx);
+const fresh=()=>C.create(C.R.create(structuredClone(vm.runInContext('generateStudentWorld(218,GRIA_TEMPLATE)',ctx))),'Test class');
+let s=fresh(),seq=0;const teacher={teacher:true},request=(type,args={},state=s)=>({id:'test-action-'+String(++seq).padStart(12,'0'),revision:state.revision,type,args}),act=(actor,type,args)=>{s=C.command(s,actor,request(type,args)).session;};
+for(const [id,role] of [['student-econ','economy'],['student-mil','military'],['student-research','research']])act(teacher,'member',{id,label:id,country:0,role});
+const econ={id:'student-econ'},mil={id:'student-mil'},research={id:'student-research'};
+const initial=JSON.stringify(s);assert.throws(()=>C.command(s,econ,request('advance')),/Only your teacher/);assert.equal(JSON.stringify(s),initial);
+assert.throws(()=>C.command(s,econ,request('order',{unit:s.game.units[0].id,territory:s.game.units[0].territory,intent:'move'})),/another department/);
+const other=s.game.units.find(u=>u.country===1);assert.throws(()=>C.command(s,mil,request('order',{unit:other.id,territory:other.territory,intent:'move'})),/not your regiment/);
+assert.throws(()=>C.command(s,research,request('allocate',{plan:{}})),/another department/);
+assert.throws(()=>C.command(s,{id:'missing-user'},request('ready',{ready:true})),/no longer active/);
+const plan={military:{money:20,food:4,wood:5,metal:6},research:{money:10,food:2,wood:3,metal:4}},req=request('allocate',{plan});s=C.command(s,econ,req).session;const after=JSON.stringify(s);assert(C.command(s,econ,req).duplicate);assert.equal(JSON.stringify(s),after);
+assert.throws(()=>C.command(s,econ,{...request('ready',{ready:true}),revision:s.revision-1}),e=>e.status===409);
+act(econ,'ready',{ready:true});act(mil,'ready',{ready:true});act(research,'ready',{ready:true});assert.equal(C.blockers(s).length,0);
+const moveReq=request('advance');s=C.command(s,teacher,moveReq).session;assert.equal(s.game.phase,'retreat','No encounters should skip Responses');assert(C.command(s,teacher,moveReq).duplicate);
+assert.throws(()=>C.command(s,teacher,request('advance',{overrideReadiness:true})),/civilian food/);
+for(const c of s.game.countries)act({teacher:true,country:c.id,role:'economy'},'feed',{plan:Object.fromEntries(s.game.territories.filter(t=>t.owner===c.id).map(t=>[t.id,t.foodNeed]))});
+act(econ,'ready',{ready:true});const end=request('advance');const expected=structuredClone(s.game.countries[0]);s=C.command(s,teacher,end).session;assert.equal(s.game.phase,'results');assert.equal(s.summaries.length,1);const summary=s.summaries[0].countries[0];assert.equal(summary.deliveries.military.food,4);assert.equal(summary.militaryFood.paid,2);assert.equal(summary.availableNextYear.military.food,2);assert.deepEqual(summary.availableNextYear.research,s.game.countries[0].accounts.research);assert.deepEqual(summary.produced,s.game.history[0].income[0]);assert.equal(summary.availableNextYear.treasury.food,expected.stock.food-summary.civilianFood+summary.produced.food);
+const yearEnd=JSON.stringify(s);assert(C.command(s,teacher,end).duplicate);assert.equal(JSON.stringify(s),yearEnd);const stocks=JSON.stringify(s.game.countries.map(c=>[c.stock,c.accounts]));act(teacher,'advance',{overrideReadiness:true});assert.equal(s.game.turn,2);assert.equal(JSON.stringify(s.game.countries.map(c=>[c.stock,c.accounts])),stocks);
+const view=C.project(s,econ,true);assert(!('roster' in view));assert(!('pins' in view));assert(!('tokens' in view));assert(view.countries.every(c=>!('stock' in c)));assert(view.units.filter(u=>u.country!==0).every(u=>!('order' in u)));assert(view.territories.every(t=>!('facilities' in t)));assert(C.project(s,research).territories.filter(t=>t.owner===0).every(t=>'facilities' in t));assert(C.project(s,teacher).roster.length===3);
+// Readiness is invalidated for the whole affected team, and affected trade partners.
+act(econ,'ready',{ready:true});act(mil,'ready',{ready:true});act(econ,'allocate',{plan:{military:{money:0,food:0,wood:0,metal:0},research:{money:0,food:0,wood:0,metal:0}}});assert.equal(Object.keys(s.ready).length,0);
+// Teacher control does not allow malformed saved-state replacement.
+assert.throws(()=>C.command(s,teacher,request('replaceGame',{game:{}})),/Unknown/);
+// Meetings retain the response stage and missing targets block even a teacher override.
+let conflict=fresh();conflict.game.units.find(u=>u.country===1).territory=conflict.game.units.find(u=>u.country===0).territory;conflict=C.command(conflict,teacher,request('advance',{},conflict)).session;assert.equal(conflict.game.phase,'decisions');assert(C.blockers(conflict).some(b=>b.text.includes('confirm targets')));assert.throws(()=>C.command(conflict,teacher,request('advance',{overrideReadiness:true},conflict)),/confirm targets/);
+// Legacy game values survive session import; only the session envelope is new.
+const game=C.R.create(structuredClone(vm.runInContext('generateStudentWorld(30,GRIA_TEMPLATE)',ctx)));assert.deepEqual(C.create(game,'Import').game,game);
+console.log('PASS classroom roles, ownership, privacy, stale revisions, idempotent advances, readiness, optional responses, year-end conservation, final decisions and save compatibility');

@@ -4,3 +4,5 @@ node_modules/
 
 # macOS sidecars on external SSDs
 ._*
+
+.classroom-data/

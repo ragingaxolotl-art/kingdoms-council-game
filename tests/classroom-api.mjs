@@ -1,0 +1,23 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import C from '../classroom/generated/core.mjs';import {handler} from '../classroom/service.mjs';import {LocalStore} from '../classroom/store.mjs';
+const ctx=vm.createContext({console});for(const f of ['vendor/d3-delaunay.min.js','data/gria-template.js','world-core.js'])vm.runInContext(fs.readFileSync(new URL('../dist/'+f,import.meta.url),'utf8'),ctx);const game=C.R.create(structuredClone(vm.runInContext('generateStudentWorld(219,GRIA_TEMPLATE)',ctx)));
+const store=await new LocalStore().init(),api=handler({store,verifyTeacher:async a=>a==='Bearer teacher'?'owner':a==='Bearer other'?'other':null,origin:'https://class.test',pepper:'test-only-secret-with-at-least-32-characters'});
+const call=async(body,auth='teacher')=>{const headers={'Content-Type':'application/json',Origin:'https://class.test'};if(auth.startsWith('student:'))headers['x-student-token']=auth.slice(8);else if(auth)headers.Authorization='Bearer '+auth;const res=await api(new Request('https://api.test',{method:'POST',headers,body:JSON.stringify(body)}));return {status:res.status,...await res.json()};};
+assert.equal((await call({op:'create',game,name:'Class'},'')).status,401);const made=await call({op:'create',game,name:'Class'});assert.equal(made.status,200,JSON.stringify(made));const classId=made.classId;const state=()=>call({op:'state',classId});let latest=await state();
+const assign=async extra=>{latest=await state();return call({op:'assign',classId,revision:latest.view.revision,requestId:crypto.randomUUID(),label:'Student',assignedCountry:0,assignedRole:'economy',...extra});};
+const assigned=await assign();assert.match(assigned.pin,/^\d{6}$/);const member=assigned.view.roster[0].id;
+assert.equal((await call({op:'state',classId},'other')).status,403);
+const joined=await call({op:'join',classId,pin:assigned.pin},'');assert.equal(joined.status,200,JSON.stringify(joined));const student='student:'+joined.token;
+assert(!('pins' in joined.view));assert(!('pin' in joined.view.assignment));assert(!('tokens' in joined.view));assert(!('roster' in joined.view));
+assert.equal((await call({op:'export',classId},student)).status,403);
+assert.equal((await call({op:'assign',classId},student)).status,403);
+const cmd={id:crypto.randomUUID(),revision:joined.view.revision,type:'ready',args:{ready:true}};
+let saved=await call({op:'command',classId,command:cmd},student);assert.equal(saved.status,200);assert((await call({op:'command',classId,command:cmd},student)).duplicate);
+assert.equal((await call({op:'command',classId,command:{id:crypto.randomUUID(),revision:saved.view.revision,type:'advance'}},student)).status,403);
+const unchanged=await call({op:'state',classId,revision:saved.view.revision},student);assert(unchanged.unchanged);
+// Competing writes cannot both replace the same state, even from different clients.
+const current=await state(),commands=[true,false].map(ready=>({op:'command',classId,command:{id:crypto.randomUUID(),revision:current.view.revision,type:'ready',args:{ready}}}));const concurrent=await Promise.all(commands.map(b=>call(b,student)));assert.equal(concurrent.filter(r=>r.status===200).length,1);assert.equal(concurrent.filter(r=>r.status===409).length,1);
+const reset=await assign({memberId:member});assert.equal(reset.status,200);assert.equal((await call({op:'state',classId},student)).status,401);assert.equal((await call({op:'join',classId,pin:assigned.pin},'')).status,401);
+const newLogin=await call({op:'join',classId,pin:reset.pin},'');assert.equal(newLogin.status,200);await assign({memberId:member,disabled:true});assert.equal((await call({op:'state',classId},'student:'+newLogin.token)).status,401);
+let limited;for(let i=0;i<10;i++)limited=await call({op:'join',classId,pin:'999999'},'');assert.equal(limited.status,429);
+const foreign=await api(new Request('https://api.test',{method:'POST',headers:{Origin:'https://evil.test'},body:'{}'}));assert.equal(foreign.status,403);
+console.log('PASS HTTP teacher ownership, PIN creation/login/reset/disable, private views, duplicate requests, concurrent writes, session revocation, rate limits and origin checks');
