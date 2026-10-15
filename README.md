@@ -1,3 +1,7 @@
+## Student site
+
+Open [Student sign-in](https://ragingaxolotl-art.github.io/kingdoms-council-game/student.html) or [explore the student screens](https://ragingaxolotl-art.github.io/kingdoms-council-game/student.html?preview=1). The practice preview has all three departments and four phases, including final supplies. Live PIN sign-in awaits Supabase project setup. [Teacher classroom](https://ragingaxolotl-art.github.io/kingdoms-council-game/classroom.html) and [classroom deployment notes](classroom/README.md) cover the prepared shared service.
+
 ## v0.17 — Attacks disrupt exchange
 
 Resolved attack choices and sieges/captures of owned land break bilateral alliances, cancel joint research, and cancel pending exchanges with exact trade-escrow refunds. Domestic research keeps its normal progress but receives no joint extra progress, refund or cooperation objective credit. All three exchange types are blocked in both directions through the next round. A full quiet round restores them; another attack renews the wait. Completed trades and knowledge are not rolled back, and third-party exchanges remain available. Neutral captures and peaceful movement do not trigger this rule. UI warnings show the affected countries and recovery round. Schema v8 adds a validated bilateral attack ledger; old campaigns retain all assets and objective evidence without invented historical wars.
@@ -69,7 +73,7 @@ v1 regiment saves upgrade once: existing stocks remain in Treasury, existing uni
 
 The campaign format is now `council-regiments-v3`, with independent browser storage `council-regiments-v0.10`. Download/Open game preserves the whole state. Previous phase restore swaps the last checkpoint with the current state. Failed phase calculations leave state unchanged. Unreadable saves pause autosave and can be downloaded for recovery. Downloads are the durable backup if local browser storage fills.
 
-The host controls all countries. There are no student logins, private orders, networking or teacher authentication yet. Imported Azgaar Full JSON supplies geometry and biomes, not game ownership, armies or treaties. The new campaign starts fresh. PNGs cannot supply traversable territory geometry. Naval transport, healing, detailed education, economy laws and trade are outside this small mode; the full v0.9 game and its save slot remain in the version library. Resource geography is asymmetric; classroom balance needs playtesting.
+The original local game below remains teacher-hosted. The separate student/classroom site implements authenticated shared sessions; production sign-in still needs backend provisioning. Imported Azgaar Full JSON supplies geometry and biomes, not game ownership, armies or treaties. The new campaign starts fresh. PNGs cannot supply traversable territory geometry. Naval transport, healing, detailed education, economy laws and trade are outside this small mode; the full v0.9 game and its save slot remain in the version library. Resource geography is asymmetric; classroom balance needs playtesting.
 
 ## Validation and development
 

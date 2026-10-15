@@ -42,6 +42,13 @@ jobs:
       - run: node tests/regiment-objectives-balance.cjs
       - run: node tests/regiment-disruption.cjs
       - run: node tests/releases.cjs
+      - run: node scripts/build-classroom.cjs
+      - run: node tests/classroom-session.cjs
+      - run: node tests/classroom-outbox.cjs
+      - run: node tests/classroom-api.mjs
+      - run: node tests/classroom-storage.mjs
+      - run: node tests/classroom-supabase-store.mjs
+      - run: node tests/student-site.cjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

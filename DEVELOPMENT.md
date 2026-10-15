@@ -1,3 +1,7 @@
+## Student site and classroom preview
+
+Delivered a separate student.html entry with PIN-based role assignment, a four-phase checklist, private role controls, year-end supplies, server-authorized map dragging and the happiness heat map. The public read-only practice preview covers all twelve role/phase combinations using synthetic data. Live Supabase project creation is pending the user completing the new database password in their browser; the connector cost tool returned UNAVAILABLE. Do not claim the public preview synchronizes real students until provisioning and live tests finish. The latest local multi-client test confirmed PIN login, order saves, reload recovery, automatic phase changes and final supply totals. Existing shared-device game and frozen versions remain intact.
+
 ## v0.18 map orders
 
 Military can drag individual regiment tokens during planning. Legal territories and route previews use the existing engine route and movement limit; drops save move/capture orders without resolving early. Enemy, training and resting regiments remain locked. Invalid drops, pointer cancellation and Escape preserve prior orders; country/phase changes cancel a drag. Saved routes remain visible, and the original dropdown controls remain available. Includes the previously requested happiness heat map.

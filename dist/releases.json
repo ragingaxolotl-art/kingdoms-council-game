@@ -131,5 +131,12 @@
     "date": "2026-10-15",
     "url": "releases/v0.18.0/",
     "notes": "Military drag orders respect movement limits, preview routes and preserve simultaneous resolution. Happiness now runs from dark red to bright blue."
+  },
+  {
+    "version": "v0.19.0",
+    "title": "Student site and phase walkthrough",
+    "date": "2026-10-15",
+    "url": "releases/v0.19.0/",
+    "notes": "Separate student entry, read-only role and phase preview, shared classroom screens, happiness map and server-validated troop orders. Live student PINs await Supabase provisioning."
   }
 ]
