@@ -1,3 +1,7 @@
+## v0.15 R&D city actions, technology and trade
+
+User approved meaningful R&D active city management, knowledge sharing, faster/cheaper joint research, Economy resource trade and more varied material requirements. Added separate development rule/UI modules, schema v6, national project installments and prerequisites, equipment progression/unlocks, research-gated construction, five local facilities/actions, production history graph, specialty yields/discounts, city-capture archives, consent-based knowledge and joint projects, and conserved Treasury trade escrow. R&D-only interior display is a role view, not secure privacy; existing teacher-hosted model remains. Preserve classroom no-table-export requirement and all historical archives.
+
 ## v0.14 shared capture ownership
 
 User requested multiple captors choose a recipient during resolution; failed agreement makes every force back up one marker and destroys the city. Added joint siege eligibility after projected ordinary retreats, unanimous per-country recipient votes in the retreat screen across all departments, no default on missing votes, saved/revisable decisions, and deterministic one-adjacent-territory withdrawals on disagreement. Arrival route preferred; existing no-safe-exit surrender rule applies. Ruins become unclaimed; agreed captures retain v0.13 downgrade rules. Schema v5 ledger migration preserves all existing game assets and decisions. Keep original single-country/open-land behavior and immutable archives.

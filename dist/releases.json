@@ -103,5 +103,12 @@
     "date": "2026-10-14",
     "url": "releases/v0.14.0/",
     "notes": "Joint captors choose a settlement owner unanimously. Disagreement destroys the settlement, leaves unclaimed ruins and withdraws all occupying regiments one adjacent territory."
+  },
+  {
+    "version": "v0.15.0",
+    "title": "Research, city actions and trade",
+    "date": "2026-10-14",
+    "url": "releases/v0.15.0/",
+    "notes": "Adds national discoveries, accepted knowledge sharing, cooperative research, active city facilities, negotiated resource trades, geographic specialties and material-based military equipment."
   }
 ]

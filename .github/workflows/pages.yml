@@ -36,6 +36,7 @@ jobs:
       - run: node tests/regiment-happiness.cjs
       - run: node tests/regiment-settlements.cjs
       - run: node tests/regiment-shared-capture.cjs
+      - run: node tests/regiment-development.cjs
       - run: node tests/releases.cjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
