@@ -145,5 +145,12 @@
     "date": "2026-10-15",
     "url": "releases/v0.19.1/",
     "notes": "Supabase classroom service, private PIN sessions and teacher email-link sign-in. First live authenticated classroom verification pending."
+  },
+  {
+    "version": "v0.19.2",
+    "title": "Fresh classroom connection",
+    "date": "2026-10-15",
+    "url": "releases/v0.19.2/",
+    "notes": "Version classroom sign-in assets so returning preview visitors load the live connection. Clarify teacher email-link steps."
   }
 ]
