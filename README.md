@@ -1,3 +1,19 @@
+## v0.17 — Attacks disrupt exchange
+
+Resolved attack choices and sieges/captures of owned land break bilateral alliances, cancel joint research, and cancel pending exchanges with exact trade-escrow refunds. Domestic research keeps its normal progress but receives no joint extra progress, refund or cooperation objective credit. All three exchange types are blocked in both directions through the next round. A full quiet round restores them; another attack renews the wait. Completed trades and knowledge are not rolled back, and third-party exchanges remain available. Neutral captures and peaceful movement do not trigger this rule. UI warnings show the affected countries and recovery round. Schema v8 adds a validated bilateral attack ledger; old campaigns retain all assets and objective evidence without invented historical wars.
+
+Validation: `tests/regiment-disruption.cjs` covers attack and siege triggers, pending refunds, independent/third-party research, historical transfers, all exchange guards, repeated attacks, cooldown recovery, neutral claims, weak-unit captures and real v0.16 migration. `tests/regiment-disruption-browser.cjs` exercises actual agreements, funding, attack choices, UI locks, persistence, mobile warnings and restored controls after a quiet round.
+
+## v0.16 — Always-open departmental objectives
+
+Three independent objectives per department, no mission selection. Countries may pivot throughout the campaign. Completing any three objectives across at least two departments earns victory at round-end; simultaneous winners share it and play may continue. Permanent awards and streak/evidence ledgers survive saves. Schema v7 preserves old assets while starting new objective accounting; it does not invent historical trades or funded discoveries.
+
+Economy rewards sustained feeding/happiness, real construction plus production growth, and substantial lasting two-way trade. Military rewards stable new holdings, equipped/supplied formations, and intact garrisoned fortifications. R&D rewards six self-funded discoveries across branches, four distinct shared/joint discoveries involving two partners, and six useful active city actions across four rounds and two facility types. There are no bonuses for early achievement that could create a runaway resource advantage. See the in-game teacher guide for exact thresholds.
+
+Trade credit nets opposite transfers against prior flows, removing reversed round credit. Gifts, tiny/identical exchanges, offer cancellation and replay do not qualify. Knowledge forwarding and repeated copies of one technology do not inflate research credit. Failed city actions and surplus academy progress do not count. The existing no-copyable-assignment-table rule remains.
+
+Validation includes `tests/regiment-objectives.cjs`, `tests/regiment-objectives-browser.cjs` and `tests/regiment-objectives-balance.cjs`. The reproducible balance snapshot is `tests/objective-balance-v0.16.json`: nine 30-round campaigns, three maps and three policies, 135 country runs. Median completed victory rounds: peaceful 11, defense 13, science 13; completion counts 40/45, 45/45, 42/45. All nine objectives and all three paired-department routes were reached using earned resources. Additional inactivity and midgame-pivot campaigns pass. Geography and scripted-policy limitations still cause long tails; this is a tested starting balance for classroom playtesting, not proof of equal difficulty or exhaustive optimal play.
+
 # Council & Crown — v0.15 Regiment game
 
 A teacher-hosted territory game for sixth graders. The default game now uses large land chunks and whole regiment tokens. The separate heraldry classroom project is unchanged.
