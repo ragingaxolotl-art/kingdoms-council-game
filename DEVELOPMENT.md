@@ -1,3 +1,7 @@
+## v0.21 department resource cards
+
+Added four rounded icon cards above Military and R&D controls. Optional display-only departmentSpending metadata records successful account debits, tracks actual round-end military meals despite incoming deliveries, preserves gross spending through refunds, survives local save/reload/checkpoints and resets each new round. Older saves explicitly show partial spending until the next round. No engine/schema or student-auth change. Rule regression covers all department purchases, failed actions, checkpoint restoration, deliveries/meals, legacy data and reset. Browser checks verified recruitment, research funding, persistence and country separation. Live-auth goal remains paused.
+
 ## v0.20 resource presentation
 
 User supplied four PNGs and screenshots of the main shared-device Economy screen. Added left-hand allocation illustrations/material labels, stronger allocation borders, small trade icons, and a Resources map layer with per-material filters and hover/focus/tap production tooltips. Baseline means R.output at happiness 50 using a shallow projection, so settlement and existing research/specialty bonuses remain without mutating saves. Resource overview hides regiment overlays and disables invisible troop dragging; other views keep existing controls. Map exports composite the visible resource artwork. Work stays in kingdoms-classroom; publishing chat checked idle. Separate teacher/student live-auth goal remains paused.

@@ -159,5 +159,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.20.0/",
     "notes": "Large labeled allocation icons, bolder boxes, compact trade icons and a resource map with per-round production popovers and material filters."
+  },
+  {
+    "version": "v0.21.0",
+    "title": "Department resource cards",
+    "date": "2026-10-16",
+    "url": "releases/v0.21.0/",
+    "notes": "Four rounded resource cards for Military and R&D with available balances and live spending totals."
   }
 ]

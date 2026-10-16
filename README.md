@@ -1,3 +1,7 @@
+## v0.21 department resource cards
+
+Military and R&D each show four rounded cards above their controls, with the supplied material pictures, available amounts and live spending totals. Totals are separate per country and department, survive saves and phase rollback, include military meals, and reset for the next round. Refunds do not erase spending already recorded. Older saves show “Spent since opening” until the next round because past spending was not recorded.
+
 ## v0.20 resource pictures and map
 
 The teacher-supplied money, food, wood and metal artwork appears beside allocation controls, with stronger card/input borders and explicit material labels. Trade uses small icons beside each material name. Choose **Resources** in the map’s View menu, then hover, tap or keyboard-focus an icon for its per-round production; filter by material or zoom for dense areas. The display uses the engine output at 50 happiness, retaining settlement and research/specialty bonuses without editing the game. Resource map PNG exports include the icons. Historical versions remain frozen. The separate live classroom sign-in verification remains paused.
