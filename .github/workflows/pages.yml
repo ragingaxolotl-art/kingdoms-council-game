@@ -35,6 +35,7 @@ jobs:
       - run: node tests/regiment-economy.cjs
       - run: node tests/regiment-happiness.cjs
       - run: node tests/regiment-map-orders.cjs
+      - run: node tests/map-navigation.cjs
       - run: node tests/regiment-settlements.cjs
       - run: node tests/regiment-shared-capture.cjs
       - run: node tests/regiment-development.cjs

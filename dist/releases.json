@@ -194,5 +194,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.25.0/",
     "notes": "Drag illustrated troop pieces with health bars and route arrows. Each troop has separate Hold and Capture controls plus number, health and equipment details. Military territory panels show ownership, shields, level, production and defense without construction controls."
+  },
+  {
+    "version": "v0.26.0",
+    "title": "Map gestures and kingdom highlights",
+    "date": "2026-10-16",
+    "url": "releases/v0.26.0/",
+    "notes": "Pan and zoom with buttons, keyboard or touch gestures. Find your kingdom and troops; highlight your own land and troops in gold, another kingdom in cyan, or display all countries with political colors and names."
   }
 ]

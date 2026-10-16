@@ -1,3 +1,9 @@
+## v0.26 map navigation and country highlights
+
+Map controls now include directional pan buttons, centered zoom, Fit map, Find my kingdom, Find my troops and a kingdom finder. Drag empty map space with a mouse or one finger to pan; pinch with two fingers to zoom, or use trackpad pinch. The focused map accepts arrow keys, +/− and Home. A second finger cancels any pending troop drag before switching to map navigation. Camera movement stays inside map bounds and never resolves or changes game orders.
+
+Gold outlines mark the active country’s land and gold frames identify its troops across departments. Each highlight can be toggled. Choose another kingdom for a cyan outline and troop frames, or All countries for the political colors and country names. Find actions frame the requested holdings or living troops; the country used for game actions stays unchanged. Highlights appear in downloaded maps, and navigation works on Resources and Happiness views.
+
 ## v0.25 troop map controls
 
 The supplied troop artwork replaces map tokens. Each icon has its regiment number and a green health bar (50–100 health) or red bar (below 50). Military can drag its ready troops within their existing movement limits; the picture follows the pointer and remains at its planned destination with a route arrow until the teacher resolves movement. Click a troop to see its number, health and equipment level, and use its separate Hold or Capture buttons. Hold defends at the planned destination without claiming; Cancel movement returns its plan to its current territory. Destination controls above the map remain available for keyboard use. Other countries’ troops, training/resting units and non-planning phases remain protected.
