@@ -37,3 +37,13 @@
 .map-order-tools #mapOrderStatus{height:4.5em;min-height:4.5em;overflow:auto;font-size:14px}
 
 .map-navigation,.map-highlights{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0}.map-directions{display:flex;gap:4px}.map-directions button{font-size:22px;min-width:44px;min-height:44px;padding:3px 12px}.map-highlights{background:#edf3e5;border:1px solid #a7baa7;border-radius:9px;padding:12px}.map-highlights select{max-width:100%;min-width:0}.map-highlights label{min-width:0}.map-highlights input{width:18px;height:18px;accent-color:#896800}.map-gesture-help,#mapHighlightStatus{font-size:14px}#mapHighlightStatus{min-height:3em}#mapViewStatus{font-variant-numeric:tabular-nums;min-width:95px}#map,.settlement-pin,.resource-pin{touch-action:none}#map:focus-visible{outline:3px solid #234c3e;outline-offset:3px}
+
+/* Keep each supplied research illustration inside its own clipped SVG viewport. */
+.development-block .research-icon{display:block;width:88px;height:88px;flex:none;overflow:hidden;background:transparent;margin:0}
+.research-entry{display:flex;align-items:center;gap:18px;min-width:0;padding:16px;border:1px solid #bccbb5;border-radius:12px;background:#f5f8ed}
+.research-entry>div{min-width:0;overflow-wrap:anywhere}.research-entry p{margin:6px 0;font-size:14px}.research-entry strong{font-size:17px}
+#technologyInfo{margin:16px 0}#technologyInfo .research-icon{width:112px;height:112px}
+.research-current{margin:20px 0 12px}.research-current>p{margin:0 0 8px}.research-current .research-entry{border-left:4px solid #41664e}
+.research-discoveries,.research-catalog{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0 20px}
+.research-discoveries .research-icon{width:52px;height:60px}.research-discoveries .research-entry{padding:12px;gap:12px}.research-discoveries strong{font-size:15px}
+@media(max-width:680px){.research-catalog,.research-discoveries{grid-template-columns:1fr}.research-entry{gap:12px;padding:12px}.development-block .research-icon,#technologyInfo .research-icon{width:68px;height:80px}.research-entry strong{font-size:16px}}

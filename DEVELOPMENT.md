@@ -1,3 +1,9 @@
+## v0.27 research artwork
+
+Added twelve supplied illustrations to the existing shared-device R&D interface. SVG viewports and unique clip paths display the untouched PNG sheets, including a sloping boundary that preserves the third marching spear without showing road workers. Names and effects use RegimentDevelopment.techs; no new technologies or rule changes. Selected/current projects and completed/prerequisite entries share the same icon renderer. Compact layouts retain readable text beside the art. Engine/schema, frozen releases and paused student authentication remain untouched.
+
+Validation: existing development and department-budget regressions pass. Browser checks verified all twelve pictures, prerequisite locks, insufficient-resource rejection, project selection, exact discounted Irrigation payment (19 money, 19 wood, 8 metal), one-payment lock, refresh persistence and no console errors. Publishing chat checked idle before changes. Proof images and test fixture are in verification/v0.27. Usage check: 55% used / 45% remaining.
+
 ## v0.26 camera navigation and kingdom visibility
 
 Added MapNavigation with clamped camera math, anchored pinch/trackpad zoom, mouse/one-finger panning, tap-versus-drag threshold, click suppression, pointer cancellation, and a second-pointer takeover that cancels troop orders before navigation. Directional and zoom buttons plus keyboard equivalents share the same camera operations. Main game integration reserves ready own troops for order drags and keeps all game state untouched by camera changes. Optional ownership borders and troop frames are gold for the active country, cyan for a selected comparison country; All countries selects political colors and labels. Find controls frame actual holdings or displayed troop destinations without changing the active country. Resources retain their markers.

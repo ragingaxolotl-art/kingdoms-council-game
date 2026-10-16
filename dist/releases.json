@@ -201,5 +201,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.26.0/",
     "notes": "Pan and zoom with buttons, keyboard or touch gestures. Find your kingdom and troops; highlight your own land and troops in gold, another kingdom in cyan, or display all countries with political colors and names."
+  },
+  {
+    "version": "v0.27.0",
+    "title": "Illustrated research",
+    "date": "2026-10-16",
+    "url": "releases/v0.27.0/",
+    "notes": "Supplied metallurgy, bow, logistics and production artwork appears alongside existing research names, costs, prerequisites and completed discoveries."
   }
 ]

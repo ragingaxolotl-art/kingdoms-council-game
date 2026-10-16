@@ -1,3 +1,7 @@
+## v0.27 illustrated research
+
+The supplied artwork appears beside R&D project previews, the current project, completed discoveries and the prerequisite catalog. It covers Bronze/Iron/Steel equipment, Simple/Recurved/Longbows, Organized marches, Road networks, Crop rotation, Irrigation, Sawmilling and Mining tools. Labels and benefits come from the existing research catalog. The original transparent sheets are preserved and displayed as separate clipped icons; the marching group stays together. Costs, research order, saves and rules remain unchanged. Asset provenance is in `dist/research-icons/README.txt`.
+
 ## v0.26 map navigation and country highlights
 
 Map controls now include directional pan buttons, centered zoom, Fit map, Find my kingdom, Find my troops and a kingdom finder. Drag empty map space with a mouse or one finger to pan; pinch with two fingers to zoom, or use trackpad pinch. The focused map accepts arrow keys, +/− and Home. A second finger cancels any pending troop drag before switching to map navigation. Camera movement stays inside map bounds and never resolves or changes game orders.
