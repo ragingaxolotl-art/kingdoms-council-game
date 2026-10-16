@@ -1,3 +1,9 @@
+## v0.25 troop map controls
+
+The supplied troop artwork replaces map tokens. Each icon has its regiment number and a green health bar (50–100 health) or red bar (below 50). Military can drag its ready troops within their existing movement limits; the picture follows the pointer and remains at its planned destination with a route arrow until the teacher resolves movement. Click a troop to see its number, health and equipment level, and use its separate Hold or Capture buttons. Hold defends at the planned destination without claiming; Cancel movement returns its plan to its current territory. Destination controls above the map remain available for keyboard use. Other countries’ troops, training/resting units and non-planning phases remain protected.
+
+Military territory details show claimed status, ownership and country shield (a colored initial shield if none is uploaded), settlement level, current production and defense only. Construction stays in Economy. No engine, balance, save schema or paused authentication changes.
+
 ## v0.24 metallic defense overlays
 
 Palisades use the supplied wooden fence with a metallic silver outline; Stone Walls and Citadels use the supplied stone wall with a metallic gold outline. Fortified settlements display the matching defense across their front at 118% of the settlement icon width, on the map and in Economy/R&D panels. Map PNG exports include both layers. Construction, capture, repair and upgrade rules remain unchanged.

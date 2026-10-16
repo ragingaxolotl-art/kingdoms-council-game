@@ -187,5 +187,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.24.0/",
     "notes": "Silver palisades and gold stone walls overlay fortified settlement pictures on the map and in upgrade panels."
+  },
+  {
+    "version": "v0.25.0",
+    "title": "Troop icons and individual orders",
+    "date": "2026-10-16",
+    "url": "releases/v0.25.0/",
+    "notes": "Drag illustrated troop pieces with health bars and route arrows. Each troop has separate Hold and Capture controls plus number, health and equipment details. Military territory panels show ownership, shields, level, production and defense without construction controls."
   }
 ]
