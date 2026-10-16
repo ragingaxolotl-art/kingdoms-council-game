@@ -1,3 +1,7 @@
+## v0.23 ordered settlement artwork
+
+Five supplied settlement pictures now mark Village (red), Small Town (orange), Town (yellow), City (green) and Great City (blue). Scaled, clickable map icons grow with zoom; a numbered illustrated key and upgrade path show the order and current/next level. Economy offers only the next settlement stage, retaining the existing one-construction-per-round, research, cost and repair requirements. PNG map exports include the artwork. The Resources layer keeps its separate production markers.
+
 ## v0.22 troop illustrations
 
 Military recruitment now shows illustrated cards for Spears, Archers, Cavalry and Artillery with their resource costs and research requirements. Existing regiments show the matching picture beside their name and health. The supplied three-figure sheet was separated into transparent image variants; the swordsman is saved for reuse without adding a new unit rule. Cavalry background was made transparent; artillery uses the supplied image.

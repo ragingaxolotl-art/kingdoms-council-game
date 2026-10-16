@@ -173,5 +173,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.22.0/",
     "notes": "Separate troop pictures on Military recruitment cards and regiment controls, with material costs."
+  },
+  {
+    "version": "v0.23.0",
+    "title": "Colored settlement stages",
+    "date": "2026-10-16",
+    "url": "releases/v0.23.0/",
+    "notes": "Five ordered settlement pictures with red, orange, yellow, green and blue outlines, scaled map markers and an illustrated upgrade path."
   }
 ]
