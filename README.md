@@ -1,3 +1,7 @@
+## v0.24 metallic defense overlays
+
+Palisades use the supplied wooden fence with a metallic silver outline; Stone Walls and Citadels use the supplied stone wall with a metallic gold outline. Fortified settlements display the matching defense across their front at 118% of the settlement icon width, on the map and in Economy/R&D panels. Map PNG exports include both layers. Construction, capture, repair and upgrade rules remain unchanged.
+
 ## v0.23 ordered settlement artwork
 
 Five supplied settlement pictures now mark Village (red), Small Town (orange), Town (yellow), City (green) and Great City (blue). Scaled, clickable map icons grow with zoom; a numbered illustrated key and upgrade path show the order and current/next level. Economy offers only the next settlement stage, retaining the existing one-construction-per-round, research, cost and repair requirements. PNG map exports include the artwork. The Resources layer keeps its separate production markers.

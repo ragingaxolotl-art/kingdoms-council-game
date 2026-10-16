@@ -180,5 +180,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.23.0/",
     "notes": "Five ordered settlement pictures with red, orange, yellow, green and blue outlines, scaled map markers and an illustrated upgrade path."
+  },
+  {
+    "version": "v0.24.0",
+    "title": "Metallic defense overlays",
+    "date": "2026-10-16",
+    "url": "releases/v0.24.0/",
+    "notes": "Silver palisades and gold stone walls overlay fortified settlement pictures on the map and in upgrade panels."
   }
 ]
