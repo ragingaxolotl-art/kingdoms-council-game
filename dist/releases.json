@@ -152,5 +152,12 @@
     "date": "2026-10-15",
     "url": "releases/v0.19.2/",
     "notes": "Version classroom sign-in assets so returning preview visitors load the live connection. Clarify teacher email-link steps."
+  },
+  {
+    "version": "v0.20.0",
+    "title": "Resource pictures and map",
+    "date": "2026-10-16",
+    "url": "releases/v0.20.0/",
+    "notes": "Large labeled allocation icons, bolder boxes, compact trade icons and a resource map with per-round production popovers and material filters."
   }
 ]

@@ -1,3 +1,7 @@
+## v0.20 resource pictures and map
+
+The teacher-supplied money, food, wood and metal artwork appears beside allocation controls, with stronger card/input borders and explicit material labels. Trade uses small icons beside each material name. Choose **Resources** in the map’s View menu, then hover, tap or keyboard-focus an icon for its per-round production; filter by material or zoom for dense areas. The display uses the engine output at 50 happiness, retaining settlement and research/specialty bonuses without editing the game. Resource map PNG exports include the icons. Historical versions remain frozen. The separate live classroom sign-in verification remains paused.
+
 ## Student site
 
 Open [Student sign-in](https://ragingaxolotl-art.github.io/kingdoms-council-game/student.html) or [explore the student screens](https://ragingaxolotl-art.github.io/kingdoms-council-game/student.html?preview=1). The practice preview has all three departments and four phases, including final supplies. Live PIN sign-in is connected to the classroom service. Teachers use the approved email’s sign-in link; students need only their class link and PIN. [Teacher classroom](https://ragingaxolotl-art.github.io/kingdoms-council-game/classroom.html) and [classroom deployment notes](classroom/README.md) cover the prepared shared service.

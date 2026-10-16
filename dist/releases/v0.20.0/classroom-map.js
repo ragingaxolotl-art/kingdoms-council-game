@@ -1,0 +1,27 @@
+/* Student map: server-projected legal routes, authenticated save commands. */
+const ClassroomMap=(()=>{
+ const stops=[[0,[128,0,32]],[25,[223,84,70]],[50,[245,243,237]],[75,[131,202,255]],[100,[0,132,255]]];
+ function heat(value){value=Math.max(0,Math.min(100,value));const i=Math.min(3,Math.floor(value/25)),a=stops[i],b=stops[i+1],f=(value-a[0])/25;return 'rgb('+a[1].map((n,k)=>Math.round(n+(b[1][k]-n)*f)).join(',')+')';}
+ function contains(poly,[x,y]){let hit=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;}
+ function attach({canvas,layer,intent,status,tools,legend,select,commit,canWrite}){
+  let view=null,cells=[],boundaries=[],selected=null,state=null,drag=null,camera={x:0,y:0,w:1200,h:700},preview=false;
+  const ctx=canvas.getContext('2d'),territoryAt=p=>cells.find(c=>c.land&&contains(c.polygon,p))?.territory??null;
+  const controller=RegimentMapOrders.attach({canvas,R:{route:(s,from,to,country)=>s.units.find(u=>u.country===country&&u.territory===from&&Object.hasOwn(u.legalRoutes||{},to))?.legalRoutes[to]??null},context:()=>({state:state||{units:[],territories:[],phase:'none'},active:view?.assignment.country,role:canWrite()?view?.assignment.role:'observer',intent:intent.value,camera}),territoryAt,preview:d=>{drag=d;draw();},status:message=>status.textContent=message,commit,start:()=>{}});
+  function draw(){
+   if(!state)return;const sx=1200/camera.w;ctx.clearRect(0,0,1200,700);ctx.save();ctx.scale(sx,sx);
+   for(const cell of cells){const t=state.territories[cell.territory];ctx.beginPath();cell.polygon.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fillStyle=!cell.land?'#626f76':layer.value==='happiness'?heat(t?.happiness??50):(view.countries.find(c=>c.id===t?.owner)?.color||'#e2dfd2');ctx.fill();if(drag&&cell.land&&!drag.paths.has(cell.territory)){ctx.fillStyle='#fff9';ctx.fill();}}
+   for(const e of boundaries){ctx.beginPath();ctx.moveTo(...e.from);ctx.lineTo(...e.to);const highlighted=e.territories.includes(selected)||drag?.valid&&e.territories.includes(drag.target);ctx.strokeStyle=highlighted?'#ffe781':'#344d3e';ctx.lineWidth=(highlighted?3:1.2)/sx;ctx.stroke();}
+   function route(u,destination,path){const points=[state.territories[u.territory].point,...path.map(n=>state.territories[n].point)];if(!points.length)return;ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.strokeStyle='#20352d';ctx.lineWidth=3/sx;ctx.setLineDash([7/sx,5/sx]);ctx.stroke();ctx.setLineDash([]);const p=state.territories[destination].point;ctx.beginPath();ctx.arc(...p,7/sx,0,2*Math.PI);ctx.stroke();}
+   for(const u of state.units)if(u.order){const path=u.legalRoutes?.[u.order.destination];if(path)route(u,u.order.destination,path);}
+   if(drag?.valid)route(drag.unit,drag.target,drag.paths.get(drag.target));
+   for(const t of state.territories){ctx.fillStyle='#172b24';ctx.font=`bold ${12/sx}px sans-serif`;ctx.fillText(t.id+1,t.point[0]+6/sx,t.point[1]-7/sx);}
+   for(const token of RegimentMapOrders.tokens(state,camera)){const {u,x,y,r}=token;ctx.beginPath();ctx.roundRect(x-r,y-r,r*2,r*2,4/sx);ctx.fillStyle=view.countries.find(c=>c.id===u.country)?.color||'#fff';ctx.fill();ctx.strokeStyle=u.country===view.country.id?'#fff':'#172b24';ctx.lineWidth=2/sx;ctx.stroke();ctx.font=`bold ${11/sx}px sans-serif`;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#172b24';ctx.lineWidth=3/sx;ctx.strokeText(u.id,x,y+4/sx);ctx.fillText(u.id,x,y+4/sx);ctx.textAlign='left';}
+   ctx.restore();
+  }
+  canvas.onclick=e=>{if(controller.consumeClick())return;const p=RegimentMapOrders.coordinates(e,canvas,camera);selected=territoryAt(p.world);draw();select(selected);};
+  layer.onchange=()=>{legend.hidden=layer.value!=='happiness';draw();};intent.onchange=()=>controller.cancel();window.addEventListener('keydown',e=>{if(e.key==='Escape')controller.cancel();});window.addEventListener('blur',()=>controller.cancel());
+  return {update(v,map,selection,demo){controller.cancel('');view=v;cells=map;const edgeMap=new Map();for(const cell of cells.filter(c=>c.land)){for(let i=0;i<cell.polygon.length;i++){const from=cell.polygon[i],to=cell.polygon[(i+1)%cell.polygon.length];if(from[0]===to[0]&&from[1]===to[1])continue;const key=[from,to].map(p=>p.map(n=>n.toFixed(3)).join(',')).sort().join('|');const old=edgeMap.get(key);if(old){old.count++;if(!old.territories.includes(cell.territory))old.territories.push(cell.territory);}else edgeMap.set(key,{from,to,count:1,territories:[cell.territory]});}}boundaries=[...edgeMap.values()].filter(e=>e.count===1||e.territories.length>1);selected=selection;preview=demo;let maxX=1200,maxY=700;for(const c of cells)for(const p of c.polygon){maxX=Math.max(maxX,p[0]);maxY=Math.max(maxY,p[1]);}const scale=Math.min(1200/maxX,700/maxY);camera={x:0,y:0,w:1200/scale,h:700/scale};state={...v,turn:v.year,countries:v.countries.map(c=>c.id===v.country.id?v.country:c)};tools.hidden=v.assignment.role!=='military'||v.phase!=='orders';status.textContent=demo?'Preview only. In a live class, drag your regiment to a highlighted territory.':'Drag your numbered regiment to a highlighted territory. Orders resolve when your teacher advances.';controller.refresh();draw();},select(n){selected=n;draw();}};
+ }
+ return {attach,heat,contains};
+})();
+if(typeof module==='object')module.exports=ClassroomMap;

@@ -49,6 +49,7 @@ jobs:
       - run: node tests/classroom-storage.mjs
       - run: node tests/classroom-supabase-store.mjs
       - run: node tests/student-site.cjs
+      - run: node tests/resource-display.cjs
       - run: node tests/teacher-auth.mjs
       - run: node tests/classroom-auth.cjs
       - uses: actions/configure-pages@v5
