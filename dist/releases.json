@@ -166,5 +166,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.21.0/",
     "notes": "Four rounded resource cards for Military and R&D with available balances and live spending totals."
+  },
+  {
+    "version": "v0.22.0",
+    "title": "Illustrated troops",
+    "date": "2026-10-16",
+    "url": "releases/v0.22.0/",
+    "notes": "Separate troop pictures on Military recruitment cards and regiment controls, with material costs."
   }
 ]

@@ -1,3 +1,7 @@
+## v0.22 troop illustrations
+
+Military recruitment now shows illustrated cards for Spears, Archers, Cavalry and Artillery with their resource costs and research requirements. Existing regiments show the matching picture beside their name and health. The supplied three-figure sheet was separated into transparent image variants; the swordsman is saved for reuse without adding a new unit rule. Cavalry background was made transparent; artillery uses the supplied image.
+
 ## v0.21 department resource cards
 
 Military and R&D each show four rounded cards above their controls, with the supplied material pictures, available amounts and live spending totals. Totals are separate per country and department, survive saves and phase rollback, include military meals, and reset for the next round. Refunds do not erase spending already recorded. Older saves show “Spent since opening” until the next round because past spending was not recorded.

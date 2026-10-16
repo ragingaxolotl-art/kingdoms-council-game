@@ -1,3 +1,7 @@
+## v0.22 troop illustrations
+
+User supplied a three-figure infantry sheet plus cavalry and artillery pictures. Built-in image editing separated polearm, archer and swordsman variants and extracted the cavalry background. Artwork saved under dist/troop-icons; asset notes record prompts/provenance. Recruitment shows four illustrated cost cards with unlock hints; existing regiment headings use matching artwork. Current troop types, costs, saves, map tokens and classroom service remain unchanged. Publishing chat checked idle. Browser verified all six rendered troop images, transparent backgrounds and working Save order action without console errors. Separate authentication goal remains paused.
+
 ## v0.21 department resource cards
 
 Added four rounded icon cards above Military and R&D controls. Optional display-only departmentSpending metadata records successful account debits, tracks actual round-end military meals despite incoming deliveries, preserves gross spending through refunds, survives local save/reload/checkpoints and resets each new round. Older saves explicitly show partial spending until the next round. No engine/schema or student-auth change. Rule regression covers all department purchases, failed actions, checkpoint restoration, deliveries/meals, legacy data and reset. Browser checks verified recruitment, research funding, persistence and country separation. Live-auth goal remains paused.
