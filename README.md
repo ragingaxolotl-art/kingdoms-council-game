@@ -1,3 +1,7 @@
+## v0.31 — Choose retreats on the map
+
+Select a retreating troop or its Choose retreat on map button to highlight safe neighboring territories. Click green land or a numbered destination, then confirm. Cancel preserves the old choice; saved destinations show a checkmark and route arrow. Movement still happens when the teacher completes retreats. The existing selector also asks for confirmation.
+
 ## v0.30 — Horizontal research categories
 
 R&D discoveries are grouped into eight horizontal, scrollable category rows using the existing artwork and names. Cards show completed, available, current or locked status; missing prerequisites are named and locked choices cannot be selected. Completing all funded progress unlocks the next tier. Research rules, installment prices and technology prerequisites are unchanged.

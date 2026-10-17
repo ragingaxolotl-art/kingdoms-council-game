@@ -229,5 +229,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.30.0/",
     "notes": "Horizontal research categories with existing artwork, visible prerequisite locks, progress, installment costs and direct project selection. Includes v0.28 artwork and v0.29 allocation limits."
+  },
+  {
+    "version": "v0.31.0",
+    "title": "Map retreat choices",
+    "date": "2026-10-16",
+    "url": "releases/v0.31.0/",
+    "notes": "Highlight safe neighbors for retreating troops, click a destination and confirm. Includes saved retreat markers, cancellation, route arrows and existing delayed resolution."
   }
 ]

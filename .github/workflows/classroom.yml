@@ -19,6 +19,7 @@ jobs:
       - run: git diff --exit-code -- dist/classroom-demo.json
       - run: node --check dist/classroom.js
       - run: node --check dist/classroom-map.js
+      - run: node tests/retreat-map.cjs
       - run: node tests/research-categories.cjs
       - run: node tests/allocation-controls.cjs
       - run: node tests/facility-map.cjs
