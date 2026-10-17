@@ -16,3 +16,7 @@ for(const rules of [R,R.forMode('battle-lab')]){
  a.doesNotThrow(()=>rules.validate(JSON.parse(JSON.stringify(s))));
 }
 console.log('PASS explicit routes, land borders, final stops, bilateral passage, crossing routes, paired movement, attack stops, other armies continue, deferred damage and reload validation in both modes.');
+
+// Allied reinforcements never default to attacking their own ally.
+{let s=fresh();s.countries.push({...structuredClone(s.countries[1]),id:2,name:'Third country'});B.add(s,0,0,'spears',1,100,0);B.add(s,1,0,'spears',1,100,0);B.add(s,2,0,'spears',1,100,0);s.alliances=['0-1'];s=R.advance(R.startMovement(s));R.encounter(s,0,'attack');a.equal(s.choices['0:0'],2);a.equal(s.choices['0:1'],2);a.equal(s.choices['0:2'],0);}
+console.log('PASS: allied participants keep enemy targets when an encounter becomes a battle.');
