@@ -1,0 +1,36 @@
+from pathlib import Path
+import re
+root=Path(__file__).resolve().parents[1]
+d=root/'dist'
+def replace(s,a,b):
+    assert a in s,a
+    return s.replace(a,b)
+(d/'battle-lab-engine.js').write_text("// Mode adapter: all combat rules come from the student game's shared engine.\nconst BattleRules=(typeof RegimentGame!=='undefined'?RegimentGame:require('./regiments-engine.js')).forMode('battle-lab');\nif(typeof module!=='undefined')module.exports=BattleRules;\n")
+a=(d/'regiments-app.js').read_text()
+a=replace(a,"const R=RegimentGame","const R=BattleRules")
+a=replace(a,"KEY='council-regiments-v0.10'","KEY='council-battle-lab-v1'")
+a=replace(a,"role='economy'","role='military'")
+a=replace(a,"R.create(generateStudentWorld(crypto.getRandomValues(new Uint32Array(1))[0],GRIA_TEMPLATE))","BattleLab.create(generateStudentWorld(crypto.getRandomValues(new Uint32Array(1))[0],GRIA_TEMPLATE))")
+a=replace(a,"ObjectiveUI.render();","BattleLabUI.render();")
+a=replace(a,"R.validate(importing?R.create(importAzgaarWorld(raw)):raw)","BattleLab.open(importing?BattleLab.create(importAzgaarWorld(raw)):raw)")
+a=replace(a,"'<span>Treasury reserve</span>'","'<span>Military resources</span>'")
+a=replace(a,"Math.floor(c.stock[g])","Math.floor(c.accounts.military[g])")
+a=replace(a,"Economy must confirm civilian food for every country with land. Finish to deliver budgets, feed armies and collect production.","Finish to collect land production directly into Military and feed armies automatically.")
+a=replace(a,"Economy assigns next-round resources. Military uses delivered funds to recruit and plans movement. New recruits train for one round.","Edit test armies freely, or recruit using land income. Plan movement for all four countries.")
+a=replace(a,"3 · Retreat & feed","3 · Retreat & collect income")
+a=replace(a,"Pending delivery after this full round: ${stockText(c.allocations.military)}.","Land production goes directly to Military at round-end.")
+a=replace(a,"New recruits use your best discovered equipment.","Normal recruits use base equipment; choose any equipment in the test editor.")
+a=replace(a,"R.validate(JSON.parse(raw))","BattleLab.open(JSON.parse(raw))")
+a=replace(a,"regiment-game-turn-${state.turn}.json","battle-lab-turn-${state.turn}.json")
+(d/'battle-lab-app.js').write_text('// Generated from regiments-app.js; separate save and military-only interface.\n'+a)
+h=(d/'index.html').read_text()
+h=h.replace('Council & Crown · Regiment game','Council & Crown · Battle Lab').replace('One piece. One plan.','Four kingdoms. Your battle test.').replace('Build, discover, trade or defend—then resolve everyone’s decisions together.','Choose any troops, place opposing armies, and use the current battle rules.')
+h=re.sub(r'COUNCIL & CROWN · v[0-9.]+','COUNCIL & CROWN · BATTLE LAB',h)
+h=h.replace('<nav class="toolbar">','<nav class="toolbar"><a href="battle-online.html">Two-player PIN match</a><a href="index.html">Full game</a>')
+h=re.sub(r'<nav class="role-tabs".*?</nav>','',h)
+h=h.replace('<section id="objectiveSummary" class="panel"></section>','<section id="labSetup" class="panel"></section><section id="objectiveSummary" hidden></section>')
+h=h.replace('<option value="happiness">Happiness</option>','')
+h=re.sub(r'<details class="panel"><summary>Rules and teacher notes</summary>.*?</details>','<details class="panel"><summary>Battle Lab rules</summary><p>Four countries are selected to maximize the minimum straight-line distance between their starting capitals. Other countries’ land becomes unclaimed. Army setup is free and immediate, with up to six regiments per country; normal recruitment still costs resources and trains for one round.</p><p>Each country starts with one round of its owned land production. Biomes, deposits and settlement production remain; research and happiness bonuses are removed. All new income goes straight to Military before military meals. Civilian feeding, research, trade and objectives are disabled. Military food shortages still affect combat. Setup lets you choose equipment and movement without research.</p><p>Combat, movement, alliances, simultaneous damage, retreats, pursuit, captures and siege defenses use the current game rules. Spears beat cavalry, cavalry beat archers, archers beat spears. Artillery is neutral in field battles and deals double siege damage. Save a test setup to replay it. Battle Lab saves are separate from the full game.</p></details>',h,flags=re.S)
+h=re.sub(r'(<script src="regiments-engine.js[^\"]*"></script>)',r'\1<script src="battle-lab-engine.js"></script>',h)
+h=re.sub(r'<script src="regiments-app.js[^\"]*"></script>','<script src="battle-lab.js?v=1"></script><script src="battle-lab-ui.js?v=1"></script><script src="battle-lab-app.js?v=1"></script>',h)
+(d/'battle-lab.html').write_text(h)

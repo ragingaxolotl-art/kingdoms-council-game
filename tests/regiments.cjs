@@ -42,7 +42,7 @@ for(const type of Object.keys(R.types)){
 }
 assert.deepEqual(battle({types:['cavalry','archers']}).units.map(u=>u.hp),[77,55]);
 assert.deepEqual(battle({types:['cavalry','spears']}).units.map(u=>u.hp),[55,77]);
-s=game();s.countries[0].knowledge.push('construction','masonry','siege');R.recruit(s,0,'artillery',0);assert.equal(s.units[0].hp,100);assert.deepEqual(s.countries[0].accounts.military,{money:110,food:194,wood:170,metal:145});assert.throws(()=>R.order(s,s.units[0].id,2,'capture'));s=advance(advance(advance(advance(s))));R.order(s,s.units[0].id,2,'capture');s=advance(advance(advance(s)));assert.equal(s.territories[2].owner,0);assert.equal(R.validate(JSON.parse(JSON.stringify(s))).units[0].type,'artillery');
+s=game();s.countries[0].knowledge.push('construction','masonry','siege');R.recruit(s,0,'artillery',0);assert.equal(s.units[0].hp,100);assert.deepEqual(s.countries[0].accounts.military,{money:110,food:194,wood:170,metal:145});assert.throws(()=>R.order(s,s.units[0].id,2,'capture'));s=advance(advance(advance(advance(s))));R.order(s,s.units[0].id,1,'capture');s=advance(advance(advance(s)));assert.equal(s.territories[1].owner,0);assert.equal(R.validate(JSON.parse(JSON.stringify(s))).units[0].type,'artillery');
 console.log('PASS: artillery recruitment, neutral matchups in both directions, cavalry strengths, movement/capture and save roundtrip.');
 
 function advance(s){if(s.phase==='retreat'){s=structuredClone(s);for(const c of s.countries){R.feed(s,c.id,Object.fromEntries(s.territories.filter(t=>t.owner===c.id).map(t=>[t.id,0])));R.confirmFood(s,c.id);}}return R.advance(s);}

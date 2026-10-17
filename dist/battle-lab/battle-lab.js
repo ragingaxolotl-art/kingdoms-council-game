@@ -1,6 +1,6 @@
 /* Battle Lab setup; combat is generated from the current regiment engine. */
 const BattleLab=(()=>{
-const R=typeof module!=='undefined'?require('./battle-lab-engine.js'):RegimentGame;
+const R=typeof module!=='undefined'?require('./battle-lab-engine.js'):BattleRules;
 const zero=()=>Object.fromEntries(R.goods.map(g=>[g,0]));
 function spread(countries,territories,count=4){
  const candidates=countries.filter(c=>c.capital!==null),d=candidates.map(a=>candidates.map(b=>Math.hypot(...territories[a.capital].point.map((v,i)=>v-territories[b.capital].point[i]))));

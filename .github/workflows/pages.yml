@@ -21,6 +21,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: node scripts/build-classroom.cjs
+      - run: node tests/regiment-movement.cjs
+      - run: node tests/battle-lab.cjs
+      - run: node tests/battle-online.mjs
+      - run: node tests/shared-rules.mjs
+      - run: node tests/movement-permissions.mjs
       - run: node tests/engine.cjs
       - run: node tests/phases.cjs
       - run: node tests/economy.cjs
@@ -56,6 +62,7 @@ jobs:
       - run: node tests/department-budget.cjs
       - run: node tests/teacher-auth.mjs
       - run: node tests/classroom-auth.cjs
+      - run: node scripts/check-live-rules.mjs
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
