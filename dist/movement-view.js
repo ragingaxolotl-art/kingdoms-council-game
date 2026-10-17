@@ -27,7 +27,7 @@ const MovementView=(()=>{
    el('p',waiting?`${waiting} encounter(s) must be settled before anyone takes the next step.`:'Next moves every eligible regiment one territory together. Troops stopped for battle stay put. Fighting happens after movement finishes.',box);
    if(next)button(box,'Next movement',next,disabled||waiting>0);
   }
-  for(const e of encounters){const card=el('article','',box);card.className='movement-encounter';
+  for(const e of encounters.filter(e=>e.countries.includes(country))){const card=el('article','',box);card.className='movement-encounter';
    el('h3',(e.locations?.length>1?'Crossing routes at ':'Encounter at ')+(e.locations||[e.territory]).map(id=>place(s,id)).join(' ↔ '),card);
    el('p',e.countries.map(id=>s.countries[id].name+': '+(e.votes[id]==='pass'?'Pass requested':e.votes[id]==='attack'?'Attack':'Waiting for decision')).join(' · '),card);
    el('p','Everyone must agree to pass. Any attack stops these troops for battle in the next stage.',card);
@@ -37,7 +37,7 @@ const MovementView=(()=>{
   }
   const recent=s.moves?.filter(m=>m.country===country).at(-1);if(recent)el('p',`Latest move: #${recent.unit} · ${place(s,recent.from)} → ${place(s,recent.to)}`,box);
   for(const u of s.units.filter(u=>u.hp>0&&u.country===country)){const battle=s.march.stopped.includes(u.id);el('p',`#${u.id}: ${battle?'Stopped for battle at':s.phase==='movement'?'Currently at':'Final stop:'} ${place(s,u.territory)}${u.order?' · Planned stop: '+place(s,u.order.destination):''}`,box);}
-  const log=el('details','',box);el('summary','Movement and encounter log',log);for(const m of (s.moves||[]).filter(m=>m.country===country))el('p',`#${m.unit}: ${place(s,m.from)} → ${place(s,m.to)}`,log);for(const entry of s.march.log.filter(e=>e.units.some(id=>s.units.some(u=>u.id===id&&u.country===country))))el('p',entry.units.map(id=>'#'+id).join(', ')+': '+({battle:'Stopped for battle',pass:'Passage agreed',arrived:'Arrived',hold:'Held position'}[entry.reason])+' at '+place(s,entry.territory),log);
+  const log=el('details','',box);el('summary','Movement and encounter log',log);for(const m of (s.moves||[]).filter(m=>m.country===country))el('p',`#${m.unit}: ${place(s,m.from)} → ${place(s,m.to)}`,log);for(const entry of s.march.log.filter(e=>e.units.some(id=>s.units.some(u=>u.id===id&&u.country===country))))el('p',entry.units.filter(id=>s.units.some(u=>u.id===id&&u.country===country)).map(id=>'#'+id).join(', ')+': '+({battle:'Stopped for battle',pass:'Passage agreed',arrived:'Arrived',hold:'Held position'}[entry.reason])+' at '+place(s,entry.territory),log);
  }
  function markers(ctx,s,units,z){
  if(!['orders','movement'].includes(s.phase))return;
@@ -52,5 +52,6 @@ const MovementView=(()=>{
   ctx.restore();
  }
 ctx.save();ctx.font=`bold ${10*z}px sans-serif`;ctx.textAlign='center';for(const u of units.filter(u=>u.order)){const stopped=s.phase==='movement'&&s.march?.stopped.includes(u.id),p=s.territories[stopped?u.territory:u.order.destination].point;ctx.fillStyle='#fff6c9';ctx.strokeStyle='#493419';ctx.lineWidth=3*z;const text=(stopped?'BATTLE #':s.phase==='movement'?'PLANNED STOP #':'STOP #')+u.id;ctx.strokeText(text,p[0],p[1]-28*z);ctx.fillText(text,p[0],p[1]-28*z);}ctx.restore();}
- return {editor,panel,markers};
+ function reportEvents(s,country,events){const name=s.countries[country].name;return (events||[]).filter(e=>e.startsWith(name+': ')||e.startsWith(name+' captured ')||e.startsWith(name+' besieged ')||/^Regiment (\d+) /.test(e)&&s.units.some(u=>u.country===country&&u.id===Number(e.match(/^Regiment (\d+) /)[1])));}
+ return {editor,panel,markers,reportEvents};
 })();
