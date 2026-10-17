@@ -123,7 +123,7 @@ function encounter(s,country,decision){
   const units=living(s).filter(u=>e.units.includes(u.id));
   // Partners always stop together, including an allied partner at this site.
   for(const u of units){if(!m.stopped.includes(u.id))m.stopped.push(u.id);if(u.pairedWith&&!m.stopped.includes(u.pairedWith))m.stopped.push(u.pairedWith);}
-  for(const c of e.countries){const enemy=e.countries.find(other=>other!==c&&!ally(s,c,other));if(enemy!==undefined)s.choices[e.territory+':'+c]=c===country?enemy:country;}
+  for(const c of e.countries){const enemy=e.countries.find(other=>other!==c&&!ally(s,c,other));if(enemy!==undefined)s.choices[e.territory+':'+c]=c===country||ally(s,c,country)?enemy:country;}
   m.log.push({territory:e.territory,units:[...e.units],reason:'battle'});m.pending=null;
  }else if(e.countries.every(c=>e.votes[c]==='pass')){
   for(const a of e.units)for(const b of e.units)if(a<b&&!m.passed.includes(pair(a,b)))m.passed.push(pair(a,b));
