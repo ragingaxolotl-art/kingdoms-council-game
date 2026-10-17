@@ -16,3 +16,7 @@ Deploy `supabase/functions/classroom` to project `bnmghtjwolplmdjwgpyl` once for
 Pages CI builds both modes, tests both, and checks the deployed rules hash before publishing. A combat change cannot publish a mismatched browser version. No separate Battle Lab rules maintenance is needed. Mode-specific UI changes still belong to their respective interface.
 
 Invitations expire after 24 hours, matches after seven days. Both players mark Ready to resolve each stage; both must agree to replay. Existing sessions and browser reconnect tokens remain usable.
+
+## Planning interface
+
+`dist/planning-view.js` and `dist/planning-view.css` share the map-first planning layout between the student classroom, local game, solo lab and two-player lab. They move existing controls with their handlers intact and restore them before each render or phase change. The desktop sidebar stays visible while the map and army cards scroll; on mobile, supplies and recruitment follow the map before regiment orders. Phase transitions, student commands and both-player readiness are covered by browser tests in `tests/planning-*` and `tests/battle-online-browser.mjs`. UI assets use content fingerprints so a published layout refreshes without changing the combat-rules hash.
