@@ -1,3 +1,7 @@
+## v0.32 — Automatic food plans on the map
+
+Economy begins retreat/feeding with an automatically distributed civilian food draft. Full supplies cover each territory; shortages are shared proportionally in whole units. Food icons show assigned/needed amounts with green, orange or red territory colors. Click your land or its marker to adjust within the shared Treasury balance, review projected happiness, and explicitly confirm. Manual edits survive refresh and require renewed confirmation. Food is still consumed only at round-end.
+
 ## v0.31 — Choose retreats on the map
 
 Select a retreating troop or its Choose retreat on map button to highlight safe neighboring territories. Click green land or a numbered destination, then confirm. Cancel preserves the old choice; saved destinations show a checkmark and route arrow. Movement still happens when the teacher completes retreats. The existing selector also asks for confirmation.
