@@ -21,7 +21,7 @@ const MovementView=(()=>{
  function panel({host,s,country,choose,next,disabled=false,focus}){
   if(!host||!s.march)return;const box=el('section','',host);box.className='movement-playback';box.dataset.planningExtra='';if(s.phase==='movement')host.prepend(box);
   el('h2',s.phase==='movement'?`Movement · step ${s.march.step}`:'Movement stops',box);
-  el('p','Your troops only · dashed lines show the remaining route; solid arrows show movement completed.',box);
+  el('p','Your routes · dashed lines show the remaining route; solid arrows show movement completed. Nearby and encountered enemy troops are visible.',box);
   const encounters=s.march.encounters||(s.march.pending?[s.march.pending]:[]),waiting=s.march.waiting??encounters.length;
   if(s.phase==='movement'){
    el('p',waiting?`${waiting} encounter(s) must be settled before anyone takes the next step.`:'Next moves every eligible regiment one territory together. Troops stopped for battle stay put. Fighting happens after movement finishes.',box);
@@ -52,6 +52,16 @@ const MovementView=(()=>{
   ctx.restore();
  }
 ctx.save();ctx.font=`bold ${10*z}px sans-serif`;ctx.textAlign='center';for(const u of units.filter(u=>u.order)){const stopped=s.phase==='movement'&&s.march?.stopped.includes(u.id),p=s.territories[stopped?u.territory:u.order.destination].point;ctx.fillStyle='#fff6c9';ctx.strokeStyle='#493419';ctx.lineWidth=3*z;const text=(stopped?'BATTLE #':s.phase==='movement'?'PLANNED STOP #':'STOP #')+u.id;ctx.strokeText(text,p[0],p[1]-28*z);ctx.fillText(text,p[0],p[1]-28*z);}ctx.restore();}
+ function captures(canvas,s,camera,cells=s.cells){
+  const stage=canvas.parentElement;stage.querySelector('.capture-overlay')?.remove();
+  const turn=s.turn??s.year,territories=s.territories.filter(t=>t.capturedTurn!==undefined&&(s.phase==='results'&&t.capturedTurn===turn||s.phase==='orders'&&t.capturedTurn===turn-1));
+  if(!territories.length)return;
+  const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.classList.add('capture-overlay');svg.setAttribute('viewBox',`${camera.x} ${camera.y} ${camera.w} ${camera.h}`);svg.setAttribute('role','img');svg.setAttribute('aria-label','Newly captured territories highlighted');
+  for(const t of territories){const group=document.createElementNS(ns,'g'),title=document.createElementNS(ns,'title');title.textContent=`${t.name}: newly captured by ${s.countries[t.owner]?.name||'Unknown'}`;group.append(title);group.setAttribute('fill',s.countries[t.owner]?.color||'#ffe59c');group.setAttribute('stroke','#fff7b2');group.setAttribute('stroke-width',String(2*camera.w/1200));group.dataset.territory=t.id;
+   for(const cell of cells.filter(c=>c.land&&c.territory===t.id)){const poly=document.createElementNS(ns,'polygon');poly.setAttribute('points',cell.polygon.map(p=>p.join(',')).join(' '));group.append(poly);}svg.append(group);
+  }
+  stage.append(svg);
+ }
  function reportEvents(s,country,events){const name=s.countries[country].name;return (events||[]).filter(e=>e.startsWith(name+': ')||e.startsWith(name+' captured ')||e.startsWith(name+' besieged ')||/^Regiment (\d+) /.test(e)&&s.units.some(u=>u.country===country&&u.id===Number(e.match(/^Regiment (\d+) /)[1])));}
- return {editor,panel,markers,reportEvents};
+ return {editor,panel,markers,reportEvents,captures};
 })();
