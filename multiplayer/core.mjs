@@ -6,7 +6,7 @@ export function command(room,player,action){
  fail(player===0||player===1,'Invalid player.');
  const own=id=>{const u=s.units.find(u=>u.id===id&&u.country===player&&u.hp>0);fail(u,'You can only command your own living troops.');return u;};
  if(action.type==='step'){fail(!next.setup&&s.phase==='movement','Movement is not running.');next.game=R.advance(s);next.ready=[];
- }else if(action.type==='encounter'){R.encounter(s,player,a.decision);next.ready=[];
+ }else if(action.type==='encounter'){R.encounter(s,player,a.decision,a.territory);next.ready=[];
  }else if(action.type==='ready'){
   fail(s.phase!=='movement','Use Next movement or answer the encounter.');
   fail(next.joined,'Wait for the second player to join.');
@@ -37,8 +37,15 @@ export function command(room,player,action){
 }
 export function project(room,player){
  const game=R.validate(structuredClone(room.game));
- // Enemy plans remain private until the simultaneous server transition.
- game.units.forEach(u=>{if(u.country!==player){u.order=null;u.retreatTo=null;}});
+ // Keep enemy troops and routes off the client; reveal only shared encounters and battles.
+ game.march=R.movementView(game,player);
+ const captures=R.sharedCaptures(game).filter(x=>x.claimants.includes(player)).map(({territory,claimants})=>({territory,claimants}));
+ game.units.filter(u=>u.country===player).forEach(u=>u.retreatOptions=R.retreatOptions(game,u));
+ game.captures=captures;game.units=game.units.filter(u=>u.country===player);
+ game.moves=game.moves.filter(m=>m.country===player);
+ game.conflicts=game.conflicts.filter(c=>c.countries.includes(player));
+ game.battles=game.battles.filter(b=>b.records.some(u=>u.country===player));
+ game.history=game.history.map(h=>({...h,moves:h.moves.filter(m=>m.country===player),battles:h.battles.filter(b=>b.records.some(u=>u.country===player)),events:h.events.filter(e=>!game.countries.some(c=>c.id!==player&&e.startsWith(c.name+': ')))}));
  game.choices=Object.fromEntries(Object.entries(game.choices).filter(([k])=>Number(k.split(':')[1])===player));
  return {id:room.id,revision:room.version,player,joined:room.joined,setup:room.setup,ready:room.ready,replay:room.replay||[],expiresAt:room.expiresAt,game};
 }
