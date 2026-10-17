@@ -56,9 +56,9 @@ const MovementView=(()=>{
    el('h3',(e.locations?.length>1?'Crossing routes at ':'Encounter at ')+(e.locations||[e.territory]).map(id=>place(s,id)).join(' ↔ '),card);
    el('p',e.countries.map(id=>s.countries[id].name+': '+(e.votes[id]==='pass'?'Pass requested':e.votes[id]==='attack'?'Attack':e.votes[id]==='hold'?'Hold':'Waiting for decision')).join(' · '),card);
    closeup(card,s,e);
-   el('p','Both sides must agree to Pass to continue. Hold keeps the encounter in place without attacking. Any Attack stops these troops for combat in the next stage.',card);
+   el('p','Choose Attack, Retreat or Hold. Hold keeps your troops in place without attacking. Any Attack stops these troops for combat in the next stage.',card);
    if(focus)button(card,'Show encounter on map',()=>focus(e.territory));
-   if(e.countries.includes(country)&&choose){button(card,'Attack · stop for battle',()=>choose('attack',e.territory),disabled);button(card,'Hold · do nothing',()=>choose('hold',e.territory),disabled||e.votes[country]==='hold');button(card,'Pass · continue route',()=>choose('pass',e.territory),disabled||e.votes[country]==='pass'||e.votes[country]==='hold');retreatControl(card,s,e,e.retreatOptions||retreatOptions?.(e.territory)||[],to=>choose('retreat',e.territory,to),disabled);}
+   if(e.countries.includes(country)&&choose){button(card,'Attack · stop for battle',()=>choose('attack',e.territory),disabled);button(card,'Hold · do nothing',()=>choose('hold',e.territory),disabled||e.votes[country]==='hold');retreatControl(card,s,e,e.retreatOptions||retreatOptions?.(e.territory)||[],to=>choose('retreat',e.territory,to),disabled);}
    else el('p','Waiting for the countries in this encounter.',card);
   }
   const recent=s.moves?.filter(m=>m.country===country).at(-1);if(recent)el('p',`Latest move: #${recent.unit} · ${place(s,recent.from)} → ${place(s,recent.to)}`,box);
