@@ -1,0 +1,10 @@
+const a=require('node:assert/strict'),R=require('../dist/regiments-engine.js'),B=require('../dist/battle-lab.js');
+function fresh(){const s=R.validate(structuredClone(require('../multiplayer/initial.json')));s.units=[];s.territories.forEach((t,i)=>t.neighbors=[i-1,i+1].filter(n=>n>=0&&n<s.territories.length));B.add(s,0,3,'cavalry',1,100,0);B.add(s,1,3,'spears',1,100,0);return s;}
+for(const rules of [R,R.forMode('battle-lab')]){
+ let s=fresh();rules.order(s,s.units[0].id,5,'move',[4,5]);s=rules.advance(rules.startMovement(s));rules.encounter(s,0,'hold',3);a(s.march.pending);rules.encounter(s,1,'pass',3);a.equal(s.march.pending,null);s=rules.advance(s);a.equal(s.phase,'decisions');a(s.units.every(u=>u.territory===3));rules.confirm(s,0);rules.confirm(s,1);s=rules.advance(s);a(s.units.every(u=>u.hp===100));
+ s=rules.advance(rules.startMovement(fresh()));a.deepEqual(rules.encounterRetreatOptions(s,0,3),[2,4]);a.throws(()=>rules.encounter(s,0,'retreat',3,7),/adjacent/);rules.encounter(s,0,'retreat',3,2);a.equal(s.units[0].territory,2);a.equal(s.units[0].order,null);a.equal(s.march.pending,null);s=rules.advance(s);a.equal(s.conflicts.length,0);a(s.units.every(u=>u.hp===100));a(s.march.log.some(x=>x.reason==='withdraw'));
+ s=rules.advance(rules.startMovement(fresh()));rules.encounter(s,1,'attack',3);s=rules.advance(s);rules.withdrawEncounter(s,0,3,4);a.equal(s.units[0].territory,4);a.equal(s.conflicts.length,0);a.doesNotThrow(()=>rules.validate(JSON.parse(JSON.stringify(s))));
+ s=fresh();s.countries.push({...structuredClone(s.countries[1]),id:2,name:'Third'});B.add(s,2,3,'archers',1,100,0);s=rules.advance(rules.startMovement(s));rules.encounter(s,0,'pass',3);rules.encounter(s,1,'pass',3);rules.encounter(s,2,'retreat',3,2);a.equal(s.march.pending,null,'Retreat resolves remaining already-agreed passage');
+ s=fresh();s.units=[];B.add(s,0,0,'spears',24,100,0);a.equal(s.units.length,24);a.throws(()=>B.add(s,0,0,'spears',1,100,0),/24/);
+}
+console.log('PASS Hold/pass gate, no hold damage, adjacent pre-combat retreat, invalid retreat rejection, multiplayer encounters, 24 troops and reload.');

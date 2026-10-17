@@ -6,7 +6,7 @@ export function command(room,player,action){
  fail(player===0||player===1,'Invalid player.');
  const own=id=>{const u=s.units.find(u=>u.id===id&&u.country===player&&u.hp>0);fail(u,'You can only command your own living troops.');return u;};
  if(action.type==='step'){fail(!next.setup&&s.phase==='movement','Movement is not running.');next.game=R.advance(s);next.ready=[];
- }else if(action.type==='encounter'){R.encounter(s,player,a.decision,a.territory);next.ready=[];
+ }else if(action.type==='encounter'){R.encounter(s,player,a.decision,a.territory,a.to);next.ready=[];
  }else if(action.type==='ready'){
   fail(s.phase!=='movement','Use Next movement or answer the encounter.');
   fail(next.joined,'Wait for the second player to join.');
@@ -27,6 +27,7 @@ export function command(room,player,action){
   else if(action.type==='detach'){own(a.id);R.detach(s,a.id);}
   else if(action.type==='order'){fail(!next.setup,'Finish setup before planning movement.');own(a.id);R.order(s,a.id,a.to,a.intent,a.path);}
   else if(action.type==='recruit'){fail(!next.setup,'Use the free setup controls first.');R.recruit(s,player,a.type,a.territory);}
+  else if(action.type==='withdrawEncounter'){R.withdrawEncounter(s,player,a.territory,a.to);next.ready=[];}
   else if(action.type==='target'){fail(!next.setup,'Finish setup first.');R.target(s,player,a.territory,a.victim);}
   else if(action.type==='retreat'){own(a.id);R.retreat(s,a.id,a.to);}
   else if(action.type==='captureOwner'){R.chooseCaptureOwner(s,player,a.territory,a.recipient);}
@@ -39,12 +40,13 @@ export function project(room,player){
  const game=R.validate(structuredClone(room.game));
  // Keep enemy troops and routes off the client; reveal only shared encounters and battles.
  const visible=R.visibleUnits(game,player);
+ const conflictViews=game.conflicts.filter(c=>c.countries.includes(player)).map(c=>({...c,retreatOptions:R.encounterRetreatOptions(game,player,c.territory)}));
  game.march=R.movementView(game,player);
  const captures=R.sharedCaptures(game).filter(x=>x.claimants.includes(player)).map(({territory,claimants})=>({territory,claimants}));
  game.units.filter(u=>u.country===player).forEach(u=>u.retreatOptions=R.retreatOptions(game,u));
  game.captures=captures;game.units=visible.map(u=>u.country===player?u:{id:u.id,country:u.country,type:u.type,hp:u.hp,territory:u.territory,readyTurn:u.readyTurn,gear:u.gear});
  game.moves=game.moves.filter(m=>m.country===player);
- game.conflicts=game.conflicts.filter(c=>c.countries.includes(player));
+ game.conflicts=conflictViews;
  game.battles=game.battles.filter(b=>b.records.some(u=>u.country===player));
  game.history=game.history.map(h=>({...h,moves:h.moves.filter(m=>m.country===player),battles:h.battles.filter(b=>b.records.some(u=>u.country===player)),events:h.events.filter(e=>!game.countries.some(c=>c.id!==player&&e.startsWith(c.name+': ')))}));
  game.choices=Object.fromEntries(Object.entries(game.choices).filter(([k])=>Number(k.split(':')[1])===player));
