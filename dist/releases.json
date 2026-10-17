@@ -215,5 +215,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.28.0/",
     "notes": "New civic and horsemanship artwork, existing icons for all research, and constructed facilities visible on their own settlement and in map exports."
+  },
+  {
+    "version": "v0.29.0",
+    "title": "Allocation limits",
+    "date": "2026-10-16",
+    "url": "releases/v0.29.0/",
+    "notes": "Department allocations stop at the available shared resource balance, including typing, paste and number arrows. Includes facility artwork and territory markers from v0.28."
   }
 ]

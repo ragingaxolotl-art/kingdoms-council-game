@@ -49,6 +49,7 @@ jobs:
       - run: node tests/classroom-api.mjs
       - run: node tests/classroom-storage.mjs
       - run: node tests/classroom-supabase-store.mjs
+      - run: node tests/allocation-controls.cjs
       - run: node tests/facility-map.cjs
       - run: node tests/student-site.cjs
       - run: node tests/resource-display.cjs

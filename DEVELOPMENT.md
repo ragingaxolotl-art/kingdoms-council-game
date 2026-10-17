@@ -1,3 +1,9 @@
+## v0.29 bounded allocation controls
+
+Added dynamic maximums to Military and Research allocations for every resource. Each edited amount is clamped to a nonnegative whole number within the shared pool, preserving the other department’s amount. The real engine remains the final validation boundary. Changes save without replacing focused controls; sibling maximums and reserve displays update together. No rules or schema changes.
+
+Validation: new allocation-controls regression executes the actual render/input handlers against the real engine, covering combined limits, returned funds, invalid values, persistence, country isolation, zero stock and phase locks. Existing regiment-economy tests pass. Browser verified the reported 69/50 case, 20/30 split, paste overflow, arrow maximum, reload and no console errors. Development only; main publishing still awaits approval following the earlier v0.28 auto-review block.
+
 ## v0.28 facilities and complete research artwork
 
 Extracted the existing display mappings into DevelopmentArt, retaining the unchanged source PNG sheets with SVG clipping. Added the six new supplied pictures, reused existing icons for all remaining research and Granary, and shared facility rendering between R&D controls, city cards and map markers. Manufacturing and Workshop share the factory picture without changing their separate existing rules. Built markers read only the territory facility list, with descriptive accessible settlement labels and hover names. The country label moves above the facility strip when needed. Military territory controls remain read-only.

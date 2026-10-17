@@ -1,3 +1,7 @@
+## v0.29 — Allocation limits
+
+Economy allocation fields stop at the resources available after the other department’s allocation. Typing or pasting too much is immediately capped; number arrows respect the same limit. Returning resources frees the other department’s allowance, and Treasury reserves stay nonnegative. Includes the v0.28 facility artwork and map markers.
+
 ## v0.28 facility artwork on the land
 
 The supplied Hospital, Academy, Civic Hall, Manufacturing, Saddles and Stirrups pictures now illustrate their existing research entries. Other research reuses the existing shield, cavalry, artillery, settlement and defense artwork. R&D facility previews, active abilities and city cards show matching pictures. The factory also identifies the existing Workshop; Granary uses its existing storage icon.
