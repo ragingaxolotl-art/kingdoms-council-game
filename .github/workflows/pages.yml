@@ -23,6 +23,7 @@ jobs:
           node-version: '22'
       - run: node scripts/build-classroom.cjs
       - run: node tests/movement-encounters.cjs
+      - run: node tests/movement-waves.cjs
       - run: node tests/regiment-movement.cjs
       - run: node tests/battle-lab.cjs
       - run: node tests/battle-online.mjs

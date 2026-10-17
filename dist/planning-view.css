@@ -13,3 +13,6 @@
 
 /* Explicit render restoration replaces browser anchoring of temporarily moved controls. */
 html{overflow-anchor:none}
+
+/* Movement is a full-width map followed immediately by its report. */
+.planning-layout.movement-layout{display:block}.movement-layout .planning-main{display:flex;flex-direction:column;width:100%;gap:16px}.movement-layout .planning-main>*{order:initial;width:100%;margin:0}.movement-layout #decisions,.movement-layout #actions{display:block}.movement-layout .movement-playback{width:100%;box-sizing:border-box;overflow-wrap:normal}.movement-layout .movement-playback h2{font-size:24px}.movement-layout .movement-playback p{max-width:90ch}.movement-encounter{padding:16px;margin:14px 0;border:2px solid #ab752c;border-radius:10px;background:#fffdf5}.movement-layout #advance{align-self:flex-start;width:auto}.movement-layout .movement-playback button{min-height:44px}.movement-layout .planning-main>.panel{margin:0}
