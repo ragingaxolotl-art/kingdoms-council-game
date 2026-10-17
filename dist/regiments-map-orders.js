@@ -7,10 +7,11 @@ function reason(s,country,role,u){
  if(!u||u.hp<=0)return 'Choose a living regiment.';
  if(u.country!==country)return 'You can move only your country’s regiments.';
  if(u.readyTurn>s.turn)return 'This regiment is still training.';
+ if(s.units.some(v=>v.id===u.pairedWith&&(v.readyTurn>s.turn||v.supportTurn===s.turn)))return 'The paired regiment is training or resting. Detach to move independently.';
  if(u.supportTurn===s.turn)return 'This regiment is resting this round.';
  return '';
 }
-function destinations(R,s,u){const paths=new Map();for(const t of s.territories){const path=R.route(s,u.territory,t.id,u.country);if(path&&path.length<=s.countries[u.country].movement)paths.set(t.id,path);}return paths;}
+function destinations(R,s,u){const paths=new Map();for(const t of s.territories){const path=R.route(s,u.territory,t.id,u.country);if(path&&path.length<=R.movement(s,u))paths.set(t.id,path);}return paths;}
 function tokens(s,camera,layout={}){const grouped=new Map(),z=camera.w/1200;return s.units.filter(u=>u.hp>0).map(u=>{const territory=s.phase==='orders'&&layout.planned===u.country?(u.order?.destination??u.territory):u.territory;const n=grouped.get(territory)||0;grouped.set(territory,n+1);const t=s.territories[territory],size=layout.size||25,gap=size+3;return {u,x:t.point[0]+((n%4)-1)*gap*z,y:t.point[1]+((layout.size?size/2+8:18)+Math.floor(n/4)*(layout.size?gap+10:28))*z,r:size/2*z};});}
 function coordinates(event,canvas,camera){const b=canvas.getBoundingClientRect(),x=(event.clientX-b.left)/b.width,y=(event.clientY-b.top)/b.height;return {world:[camera.x+x*camera.w,camera.y+y*camera.h],inside:x>=0&&x<=1&&y>=0&&y<=1};}
 function attach({canvas,R,context,territoryAt,preview,status,commit,start,tokenList=c=>tokens(c.state,c.camera),intentFor=null}){
@@ -18,7 +19,7 @@ function attach({canvas,R,context,territoryAt,preview,status,commit,start,tokenL
  function end(){const old=drag;drag=null;preview(null);canvas.style.cursor='';if(old&&canvas.hasPointerCapture(old.pointer))canvas.releasePointerCapture(old.pointer);return old;}
  function cancel(message='Movement cancelled. Your saved order is unchanged.') {if(!drag)return;suppressClick=true;end();if(message)status(message);}
  function current(){const c=context();return drag&&c.state===drag.state&&c.active===drag.active&&c.role===drag.role&&(intentFor?intentFor(drag.unit):c.intent)===drag.intent&&c.camera===drag.camera;}
- function update(e){const point=coordinates(e,canvas,drag.camera),target=point.inside?territoryAt(point.world):null;drag.point=point.world;drag.target=target;drag.valid=target!==null&&drag.paths.has(target);drag.moved ||= Math.hypot(e.clientX-drag.clientX,e.clientY-drag.clientY)>=5;preview(drag);canvas.style.cursor=drag.valid?'grabbing':'not-allowed';const label=drag.valid?(drag.paths.get(target).length+' / '+drag.state.countries[drag.active].movement+' moves · '+drag.state.territories[target].name+' · release to save '+(drag.intent==='capture'?'capture':'movement')):'Outside movement limits or no land route · release to cancel';status('Regiment #'+drag.unit.id+' · '+label);}
+ function update(e){const point=coordinates(e,canvas,drag.camera),target=point.inside?territoryAt(point.world):null;drag.point=point.world;drag.target=target;drag.valid=target!==null&&drag.paths.has(target);drag.moved ||= Math.hypot(e.clientX-drag.clientX,e.clientY-drag.clientY)>=5;preview(drag);canvas.style.cursor=drag.valid?'grabbing':'not-allowed';const label=drag.valid?(drag.paths.get(target).length+' / '+R.movement(drag.state,drag.unit)+' moves · '+drag.state.territories[target].name+' · release to save '+(drag.intent==='capture'?'capture':'movement')):'Outside movement limits or no land route · release to cancel';status('Regiment #'+drag.unit.id+' · '+label);}
  canvas.addEventListener('pointerdown',e=>{
   if(e.button!==0||e.isPrimary===false||drag)return;suppressClick=false;const c=context(),point=coordinates(e,canvas,c.camera);const hit=tokenList(c).reverse().find(t=>Math.abs(point.world[0]-t.x)<=t.r&&Math.abs(point.world[1]-t.y)<=t.r);if(!hit)return;
   const blocked=reason(c.state,c.active,c.role,hit.u);if(blocked){status(blocked);return;}

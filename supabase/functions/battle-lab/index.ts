@@ -1,7 +1,5 @@
-import {handler} from './service.mjs';
-import {Store} from './store.mjs';
-import initial from './initial.json' with {type:'json'};
-const store=new Store(Deno.env.get('SUPABASE_URL'),Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'));
-const settings=await store.rest('classroom_private_config?key=eq.pin_pepper&select=value');
-if(!settings[0]?.value)throw Error('Missing private PIN key.');
-Deno.serve(handler({store,initial,pepper:settings[0].value}));
+// Permanent compatibility address. The classroom deployment owns both game modes.
+Deno.serve(async req=>{
+ const headers=new Headers();for(const key of ['content-type','origin','x-battle-token','x-forwarded-for']){const value=req.headers.get(key);if(value)headers.set(key,value);}
+ return fetch(Deno.env.get('SUPABASE_URL')+'/functions/v1/classroom/battle',{method:req.method,headers,body:['GET','HEAD'].includes(req.method)?undefined:req.body,redirect:'error'});
+});
