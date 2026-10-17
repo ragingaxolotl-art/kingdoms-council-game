@@ -9,7 +9,9 @@ s.game.territories.forEach((t,i)=>t.happiness=[0,25,50,75,100][i%5]);
 s.game.units.find(u=>u.country===1).territory=s.game.units.find(u=>u.country===0).territory;
 act('allocate',{plan:{military:{money:20,food:6,wood:5,metal:5},research:{money:12,food:2,wood:4,metal:3}}});
 const views=Object.fromEntries(C.roles.map(r=>[r,{}])),save=()=>{for(const role of C.roles)views[role][s.game.phase]=C.project(s,{id:'preview-'+role});};save();
-act('advance',{overrideReadiness:true});save();
+act('advance',{overrideReadiness:true});
+while(s.game.phase==='movement'){if(s.game.march.pending){save();act('encounter',{decision:'attack'},{teacher:true,country:s.game.march.pending.countries[0],role:'military'});}else act('advance',{overrideReadiness:true});}
+save();
 for(const conflict of s.game.conflicts)for(const country of conflict.countries)act('target',{territory:conflict.territory,target:null},{teacher:true,country,role:'military'});
 for(const country of new Set(s.game.conflicts.flatMap(x=>x.countries)))act('ready',{ready:true},{teacher:true,country,role:'military'});
 act('advance',{overrideReadiness:true});save();
@@ -17,4 +19,4 @@ for(const c of s.game.countries)act('feed',{plan:Object.fromEntries(s.game.terri
 act('advance',{overrideReadiness:true});save();
 const cells=C.project(s,{id:'preview-economy'},true).cells;
 fs.writeFileSync('dist/classroom-demo.json',JSON.stringify({sample:true,cells,views}));
-console.log('Built 12 read-only student examples from synthetic gameplay.');
+console.log('Built 15 read-only student examples from synthetic gameplay.');

@@ -4,3 +4,12 @@ let room={game,setup:false,ready:[],joined:true};a.throws(()=>command(room,1,{ty
 let session=C.create(game,'Pair permissions');session.members=[{id:'mil-test',country:0,role:'military',label:'Military'},{id:'econ-test',country:0,role:'economy',label:'Economy'}];let n=0;const act=(actor,type,args)=>C.command(session,actor,{id:'pair-test-command-'+(++n),revision:session.revision,type,args});
 a.throws(()=>act({id:'econ-test'},'attach',{unit:c.id,other:g.id}),/another department/);a.throws(()=>act({id:'mil-test'},'attach',{unit:c.id,other:enemy.id}),/not your/);session=act({id:'mil-test'},'attach',{unit:c.id,other:g.id}).session;const v=C.project(session,{id:'mil-test'});a.equal(v.units.find(u=>u.id===c.id).movement,2);a.equal(v.units.find(u=>u.id===g.id).pairedWith,c.id);session=act({id:'mil-test'},'clearOrder',{unit:c.id}).session;session=act({id:'mil-test'},'detach',{unit:c.id}).session;a.equal(C.project(session,{id:'mil-test'}).units.find(u=>u.id===g.id).movement,1);
 console.log('PASS: classroom roles, foreign troops, multiplayer ready locks, shared projections and detach permissions.');
+// Route ownership and encounter answers stay server-authoritative.
+a.throws(()=>act({id:'econ-test'},'order',{unit:c.id,territory:0,intent:'move',path:[]}),/another department/);
+a.throws(()=>act({id:'mil-test'},'order',{unit:enemy.id,territory:0,intent:'move',path:[]}),/not your/);
+session.game=C.R.advance(C.R.startMovement(session.game));a(session.game.march.pending);
+a.throws(()=>act({id:'econ-test'},'encounter',{decision:'attack'}),/another department/);
+a.throws(()=>act({id:'mil-test'},'advance',{}),/Only your teacher/);
+session=act({id:'mil-test'},'encounter',{decision:'pass'}).session;a(session.game.march.pending);a.equal(session.game.march.pending.votes[0],'pass');
+room={game:R.advance(R.startMovement(game)),setup:false,ready:[],joined:true};room=command(room,0,{type:'encounter',args:{decision:'pass',country:1}});a.equal(room.game.march.pending.votes[1],undefined,'Cannot vote as the other player');a.throws(()=>command(room,1,{type:'step'}),/encounter/);room=command(room,1,{type:'encounter',args:{decision:'attack'}});a.equal(room.game.march.pending,null);a(room.game.units.every(u=>u.hp===100));
+console.log('PASS: explicit route ownership, department encounter permissions, teacher-only classroom stepping, bilateral passage and spoofed-country rejection.');

@@ -11,7 +11,7 @@ function reason(s,country,role,u){
  if(u.supportTurn===s.turn)return 'This regiment is resting this round.';
  return '';
 }
-function destinations(R,s,u){const paths=new Map();for(const t of s.territories){const path=R.route(s,u.territory,t.id,u.country);if(path&&path.length<=R.movement(s,u))paths.set(t.id,path);}return paths;}
+function destinations(R,s,u){const paths=new Map();for(const t of s.territories){const path=R.route(s,u.territory,t.id,u.country,true);if(path&&path.length<=R.movement(s,u))paths.set(t.id,path);}return paths;}
 function tokens(s,camera,layout={}){const grouped=new Map(),z=camera.w/1200;return s.units.filter(u=>u.hp>0).map(u=>{const territory=s.phase==='orders'&&layout.planned===u.country?(u.order?.destination??u.territory):u.territory;const n=grouped.get(territory)||0;grouped.set(territory,n+1);const t=s.territories[territory],size=layout.size||25,gap=size+3;return {u,x:t.point[0]+((n%4)-1)*gap*z,y:t.point[1]+((layout.size?size/2+8:18)+Math.floor(n/4)*(layout.size?gap+10:28))*z,r:size/2*z};});}
 function coordinates(event,canvas,camera){const b=canvas.getBoundingClientRect(),x=(event.clientX-b.left)/b.width,y=(event.clientY-b.top)/b.height;return {world:[camera.x+x*camera.w,camera.y+y*camera.h],inside:x>=0&&x<=1&&y>=0&&y<=1};}
 function attach({canvas,R,context,territoryAt,preview,status,commit,start,tokenList=c=>tokens(c.state,c.camera),intentFor=null}){

@@ -12,11 +12,11 @@ const ClassroomMap=(()=>{
    for(const cell of cells){const t=state.territories[cell.territory];ctx.beginPath();cell.polygon.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.closePath();ctx.fillStyle=!cell.land?'#626f76':layer.value==='happiness'?heat(t?.happiness??50):(view.countries.find(c=>c.id===t?.owner)?.color||'#e2dfd2');ctx.fill();if(drag&&cell.land&&!drag.paths.has(cell.territory)){ctx.fillStyle='#fff9';ctx.fill();}}
    for(const e of boundaries){ctx.beginPath();ctx.moveTo(...e.from);ctx.lineTo(...e.to);const highlighted=e.territories.includes(selected)||drag?.valid&&e.territories.includes(drag.target);ctx.strokeStyle=highlighted?'#ffe781':'#344d3e';ctx.lineWidth=(highlighted?3:1.2)/sx;ctx.stroke();}
    function route(u,destination,path){const points=[state.territories[u.territory].point,...path.map(n=>state.territories[n].point)];if(!points.length)return;ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(...p):ctx.moveTo(...p));ctx.strokeStyle='#20352d';ctx.lineWidth=3/sx;ctx.setLineDash([7/sx,5/sx]);ctx.stroke();ctx.setLineDash([]);const p=state.territories[destination].point;ctx.beginPath();ctx.arc(...p,7/sx,0,2*Math.PI);ctx.stroke();}
-   for(const u of state.units)if(u.order){const path=u.legalRoutes?.[u.order.destination];if(path)route(u,u.order.destination,path);}
+   for(const u of state.units)if(u.order){const path=state.phase==='orders'?u.order.path:null;if(path)route(u,u.order.destination,path);}
    if(drag?.valid)route(drag.unit,drag.target,drag.paths.get(drag.target));
    for(const t of state.territories){ctx.fillStyle='#172b24';ctx.font=`bold ${12/sx}px sans-serif`;ctx.fillText(t.id+1,t.point[0]+6/sx,t.point[1]-7/sx);}
    for(const token of RegimentMapOrders.tokens(state,camera)){const {u,x,y,r}=token;ctx.beginPath();ctx.roundRect(x-r,y-r,r*2,r*2,4/sx);ctx.fillStyle=view.countries.find(c=>c.id===u.country)?.color||'#fff';ctx.fill();ctx.strokeStyle=u.country===view.country.id?'#fff':'#172b24';ctx.lineWidth=2/sx;ctx.stroke();ctx.font=`bold ${11/sx}px sans-serif`;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#172b24';ctx.lineWidth=3/sx;ctx.strokeText(u.id,x,y+4/sx);ctx.fillText(u.id,x,y+4/sx);ctx.textAlign='left';}
-   ctx.restore();
+   MovementView.markers(ctx,state,state.units.filter(u=>u.country===view.country.id),camera.w/1200);ctx.restore();
   }
   canvas.onclick=e=>{if(controller.consumeClick())return;const p=RegimentMapOrders.coordinates(e,canvas,camera);selected=territoryAt(p.world);draw();select(selected);};
   layer.onchange=()=>{legend.hidden=layer.value!=='happiness';draw();};intent.onchange=()=>controller.cancel();window.addEventListener('keydown',e=>{if(e.key==='Escape')controller.cancel();});window.addEventListener('blur',()=>controller.cancel());

@@ -21,3 +21,11 @@ Run `node scripts/build-classroom.cjs`. This builds both modes from one rule sou
 Run `node tests/battle-lab.cjs`, `node tests/battle-online.mjs`, and `node tests/battle-online-browser.mjs` with the local web preview on port 8042. Set BATTLE_LIVE=1 to verify the real Supabase service; set BATTLE_URL to the public page for an end-to-end published test. Browser tests create disposable matches with independent browser contexts. Tests cover PIN/seat isolation, denied ownership and origin, hidden plans, setup locks, stale concurrent saves, duplicate requests, lost database acknowledgements, normal damage/retreat/income, replay, empty successful database responses, browser refresh and mobile layout.
 
 The public `dist/battle-lab/` directory is generated on every main-branch publication. Its pages load shared rule scripts from the parent directory. The main branch contains the full implementation and tests. Archived releases remain immutable.
+
+## Routes and interactive movement
+
+All playable clients call the shared `startMovement` after planning. `advance` then moves one regiment one adjacent territory per click (paired cavalry/artillery move atomically), cycling through regiment IDs at each movement step. Encounter choices are authenticated per country: everyone must pass, or one attack stops the encounter's regiments. Other armies continue before the normal combat stage. Choices, actual steps and stop reasons persist in the room state and survive reconnects. Enemy orders remain private.
+
+`order` accepts an optional explicit path, validates every border and the regiment's effective range, and applies it to both paired units. `route(..., true)` includes potential passage through hostile occupied land. The default `route` and `advance(orders)` retain the legacy batch API for archived scenario/balance tooling; playable UIs use interactive movement.
+
+Verification: `tests/movement-encounters.cjs`, `tests/battle-online.mjs`, `tests/battle-online-browser.mjs`, and `tests/planning-student-actions.cjs`.
