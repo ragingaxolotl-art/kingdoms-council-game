@@ -31,7 +31,7 @@ async function flush(form=null){if(busy||!session?.pending)return;busy=true;rend
  finally{busy=false;render();schedule();}}
 const own=()=>view.game.units.filter(u=>u.country===view.player&&u.hp>0);
 function bindForm(id,fn){const f=$(id);if(f)f.onsubmit=e=>{e.preventDefault();fn(f);};}
-function render(){
+function render(){PlanningView.reset();
  if(!view)return;const s=view.game,p=view.player,c=s.countries[p],locked=view.ready.includes(p),disabled=locked||busy||!!session.pending;
  $('lobby').hidden=true;$('game').hidden=false;$('lobbyButton').hidden=false;$('invite').hidden=view.joined;
  if(!view.joined){const link=new URL(location.href);link.hash='room='+session.room;$('invite').innerHTML=`<h2>Invite player two</h2><p>Send your friend this link and PIN. They will control ${esc(s.countries[1].name)}.</p><label>Match link<input id="inviteLink" readonly value="${esc(link.href)}"></label><p>PIN <strong class="pin-display" id="invitePin">${esc(pin||'Loading…')}</strong></p><button id="copyInvite">Copy match link</button><p>The PIN expires after 24 hours and closes after one player joins.</p>`;$('copyInvite').onclick=async()=>{try{await navigator.clipboard.writeText(link.href);note('Match link copied. Share the PIN separately.');}catch{$('inviteLink').select();note('Select and copy the match link.');}};}
@@ -74,7 +74,7 @@ function render(){
  $('inspect').innerHTML=opts(s.territories.map(t=>[t.id,`${t.id+1} · ${t.name}`]),selected);
  const battles=s.battles.length?s.battles:s.history[0]?.battles||[];
  $('report').innerHTML=battles.map(b=>`<article><h3>${esc(s.territories[b.territory].name)}</h3>${b.records.map(u=>`<p>${esc(s.countries[u.country].name)} · ${R.types[u.type].name} #${u.id}: ${u.before} → <strong>${u.remaining} health</strong> <span class="loss">(−${u.lost})</span></p>`).join('')}</article>`).join('')+(s.history[0]?`<h3>Round ${s.history[0].turn} summary</h3>${s.history[0].events.map(e=>`<p>${esc(e)}</p>`).join('')}<p>Income: ${stock(s.history[0].income[p])}</p>`:'<p>Battle damage and income appear after both players resolve a stage.</p>');
- draw();
+ PlanningView.online({view,R,focus:id=>{selected=id;$('inspect').value=id;camera=MapNavigation.fit([s.territories[id].point]);draw();}});draw();
 }
 const canvas=$('map'),ctx=canvas.getContext('2d');
 function draw(){if(!view)return;const s=view.game,p=view.player,z=camera.w/1200;ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#a4cddc';ctx.fillRect(0,0,1200,700);ctx.setTransform(1200/camera.w,0,0,700/camera.h,-camera.x*1200/camera.w,-camera.y*700/camera.h);
@@ -93,7 +93,7 @@ $('ready').onclick=()=>{if(drafts.size)return note('You have unsaved form edits.
 $('create').onclick=()=>connect('create',crypto.randomUUID());
 function roomId(value){try{return new URLSearchParams(new URL(value).hash.slice(1)).get('room')||'';}catch{return value.trim();}}
 $('joinForm').onsubmit=e=>{e.preventDefault();connect('join',roomId($('room').value),$('pin').value.trim());};
-$('lobbyButton').onclick=()=>{if(busy)return;clearTimeout(pollTimer);view=null;session=null;drafts.clear();$('game').hidden=true;$('invite').hidden=true;$('lobby').hidden=false;$('lobbyButton').hidden=true;location.hash='';showResume();note('Create another match or return to your saved match.');};
+$('lobbyButton').onclick=()=>{if(busy)return;PlanningView.reset();clearTimeout(pollTimer);view=null;session=null;drafts.clear();$('game').hidden=true;$('invite').hidden=true;$('lobby').hidden=false;$('lobbyButton').hidden=true;location.hash='';showResume();note('Create another match or return to your saved match.');};
 $('backup').onclick=()=>{if(!view)return;const blob=new Blob([JSON.stringify(view.game)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='two-player-battle-round-'+view.game.turn+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);};
 function showResume(){const last=localStorage.getItem('battle-online:last');$('resume').innerHTML=last?'<h3>Your saved seat</h3><button id="resumeButton">Resume last match</button>':'';if(last)$('resumeButton').onclick=()=>connect('state',last);}
 try{const id=new URLSearchParams(location.hash.slice(1)).get('room');if(id){$('room').value=id;if(localStorage.getItem(storageKey(id)))connect('state',id);}showResume();}catch{note('Enable browser storage to play and reconnect.');}

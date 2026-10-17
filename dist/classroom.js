@@ -24,7 +24,7 @@ async function api(body,{publicRequest=false}={}){
  const response=await fetch(cfg.api,{method:'POST',headers,body:JSON.stringify({classId,country:teacherCountry,role:teacherRole,...body}),signal:AbortSignal.timeout(15000)});
  const data=await response.json();if(!response.ok){const error=Error(data.error||'Could not save.');error.status=response.status;throw error;}return data;
 }
-function connection(ok){if(demo){online=false;$('connection').textContent='Practice preview · not a live class';document.querySelectorAll('#classroom button[data-write],#classroom form input,#classroom form select,#classroom form button').forEach(b=>b.disabled=true);return;}online=ok;$('connection').textContent=ok?'Connected · changes sync automatically':'Reconnecting · decisions paused';document.querySelectorAll('#classroom button[data-write]').forEach(b=>b.disabled=!ok||busy||!!outbox.read());}
+function connection(ok){if(demo){online=false;$('connection').textContent='Practice preview · not a live class';document.querySelectorAll('#classroom button[data-write],#classroom form input,#classroom form select,#classroom form button:not(.planning-find)').forEach(b=>b.disabled=true);return;}online=ok;$('connection').textContent=ok?'Connected · changes sync automatically':'Reconnecting · decisions paused';document.querySelectorAll('#classroom button[data-write]').forEach(b=>b.disabled=!ok||busy||!!outbox.read());}
 function setView(view,force=false){if(v&&view.revision<v.revision)return;if(view.teacher&&(view.assignment.country!==teacherCountry||view.assignment.role!==teacherRole))return;if(view.cells)cells=view.cells;if(v&&dirty&&!force&&v.phase===view.phase&&v.year===view.year&&v.revision!==view.revision){latest=view;notice('The class has new changes. Your unsaved entries are still here. Use “Review latest” before submitting.');if(!$('reviewLatest')){const b=document.createElement('button');b.id='reviewLatest';b.textContent='Review latest';b.onclick=()=>{dirty=false;setView(latest,true);latest=null;notice('Updated. Review your choices before saving.');};$('notice').append(' ',b);}return;}
  if(v&&dirty&&(v.phase!==view.phase||v.year!==view.year))notice('The teacher advanced the class. Unsaved entries from the previous phase were not submitted.');
  const changed=!v||v.revision!==view.revision||v.assignment.country!==view.assignment.country||v.assignment.role!==view.assignment.role||force;v=view;if(changed){dirty=false;render();}else if(v.teacher)renderRoster();connection(true);}
@@ -65,7 +65,7 @@ function form(id,fn){const element=$(id);if(!element)return;element.addEventList
 function btn(text,type,args={},className=''){return `<button type="button" data-write data-action="${type}" data-args="${esc(JSON.stringify(args))}" class="${className}">${esc(text)}</button>`;}
 function wireActions(root){root.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>action(b.dataset.action,JSON.parse(b.dataset.args)));}
 function country(n){return v.countries.find(c=>c.id===n)?.name||'Unclaimed';}
-function entry(mode=studentPage?'student':'teacher'){
+function entry(mode=studentPage?'student':'teacher'){PlanningView.reset();
  $('classroom').hidden=true;$('entry').hidden=false;$('logout').hidden=!auth;
  if(!cfg.api){studentEntry(false);return;}
  if(studentPage){studentEntry(true);return;}
@@ -81,6 +81,7 @@ async function teacherHome(){try{const data=await api({op:'list'});$('classroom'
  form('createClass',async f=>{const submit=f.querySelector('button');submit.disabled=true;try{let game;const source=string(f,'source');if(source==='local'){const raw=localStorage.getItem('council-regiments-v0.10');if(!raw)throw Error('No local game is saved in this browser. Upload a downloaded game instead.');game=JSON.parse(raw);}else if(source==='file'){const file=f.elements.file.files[0];if(!file)throw Error('Choose your saved game file.');if(file.size>35e6)throw Error('Choose a file under 35 MB.');game=JSON.parse(await file.text());}else game=RegimentGame.create(generateStudentWorld(crypto.getRandomValues(new Uint32Array(1))[0],GRIA_TEMPLATE));const data=await api({op:'create',name:string(f,'name'),game});classId=data.classId;cells=[];history.replaceState({},'','?class='+classId);setView(data.view,true);notice('Class created. Assign students below and share the class link.');}catch(e){notice(e.message);submit.disabled=false;}});
  }catch(e){notice(e.message);}}
 function render(){
+ PlanningView.reset();
  $('entry').hidden=true;$('classroom').hidden=false;$('logout').hidden=false;
  $('identity').textContent=`${v.name} · ${country(v.assignment.country)} · ${roles[v.assignment.role]}`;
  $('logout').hidden=demo;
@@ -92,7 +93,7 @@ function render(){
  $('balances').innerHTML=`<p class="eyebrow">${v.assignment.role==='economy'?'TREASURY AVAILABLE':roles[v.assignment.role].toUpperCase()+' AVAILABLE'}</p>${amounts(v.assignment.role==='economy'?v.country.stock:v.country.accounts[v.assignment.role])}<p class="muted">${v.phase==='results'?'These balances carry into next year.':'Spend only delivered resources. New allocations arrive at year-end.'}</p>`;
  $('goals').innerHTML='<p class="eyebrow">DEPARTMENT OBJECTIVES</p>'+(v.objectives.filter(o=>o.department===v.assignment.role).map(o=>`<div><h3>${esc(o.name)}</h3><p>${esc(o.description)}</p><progress max="1" value="${o.progress}"></progress><small>${esc(o.detail)}${o.done?' · Achieved':''}</small></div>`).join('')||'<p>Objectives will appear when this class uses the objectives release.</p>');
  $('teacherPanel').hidden=!v.teacher;$('teacherView').innerHTML='';if(v.teacher)renderTeacher();
- renderActions();renderSummary();renderMap();connection(online);
+ renderActions();renderSummary();renderMap();PlanningView.student({v,mapView,action});connection(online);
 }
 function renderTeacher(){
  $('teacherView').innerHTML=`<label>Preview country<select id="teacherCountry">${opts(v.countries.map(c=>[c.id,c.name]),v.assignment.country)}</select></label><label>Department<select id="teacherRole">${opts(Object.entries(roles),v.assignment.role)}</select></label>`;
