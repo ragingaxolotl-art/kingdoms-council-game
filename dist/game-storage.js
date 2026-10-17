@@ -8,7 +8,7 @@ const GameStorage=(()=>{
   db.onversionchange=()=>{db.close();warning('Local saving paused because storage changed in another tab. Download your game before closing, then refresh.');};
   for(const k of keys){const value=await new Promise((resolve,reject)=>{const tx=db.transaction('snapshots','readonly'),r=tx.objectStore('snapshots').get(k);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});if(value!==undefined)cache.set(k,value);else{let legacy;try{legacy=localStorage.getItem(k);}catch{}if(legacy!==null&&legacy!==undefined){cache.set(k,legacy);await write(k,legacy);}}}
   // Remove only this mode's legacy copies, after every migration is durable.
-  for(const k of keys)if(cache.has(k)){try{localStorage.removeItem(k);}catch{}}
+  for(const k of keys)if(cache.has(k)){try{if(localStorage.getItem(k)===cache.get(k))localStorage.removeItem(k);}catch{}}
  }catch{fallback=true;for(const k of keys)if(!cache.has(k)){try{const value=localStorage.getItem(k);if(value!==null)cache.set(k,value);}catch{}}warning('Expanded browser storage is unavailable. Your game can continue, but download a backup before closing. Existing saves have not been deleted.');}
  }
  function setItem(key,value){cache.set(key,value);pendingWrites++;queue=queue.then(async()=>{try{if(fallback)localStorage.setItem(key,value);else await write(key,value);}catch{failed=true;warning('Your latest game is kept in this tab, but could not be saved to this browser. You can keep playing and undoing here. Use Download game before closing or refreshing.');}finally{pendingWrites--;}});}
