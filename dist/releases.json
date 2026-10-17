@@ -208,5 +208,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.27.0/",
     "notes": "Supplied metallurgy, bow, logistics and production artwork appears alongside existing research names, costs, prerequisites and completed discoveries."
+  },
+  {
+    "version": "v0.28.0",
+    "title": "Buildings on the land",
+    "date": "2026-10-16",
+    "url": "releases/v0.28.0/",
+    "notes": "New civic and horsemanship artwork, existing icons for all research, and constructed facilities visible on their own settlement and in map exports."
   }
 ]

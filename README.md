@@ -1,3 +1,9 @@
+## v0.28 facility artwork on the land
+
+The supplied Hospital, Academy, Civic Hall, Manufacturing, Saddles and Stirrups pictures now illustrate their existing research entries. Other research reuses the existing shield, cavalry, artillery, settlement and defense artwork. R&D facility previews, active abilities and city cards show matching pictures. The factory also identifies the existing Workshop; Granary uses its existing storage icon.
+
+Each settlement displays only the facilities actually built on that territory. Building icons scale with the settlement, name themselves on hover, and open their territory when clicked. They remain through saves and reflect capture/destruction immediately. Map exports include the buildings and wait for artwork to load. The Resources map retains its resource-only view. Research unlocks alone do not place buildings; costs, prerequisites, construction limits and role permissions are unchanged.
+
 ## v0.27 illustrated research
 
 The supplied artwork appears beside R&D project previews, the current project, completed discoveries and the prerequisite catalog. It covers Bronze/Iron/Steel equipment, Simple/Recurved/Longbows, Organized marches, Road networks, Crop rotation, Irrigation, Sawmilling and Mining tools. Labels and benefits come from the existing research catalog. The original transparent sheets are preserved and displayed as separate clipped icons; the marching group stays together. Costs, research order, saves and rules remain unchanged. Asset provenance is in `dist/research-icons/README.txt`.
