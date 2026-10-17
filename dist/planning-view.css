@@ -10,3 +10,6 @@
 
 @media(max-width:760px){.planning-layout{display:flex}.planning-main,.planning-sidebar{display:contents}.planning-main>*{order:5;width:100%}.planning-main>.country,.planning-country{order:1}.planning-main>.atlas,.planning-main>.card:has(#map){order:2}.planning-sidebar>*{order:3;width:100%}.planning-sidebar>.planning-setup{order:4}.planning-sidebar>.planning-finish{order:6}.planning-main>#goals{order:8}.planning-main>details{order:7}.planning-main>#summary{order:9}}
 .route-editor,.movement-playback{padding:14px;margin:14px 0;border:1px solid #a6b4a6;border-radius:12px;background:#f8f7e9;color:#203c35;overflow-wrap:anywhere}.route-editor p,.movement-playback p{line-height:1.5}.route-editor select{max-width:100%;width:100%}.route-editor button,.movement-playback button{margin:4px}.route-editor label{display:block}.movement-playback h3{color:#8d411c}
+
+/* Explicit render restoration replaces browser anchoring of temporarily moved controls. */
+html{overflow-anchor:none}
