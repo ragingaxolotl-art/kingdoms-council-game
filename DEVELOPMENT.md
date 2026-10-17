@@ -1,3 +1,9 @@
+## v0.30 research category rows
+
+Replaced the flat discovery picker and hidden catalog with horizontal cards per existing branch. Includes starting discoveries; future tiers have readable lock states and explicit missing prerequisites. Cards select available projects, while one shared funding control retains installments and phase/funding locks. Funding is disabled when the delivered account cannot cover the installment. Graph and city/diplomacy controls remain below the catalog. Rows scroll independently with touch/trackpad or focused keyboard arrows. No invented dependencies between independent technologies.
+
+Tests exercise the rendered catalog with real funded Bronze/Iron/Steel and Recurved/Longbow completion, incomplete installments, multiple requirements, country isolation, phase locks and reload. Existing full development suite passes. Browser verified row grouping, locked disabled buttons, Bronze selection, insufficient funds, saved selection after reload, keyboard scrolling and no console errors. Other game chats idle; student authentication remains paused. Saved in development pending publishing approval.
+
 ## v0.29 bounded allocation controls
 
 Added dynamic maximums to Military and Research allocations for every resource. Each edited amount is clamped to a nonnegative whole number within the shared pool, preserving the other department’s amount. The real engine remains the final validation boundary. Changes save without replacing focused controls; sibling maximums and reserve displays update together. No rules or schema changes.

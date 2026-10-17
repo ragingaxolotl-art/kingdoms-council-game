@@ -1,3 +1,7 @@
+## v0.30 — Horizontal research categories
+
+R&D discoveries are grouped into eight horizontal, scrollable category rows using the existing artwork and names. Cards show completed, available, current or locked status; missing prerequisites are named and locked choices cannot be selected. Completing all funded progress unlocks the next tier. Research rules, installment prices and technology prerequisites are unchanged.
+
 ## v0.29 — Allocation limits
 
 Economy allocation fields stop at the resources available after the other department’s allocation. Typing or pasting too much is immediately capped; number arrows respect the same limit. Returning resources frees the other department’s allowance, and Treasury reserves stay nonnegative. Includes the v0.28 facility artwork and map markers.

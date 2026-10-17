@@ -222,5 +222,12 @@
     "date": "2026-10-16",
     "url": "releases/v0.29.0/",
     "notes": "Department allocations stop at the available shared resource balance, including typing, paste and number arrows. Includes facility artwork and territory markers from v0.28."
+  },
+  {
+    "version": "v0.30.0",
+    "title": "Research category rows",
+    "date": "2026-10-16",
+    "url": "releases/v0.30.0/",
+    "notes": "Horizontal research categories with existing artwork, visible prerequisite locks, progress, installment costs and direct project selection. Includes v0.28 artwork and v0.29 allocation limits."
   }
 ]
