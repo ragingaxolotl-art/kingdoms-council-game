@@ -12,5 +12,5 @@ for(const type of Object.keys(R.types))for(const opposing of Object.keys(R.types
  let q=B.create(world);q.units=[];const at=q.countries[0].capital;B.add(q,0,at,type,1,100,0);B.add(q,1,at,opposing,1,100,0);q.units[0].fatigue=.15;q=R.advance(q);R.target(q,0,at,1);R.target(q,1,at,0);R.confirm(q,0);R.confirm(q,1);
  const a=R.advance(q),b=Original.advance(q);assert.deepEqual(a.battles,b.battles);assert.deepEqual(a.units,b.units);
 }
-let q=B.create(world);q.units=[];const at=q.countries[0].capital;B.add(q,0,at,'cavalry',6,75,2);assert.equal(q.units[0].readyTurn,q.turn);assert.equal(q.units[0].gear,2);R.validate(q);assert.throws(()=>B.add(q,0,at,'spears',1,100,0));assert.throws(()=>B.add(q,1,at,'artillery',1,100,1));q.phase='results';assert.throws(()=>B.add(q,1,at,'spears',1,100,0));
+let q=B.create(world);q.units=[];const at=q.countries[0].capital;B.add(q,0,at,'cavalry',24,75,2);assert.equal(q.units[0].readyTurn,q.turn);assert.equal(q.units[0].gear,2);R.validate(q);assert.throws(()=>B.add(q,0,at,'spears',1,100,0));assert.throws(()=>B.add(q,1,at,'artillery',1,100,1));q.phase='results';assert.throws(()=>B.add(q,1,at,'spears',1,100,0));
 console.log('PASS: four-country spacing, isolated save validation, direct land income, no civilian feeding, all 16 combat matchups match current game, editor guards.');

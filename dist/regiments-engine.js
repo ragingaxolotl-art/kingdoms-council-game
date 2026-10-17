@@ -82,7 +82,7 @@ function create(world){const {cells,territories}=group(world);const s={movementR
  s.countries.forEach(c=>{const own=territories.filter(t=>t.home===c.id);if(!own.length)return;const cap=own.sort((a,b)=>Math.hypot(a.point[0]-world.countries[c.id].capital[0],a.point[1]-world.countries[c.id].capital[1])-Math.hypot(b.point[0]-world.countries[c.id].capital[0],b.point[1]-world.countries[c.id].capital[1]))[0];cap.owner=c.id;c.capital=cap.id;['spears','archers'].forEach(type=>s.units.push({id:s.nextId++,country:c.id,type,hp:100,territory:cap.id,order:null,fatigue:0,retreat:null,retreatTo:null}));});return D.upgradeRelations(M.upgrade(D.upgrade(upgradeCaptureAgreements(upgradeSettlements(upgradeWellbeing(upgradeEconomy(s,world.settlements||[]))))),output));}
 function phase(s,p){fail(s.phase===p,`This action belongs to the ${p} phase.`);}
 function pay(stock,cost){fail(goods.every(g=>stock[g]>=(cost[g]||0)),'Not enough delivered resources in this department. Economy allocations arrive after the full round.');goods.forEach(g=>stock[g]-=cost[g]||0);}
-function recruit(s,country,type,territory){phase(s,'orders');fail(Object.hasOwn(types,type),'Choose a regiment type.');fail(recruitmentSites(s,country).some(p=>p.territory===territory),'Recruit at a controlled village, town or city without hostile troops.');fail(!living(s).some(u=>u.territory===territory&&!ally(s,u.country,country)),'Cannot recruit beside a hostile force.');fail(living(s).filter(u=>u.country===country).length<6,'Six regiments maximum per country.');fail(D.unlocked(s.countries[country],type),'R&D must unlock this regiment type first.');pay(s.countries[country].accounts.military,D.recruitCost(s.countries[country],type));s.units.push({id:s.nextId++,country,type,hp:100,territory,order:null,fatigue:0,retreat:null,retreatTo:null,readyTurn:s.turn+1,gear:D.gear(s.countries[country],type),supportTurn:0});}
+function recruit(s,country,type,territory){phase(s,'orders');fail(Object.hasOwn(types,type),'Choose a regiment type.');fail(recruitmentSites(s,country).some(p=>p.territory===territory),'Recruit at a controlled village, town or city without hostile troops.');fail(!living(s).some(u=>u.territory===territory&&!ally(s,u.country,country)),'Cannot recruit beside a hostile force.');fail(living(s).filter(u=>u.country===country).length<24,'24 regiments maximum per country.');fail(D.unlocked(s.countries[country],type),'R&D must unlock this regiment type first.');pay(s.countries[country].accounts.military,D.recruitCost(s.countries[country],type));s.units.push({id:s.nextId++,country,type,hp:100,territory,order:null,fatigue:0,retreat:null,retreatTo:null,readyTurn:s.turn+1,gear:D.gear(s.countries[country],type),supportTurn:0});}
 function research(s,country){const copy=structuredClone(s),key=copy.countries[country].movement<3?'march':'roads';D.selectResearch(copy,country,key);D.fundResearch(copy,country);Object.assign(s,copy);}
 function route(s,from,to,country,allowPassage=false){if(from===to)return [];const queue=[from],prev=new Map([[from,null]]);for(let i=0;i<queue.length;i++){const current=queue[i];if(!allowPassage&&current!==from&&living(s).some(u=>u.territory===current&&!ally(s,u.country,country)))continue;for(const n of s.territories[current].neighbors){if(prev.has(n))continue;prev.set(n,current);if(n===to){const result=[];let k=to;while(k!==from){result.unshift(k);k=prev.get(k);}return result;}queue.push(n);}}return null;}
 // Country movement remains the research baseline (2, 3, 4); troop types add their own range.
@@ -119,23 +119,55 @@ function meetings(s,moves=[]){
  m.encounters=groups.map(group=>{const involved=units.filter(u=>group.has(u.id)),locations=[...new Set(involved.map(u=>u.territory))].sort((a,b)=>a-b);return {territory:locations[0],locations,units:involved.map(u=>u.id),countries:[...new Set(involved.map(u=>u.country))].sort((a,b)=>a-b),votes:{}};});
  m.pending=m.encounters[0]||null;
 }
-function encounter(s,country,decision,territory){
+function encounterRetreatOptions(s,country,territory){
+ const e=s.phase==='movement'?s.march?.encounters?.find(e=>e.territory===territory):null;
+ const units=living(s).filter(u=>u.country===country&&(e?e.units.includes(u.id):u.territory===territory));
+ if(!units.length)return [];
+ return retreatOptions(s,units[0]).filter(to=>units.every(u=>retreatOptions(s,u).includes(to)));
+}
+function settleQuietEncounter(s,e){
+ const m=s.march;
+ if(!e.countries.every(c=>['pass','hold'].includes(e.votes[c])))return;
+ const held=e.countries.some(c=>e.votes[c]==='hold');
+ if(held)for(const u of living(s).filter(u=>e.units.includes(u.id))){u.territory=e.territory;if(!m.stopped.includes(u.id))m.stopped.push(u.id);u.order=null;s.choices[e.territory+':'+u.country]=null;}
+ for(const a of e.units)for(const b of e.units)if(a<b&&!m.passed.includes(pair(a,b)))m.passed.push(pair(a,b));
+ m.log.push({territory:e.territory,units:[...e.units],reason:held?'hold':'pass'});m.encounters=m.encounters.filter(x=>x!==e);
+}
+function withdrawEncounter(s,country,territory,to){
+ fail(['movement','decisions'].includes(s.phase),'Retreat from an encounter before combat.');
+ const e=s.phase==='movement'?s.march.encounters.find(e=>e.territory===territory):s.conflicts.find(e=>e.territory===territory);
+ fail(e?.countries.includes(country),'Your country is not part of this encounter.');
+ fail(encounterRetreatOptions(s,country,territory).includes(to),'Choose one adjacent territory without hostile troops.');
+ const units=living(s).filter(u=>u.country===country&&(s.phase==='movement'?e.units.includes(u.id):u.territory===territory));
+ for(const u of units){const from=u.territory;u.territory=to;u.order=null;u.retreatTo=null;u.retreat=null;if(s.march&&!s.march.stopped.includes(u.id))s.march.stopped.push(u.id);s.moves.push({unit:u.id,country,from,to,step:Math.min(5,s.march?.step||0)});}
+ if(s.march)s.march.log.push({territory:to,units:units.map(u=>u.id),reason:'withdraw'});
+ s.ready=[];s.captureAgreements={};
+ if(s.phase==='movement'){
+  e.units=e.units.filter(id=>!units.some(u=>u.id===id));e.countries=e.countries.filter(c=>c!==country);delete e.votes[country];
+  if(e.countries.length<2||e.countries.every(a=>e.countries.every(b=>a===b||ally(s,a,b))))s.march.encounters=s.march.encounters.filter(x=>x!==e);else settleQuietEncounter(s,e);
+  s.march.pending=s.march.encounters[0]||null;
+ }else{
+  e.countries=e.countries.filter(c=>c!==country);delete s.choices[territory+':'+country];
+  for(const c of e.countries)if(s.choices[territory+':'+c]===country)s.choices[territory+':'+c]=null;
+  if(e.countries.length<2)s.conflicts=s.conflicts.filter(x=>x!==e);
+ }
+}
+function encounter(s,country,decision,territory,to){
  phase(s,'movement');const m=s.march,e=territory===undefined?m.pending:m.encounters.find(e=>e.territory===territory);
  fail(e&&e.countries.includes(country),'Your country is not part of this encounter.');
- fail(['attack','pass'].includes(decision),'Choose Attack or Pass.');
+ if(decision==='retreat'){withdrawEncounter(s,country,e.territory,to);return;}
+ fail(['attack','pass','hold'].includes(decision),'Choose Attack, Retreat, Hold or Pass.');
  e.votes[country]=decision;
+ if(decision==='hold'){for(const u of living(s).filter(u=>u.country===country&&e.units.includes(u.id))){if(!m.stopped.includes(u.id))m.stopped.push(u.id);u.order=null;}s.choices[e.territory+':'+country]=null;m.log.push({territory:e.territory,units:e.units.filter(id=>s.units.find(u=>u.id===id).country===country),reason:'hold'});}
  if(decision==='attack'){
   const units=living(s).filter(u=>e.units.includes(u.id));
   // Border encounters stop at the reported battle site; no damage is dealt yet.
   for(const u of units)u.territory=e.territory;
   // Partners always stop together, including an allied partner at this site.
   for(const u of units){if(!m.stopped.includes(u.id))m.stopped.push(u.id);if(u.pairedWith&&!m.stopped.includes(u.pairedWith))m.stopped.push(u.pairedWith);}
-  for(const c of e.countries){const enemy=e.countries.find(other=>other!==c&&!ally(s,c,other));if(enemy!==undefined)s.choices[e.territory+':'+c]=c===country||ally(s,c,country)?enemy:country;}
+  for(const c of e.countries){const enemy=e.countries.find(other=>other!==c&&!ally(s,c,other));if(enemy!==undefined&&e.votes[c]!=='hold')s.choices[e.territory+':'+c]=c===country||ally(s,c,country)?enemy:country;}
   m.log.push({territory:e.territory,units:[...e.units],reason:'battle'});m.encounters=m.encounters.filter(x=>x!==e);
- }else if(e.countries.every(c=>e.votes[c]==='pass')){
-  for(const a of e.units)for(const b of e.units)if(a<b&&!m.passed.includes(pair(a,b)))m.passed.push(pair(a,b));
-  m.log.push({territory:e.territory,units:[...e.units],reason:'pass'});m.encounters=m.encounters.filter(x=>x!==e);
- }
+ }else settleQuietEncounter(s,e);
  m.pending=m.encounters[0]||null;
 }
 function marchStep(s){
@@ -157,7 +189,7 @@ function marchStep(s){
  }
  for(const u of units){
   if(u.readyTurn<=s.turn&&u.order?.intent==='capture'&&u.territory===u.order.destination){const key=u.territory;s.captureChoices[key]??=[];if(!s.captureChoices[key].includes(u.country))s.captureChoices[key].push(u.country);}
-  m.log.push({territory:u.territory,units:[u.id],reason:m.stopped.includes(u.id)?'battle':u.order?.path.length?'arrived':'hold'});
+  const last=m.log.findLast(e=>e.units.includes(u.id)&&['battle','hold','withdraw'].includes(e.reason));m.log.push({territory:u.territory,units:[u.id],reason:m.stopped.includes(u.id)?last?.reason||'hold':u.order?.path.length?'arrived':'hold'});
  }
  s.conflicts=s.territories.map(t=>({territory:t.id,countries:[...new Set(units.filter(u=>u.territory===t.id&&m.stopped.includes(u.id)).map(u=>u.country))].sort((a,b)=>a-b)})).filter(c=>c.countries.length>1);
  s.phase='decisions';
@@ -182,7 +214,7 @@ function movementView(s,country){
  if(!s.march)return null;
  const own=id=>s.units.some(u=>u.id===id&&u.country===country),m=s.march;
  const all=m.encounters|| (m.pending?[m.pending]:[]);
- const encounters=all.filter(e=>e.countries.includes(country)).map(e=>({...structuredClone(e),units:e.units.filter(own)}));
+ const encounters=all.filter(e=>e.countries.includes(country)).map(e=>({...structuredClone(e),units:e.units.filter(own),retreatOptions:encounterRetreatOptions(s,country,e.territory)}));
  return {step:m.step,stopped:m.stopped.filter(own),pending:encounters[0]||null,encounters,waiting:all.length,log:m.log.filter(e=>e.units.some(own)).map(e=>({...e,units:e.units.filter(own)}))};
 }
 function moveAll(s){phase(s,'orders');s.moves=[];s.battles=[];s.choices={};s.ready=[];s.captureChoices={};s.units.forEach(u=>{u.fatigue=0;u.retreatTo=null;});const max=Math.max(0,...living(s).map(u=>movement(s,u)));
@@ -238,7 +270,7 @@ function finish(s){phase(s,'retreat');const fleeing=living(s).filter(u=>u.retrea
 
  D.sync(s);const income=s.countries.map(c=>({country:c.id,money:0,food:0,wood:0,metal:0}));for(const t of s.territories)if(t.owner>=0){goods.forEach(g=>income[t.owner][g]+=output(t)[g]);}
  income.forEach(i=>goods.forEach(g=>(battleLab?s.countries[i.country].accounts.military:s.countries[i.country].stock)[g]+=i[g]));s.countries.forEach(c=>{for(const department of ['military','research']){const delivery=c.allocations[department];if(goods.some(g=>delivery[g]>0))events.push(`${c.name}: ${department} received ${goods.map(g=>delivery[g]+' '+g).join(', ')}; spendable next planning round.`);goods.forEach(g=>c.accounts[department][g]+=delivery[g]);c.allocations[department]=emptyStock();}const need=living(s).filter(u=>u.country===c.id).length,paid=Math.min(need,c.accounts.military.food);c.accounts.military.food-=paid;c.supplyPenalty=need?1+.5*(1-paid/need):1;c.lastSupply={turn:s.turn,need,paid};events.push(`${c.name}: military ate ${paid}/${need} food. Next round incoming damage ×${c.supplyPenalty.toFixed(2)}.`);if(c.research){c.movement++;c.research=false;}});
- if(battleLab)s.territories.forEach(t=>t.happiness=50);else {D.endRound(s,events);M.endRound(s,events,output);}if(s.march)for(const u of s.units){const stop=s.march.log.findLast(e=>e.units.includes(u.id)&&['battle','arrived','hold'].includes(e.reason));if(stop)events.push(s.countries[u.country].name+': regiment #'+u.id+' stopped at '+s.territories[stop.territory].name+' ('+({battle:'stopped for battle',arrived:'planned stop reached',hold:'held position'}[stop.reason])+').');}s.history.unshift({turn:s.turn,moves:structuredClone(s.moves),battles:structuredClone(s.battles),events,income});s.history=s.history.slice(0,20);s.phase='results';s.units.forEach(u=>u.order=null);
+ if(battleLab)s.territories.forEach(t=>t.happiness=50);else {D.endRound(s,events);M.endRound(s,events,output);}if(s.march)for(const u of s.units){const stop=s.march.log.findLast(e=>e.units.includes(u.id)&&['battle','arrived','hold','withdraw'].includes(e.reason));if(stop)events.push(s.countries[u.country].name+': regiment #'+u.id+' stopped at '+s.territories[stop.territory].name+' ('+({battle:'stopped for battle',arrived:'planned stop reached',hold:'held position',withdraw:'retreated one adjacent territory'}[stop.reason])+').');}s.history.unshift({turn:s.turn,moves:structuredClone(s.moves),battles:structuredClone(s.battles),events,income});s.history=s.history.slice(0,20);s.phase='results';s.units.forEach(u=>u.order=null);
 }
 function next(s){phase(s,'results');delete s.march;s.turn++;s.units.forEach(u=>{if(u.retreat&&u.retreat.turn<s.turn)u.retreat=null;});s.offers=[];s.moves=[];s.battles=[];s.conflicts=[];s.choices={};s.ready=[];s.captureChoices={};s.captureAgreements={};s.phase='orders';}
 function advance(s){const copy=validate(structuredClone(s));({orders:moveAll,movement:marchStep,decisions:resolve,retreat:finish,results:next})[s.phase](copy);cleanPairs(copy);return validate(copy);}
@@ -248,7 +280,7 @@ function validate(s){
  fail(Array.isArray(s.countries)&&s.countries.length>0&&s.countries.length<=200&&Array.isArray(s.cells)&&s.cells.length>0&&s.cells.length<=100000&&Array.isArray(s.territories)&&s.territories.length>0&&s.territories.length<=10000&&Array.isArray(s.units)&&s.units.length<=5000,'Invalid world.');
  const country=id=>int(id,0,s.countries.length-1),territory=id=>int(id,0,s.territories.length-1),ids=a=>Array.isArray(a)&&a.every(country),pairKey=k=>typeof k==='string'&&/^\d+-\d+$/.test(k)&&k.split('-').every(v=>country(Number(v)));
  s.countries.forEach((c,i)=>fail(c.id===i&&name(c.name)&&/^(#[0-9a-f]{6}|hsl\(\d{1,3}, \d{1,3}%, \d{1,3}%\))$/i.test(c.color)&&int(c.movement,2,4)&&typeof c.research==='boolean'&&c.stock&&goods.every(g=>Number.isFinite(c.stock[g])&&c.stock[g]>=0&&c.stock[g]<1e12)&&(!c.shield||typeof c.shield==='string'&&c.shield.length<200000&&/^data:image\/(png|jpeg|webp);base64,/.test(c.shield))&&(c.capital===null||territory(c.capital)),'Invalid country.'));
- if(s.march!==undefined){const m=s.march,unit=id=>s.units.some(u=>u.id===id),unitIds=a=>Array.isArray(a)&&a.length<=5000&&a.every(unit);fail(m&&int(m.step,0,6)&&int(m.cursor,0,5000)&&unitIds(m.stopped)&&Array.isArray(m.passed)&&m.passed.length<=12500000&&m.passed.every(k=>typeof k==='string'&&/^\d+-\d+$/.test(k)&&k.split('-').every(n=>unit(Number(n))))&&Array.isArray(m.log)&&m.log.length<=50000&&m.log.every(e=>territory(e.territory)&&unitIds(e.units)&&['battle','pass','arrived','hold'].includes(e.reason)),'Invalid movement simulation.');m.encounters??=m.pending?[m.pending]:[];fail(Array.isArray(m.encounters)&&m.encounters.length<=5000,'Invalid encounters.');for(const e of m.encounters){fail(territory(e.territory)&&unitIds(e.units)&&e.units.length>1&&(e.locations===undefined?e.units.every(id=>s.units.find(u=>u.id===id).territory===e.territory):Array.isArray(e.locations)&&e.locations.length>0&&e.locations.includes(e.territory)&&e.locations.every(territory)&&e.units.every(id=>e.locations.includes(s.units.find(u=>u.id===id).territory)))&&ids(e.countries)&&e.countries.length>1&&e.countries.every(c=>e.units.some(id=>s.units.find(u=>u.id===id).country===c))&&e.votes&&Object.entries(e.votes).every(([c,v])=>e.countries.includes(Number(c))&&['attack','pass'].includes(v)),'Invalid movement encounter.');}m.pending=m.encounters[0]||null;}else fail(s.phase!=='movement','Missing movement simulation.');
+ if(s.march!==undefined){const m=s.march,unit=id=>s.units.some(u=>u.id===id),unitIds=a=>Array.isArray(a)&&a.length<=5000&&a.every(unit);fail(m&&int(m.step,0,6)&&int(m.cursor,0,5000)&&unitIds(m.stopped)&&Array.isArray(m.passed)&&m.passed.length<=12500000&&m.passed.every(k=>typeof k==='string'&&/^\d+-\d+$/.test(k)&&k.split('-').every(n=>unit(Number(n))))&&Array.isArray(m.log)&&m.log.length<=50000&&m.log.every(e=>territory(e.territory)&&unitIds(e.units)&&['battle','pass','arrived','hold','withdraw'].includes(e.reason)),'Invalid movement simulation.');m.encounters??=m.pending?[m.pending]:[];fail(Array.isArray(m.encounters)&&m.encounters.length<=5000,'Invalid encounters.');for(const e of m.encounters){fail(territory(e.territory)&&unitIds(e.units)&&e.units.length>1&&(e.locations===undefined?e.units.every(id=>s.units.find(u=>u.id===id).territory===e.territory):Array.isArray(e.locations)&&e.locations.length>0&&e.locations.includes(e.territory)&&e.locations.every(territory)&&e.units.every(id=>e.locations.includes(s.units.find(u=>u.id===id).territory)))&&ids(e.countries)&&e.countries.length>1&&e.countries.every(c=>e.units.some(id=>s.units.find(u=>u.id===id).country===c))&&e.votes&&Object.entries(e.votes).every(([c,v])=>e.countries.includes(Number(c))&&['attack','pass','hold'].includes(v)),'Invalid movement encounter.');}m.pending=m.encounters[0]||null;}else fail(s.phase!=='movement','Missing movement simulation.');
  for(const t of s.territories)if(t.capturedTurn!==undefined)fail(int(t.capturedTurn,1,s.turn)&&int(t.previousOwner,-1,s.countries.length-1),'Invalid capture marker.');
  const membership=new Set();s.territories.forEach((t,i)=>{fail(t.id===i&&int(t.owner,-1,s.countries.length-1)&&name(t.name)&&goods.includes(t.resource)&&typeof t.rough==='boolean'&&Array.isArray(t.cells)&&t.cells.length>0&&t.cells.every(n=>int(n,0,s.cells.length-1)&&s.cells[n]?.land)&&Array.isArray(t.neighbors)&&t.neighbors.every(n=>territory(n)&&n!==i)&&new Set(t.neighbors).size===t.neighbors.length&&point(t.point)&&t.biome&&name(t.biome.name)&&/^#[0-9a-f]{6}$/i.test(t.biome.color),'Invalid territory.');for(const id of t.cells){fail(!membership.has(id)&&s.cells[id].territory===i,'Invalid territory membership.');membership.add(id);}for(const n of t.neighbors)fail(s.territories[n].neighbors.includes(i),'Asymmetric territory border.');});
  s.cells.forEach(c=>fail(point(c.point)&&Array.isArray(c.polygon)&&c.polygon.length>=3&&c.polygon.length<40&&c.polygon.every(point)&&(!c.land||territory(c.territory)&&membership.has(c.id))&&c.biome&&/^#[0-9a-f]{6}$/i.test(c.biome.color),'Invalid geometry.'));
@@ -272,7 +304,7 @@ function validate(s){
  fail(s.captureAgreements&&typeof s.captureAgreements==='object'&&!Array.isArray(s.captureAgreements)&&Object.entries(s.captureAgreements).every(([id,x])=>/^\d+$/.test(id)&&territory(Number(id))&&x&&typeof x.signature==='string'&&x.signature.length<200000&&x.votes&&typeof x.votes==='object'&&!Array.isArray(x.votes)&&Object.entries(x.votes).every(([c,v])=>/^\d+$/.test(c)&&country(Number(c))&&(v===-1||country(v)))),'Invalid capture agreement.');
  if(s.phase==='retreat')s.countries.forEach(c=>{fail(Object.entries(c.foodPlan).every(([id,n])=>s.territories[Number(id)].owner===c.id&&n<=s.territories[Number(id)].foodNeed)&&Object.values(c.foodPlan).reduce((a,b)=>a+b,0)<=c.stock.food,'Invalid civilian allocation.');if(c.foodConfirmed)fail(s.territories.filter(t=>t.owner===c.id).every(t=>Object.hasOwn(c.foodPlan,t.id)),'Incomplete confirmed food plan.');});D.validate(s);M.upgrade(s,output);M.validate(s,D.techs,D.facilities);D.upgradeRelations(s);D.validateRelations(s);if(s.movementRules!==1){for(const u of s.units)if(s.phase==='orders'&&u.order?.path.length>movement(s,u))u.order=null;s.movementRules=1;}return s;
 }
-return {mode:battleLab?'battle-lab':'classroom',forMode(mode){fail(['battle-lab','classroom'].includes(mode),'Unknown game mode.');return createRegimentRules(mode==='battle-lab');},objectives:M,development:D,sharedCaptures,chooseCaptureOwner,types,goods,settlementLevels,fortifications,productionBonus,maxDefense,constructionCost,build,repair,group,create,output,feed,confirmFood,allocate,recruitmentSites,ally,route,movement,pairOptions,attach,detach,clearOrder,order,recruit,research,offer,accept,target,confirm,retreatOptions,retreat,startMovement,encounter,movementView,visibleUnits,advance,validate};
+return {mode:battleLab?'battle-lab':'classroom',forMode(mode){fail(['battle-lab','classroom'].includes(mode),'Unknown game mode.');return createRegimentRules(mode==='battle-lab');},objectives:M,development:D,sharedCaptures,chooseCaptureOwner,types,goods,settlementLevels,fortifications,productionBonus,maxDefense,constructionCost,build,repair,group,create,output,feed,confirmFood,allocate,recruitmentSites,ally,route,movement,pairOptions,attach,detach,clearOrder,order,recruit,research,offer,accept,target,confirm,retreatOptions,retreat,startMovement,encounter,encounterRetreatOptions,withdrawEncounter,movementView,visibleUnits,advance,validate};
 }
 const RegimentGame=createRegimentRules();
 if(typeof module!=='undefined')module.exports=RegimentGame;

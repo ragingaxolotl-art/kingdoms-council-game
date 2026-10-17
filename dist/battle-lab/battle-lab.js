@@ -27,7 +27,7 @@ function open(raw){if(raw?.lab?.version!==1||raw.countries?.length!==4)throw Err
 function add(s,country,territory,type,count,hp,gear){
  if(s.phase!=='orders')throw Error('Edit armies during planning.');
  if(!s.countries[country]||!s.territories[territory]||!Object.hasOwn(R.types,type))throw Error('Choose a country, territory and troop type.');
- if(!Number.isInteger(count)||count<1||count>6||s.units.filter(u=>u.hp>0&&u.country===country).length+count>6)throw Error('Keep at most six living regiments per country, as in the full game.');
+ if(!Number.isInteger(count)||count<1||count>24||s.units.filter(u=>u.hp>0&&u.country===country).length+count>24)throw Error('Keep at most 24 living regiments per country, as in the full game.');
  if(!Number.isInteger(hp)||hp<1||hp>100||!Number.isInteger(gear)||gear<0||gear>=R.development.gearNames[type].length)throw Error('Choose valid health and equipment.');
  for(let i=0;i<count;i++)s.units.push({id:s.nextId++,country,territory,type,hp,gear,order:null,fatigue:0,retreat:null,retreatTo:null,readyTurn:s.turn,supportTurn:0});
 }
