@@ -38,10 +38,11 @@ export function command(room,player,action){
 export function project(room,player){
  const game=R.validate(structuredClone(room.game));
  // Keep enemy troops and routes off the client; reveal only shared encounters and battles.
+ const visible=R.visibleUnits(game,player);
  game.march=R.movementView(game,player);
  const captures=R.sharedCaptures(game).filter(x=>x.claimants.includes(player)).map(({territory,claimants})=>({territory,claimants}));
  game.units.filter(u=>u.country===player).forEach(u=>u.retreatOptions=R.retreatOptions(game,u));
- game.captures=captures;game.units=game.units.filter(u=>u.country===player);
+ game.captures=captures;game.units=visible.map(u=>u.country===player?u:{id:u.id,country:u.country,type:u.type,hp:u.hp,territory:u.territory,readyTurn:u.readyTurn,gear:u.gear});
  game.moves=game.moves.filter(m=>m.country===player);
  game.conflicts=game.conflicts.filter(c=>c.countries.includes(player));
  game.battles=game.battles.filter(b=>b.records.some(u=>u.country===player));

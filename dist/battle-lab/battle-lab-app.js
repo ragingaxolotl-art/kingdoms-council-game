@@ -3,7 +3,7 @@ const R=BattleRules,$=id=>document.getElementById(id),KEY='council-battle-lab-v1
 let state,active=0,selected=0,camera={x:0,y:0,w:1200,h:700},pending=null,unreadableSave=null,role='military',popupOpen=false;
 let mapOrders=null,navigation=null,dragPreview=null,selectedTroop=null;
 const troopImages=new Map();
-const mapTokens=()=>RegimentMapOrders.tokens(state,camera,{planned:role==='military'&&state.phase==='orders'?active:null,size:44}).filter(t=>t.u.country===active);
+const mapTokens=()=>RegimentMapOrders.tokens(state,camera,{planned:role==='military'&&state.phase==='orders'?active:null,size:44}).filter(t=>R.visibleUnits(state,active).some(u=>u.id===t.u.id));
 const defaultMapHelp=$('mapHelp').textContent;
 const shields=new Map(),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const troopPicture=type=>`<img class="troop-picture" src="troop-icons/${type==='cavalry'?'cavalry-cutout':type}.png" alt="" draggable="false">`;

@@ -162,6 +162,19 @@ function marchStep(s){
  s.conflicts=s.territories.map(t=>({territory:t.id,countries:[...new Set(units.filter(u=>u.territory===t.id&&m.stopped.includes(u.id)).map(u=>u.country))].sort((a,b)=>a-b)})).filter(c=>c.countries.length>1);
  s.phase='decisions';
 }
+// Reveal only troops participating in this country's current encounter.
+function visibleUnits(s,country){
+ const revealed=new Set();
+ if(s.phase==='movement'){
+  for(const e of s.march?.encounters||[])if(e.countries.includes(country))e.units.forEach(id=>revealed.add(id));
+  for(const e of s.march?.log||[])if(e.reason==='battle'&&e.units.some(id=>s.units.some(u=>u.id===id&&u.country===country)))e.units.forEach(id=>revealed.add(id));
+ }
+ if(['decisions','retreat'].includes(s.phase)){
+  const sites=new Set((s.conflicts||[]).filter(c=>c.countries.includes(country)).map(c=>c.territory));
+  for(const u of s.units)if(sites.has(u.territory))revealed.add(u.id);
+ }
+ return s.units.filter(u=>u.country===country||u.hp>0&&revealed.has(u.id));
+}
 function movementView(s,country){
  if(!s.march)return null;
  const own=id=>s.units.some(u=>u.id===id&&u.country===country),m=s.march;
@@ -255,7 +268,7 @@ function validate(s){
  fail(s.captureAgreements&&typeof s.captureAgreements==='object'&&!Array.isArray(s.captureAgreements)&&Object.entries(s.captureAgreements).every(([id,x])=>/^\d+$/.test(id)&&territory(Number(id))&&x&&typeof x.signature==='string'&&x.signature.length<200000&&x.votes&&typeof x.votes==='object'&&!Array.isArray(x.votes)&&Object.entries(x.votes).every(([c,v])=>/^\d+$/.test(c)&&country(Number(c))&&(v===-1||country(v)))),'Invalid capture agreement.');
  if(s.phase==='retreat')s.countries.forEach(c=>{fail(Object.entries(c.foodPlan).every(([id,n])=>s.territories[Number(id)].owner===c.id&&n<=s.territories[Number(id)].foodNeed)&&Object.values(c.foodPlan).reduce((a,b)=>a+b,0)<=c.stock.food,'Invalid civilian allocation.');if(c.foodConfirmed)fail(s.territories.filter(t=>t.owner===c.id).every(t=>Object.hasOwn(c.foodPlan,t.id)),'Incomplete confirmed food plan.');});D.validate(s);M.upgrade(s,output);M.validate(s,D.techs,D.facilities);D.upgradeRelations(s);D.validateRelations(s);if(s.movementRules!==1){for(const u of s.units)if(s.phase==='orders'&&u.order?.path.length>movement(s,u))u.order=null;s.movementRules=1;}return s;
 }
-return {mode:battleLab?'battle-lab':'classroom',forMode(mode){fail(['battle-lab','classroom'].includes(mode),'Unknown game mode.');return createRegimentRules(mode==='battle-lab');},objectives:M,development:D,sharedCaptures,chooseCaptureOwner,types,goods,settlementLevels,fortifications,productionBonus,maxDefense,constructionCost,build,repair,group,create,output,feed,confirmFood,allocate,recruitmentSites,ally,route,movement,pairOptions,attach,detach,clearOrder,order,recruit,research,offer,accept,target,confirm,retreatOptions,retreat,startMovement,encounter,movementView,advance,validate};
+return {mode:battleLab?'battle-lab':'classroom',forMode(mode){fail(['battle-lab','classroom'].includes(mode),'Unknown game mode.');return createRegimentRules(mode==='battle-lab');},objectives:M,development:D,sharedCaptures,chooseCaptureOwner,types,goods,settlementLevels,fortifications,productionBonus,maxDefense,constructionCost,build,repair,group,create,output,feed,confirmFood,allocate,recruitmentSites,ally,route,movement,pairOptions,attach,detach,clearOrder,order,recruit,research,offer,accept,target,confirm,retreatOptions,retreat,startMovement,encounter,movementView,visibleUnits,advance,validate};
 }
 const RegimentGame=createRegimentRules();
 if(typeof module!=='undefined')module.exports=RegimentGame;
