@@ -11,7 +11,7 @@ const sheets={
  sanitation:['facilities-horsemanship',1115,0,425,375],manufacturing:['facilities-horsemanship',1540,0,470,410],
  saddles:['facilities-horsemanship',550,380,365,335],stirrups:['facilities-horsemanship',965,380,290,330]
 };
-const files={copper:'research-images/shield.svg',riding:'troop-icons/cavalry-cutout.png',siege:'troop-icons/artillery.png',granary:'research-images/storage.svg'};
+const files={commerce:'research-images/storage.svg',copper:'research-images/shield.svg',riding:'troop-icons/cavalry-cutout.png',siege:'troop-icons/artillery.png',granary:'research-images/storage.svg'};
 const settlementResearch={construction:{settlementLevel:2,fortification:1},masonry:{settlementLevel:3,fortification:2},planning:{settlementLevel:4,fortification:0},architecture:{settlementLevel:5,fortification:3}};
 const facilities={hospital:{name:'Hospital',art:'medicine'},academy:{name:'Academy',art:'education'},civic:{name:'Civic Hall',art:'sanitation'},workshop:{name:'Workshop',art:'manufacturing'},granary:{name:'Granary',art:'granary'}};
 // Separate the complete third spear from the neighboring road workers.

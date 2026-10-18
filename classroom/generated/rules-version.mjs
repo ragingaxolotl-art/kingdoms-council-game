@@ -1,1 +1,1 @@
-export const rulesVersion="80ed09836e4d5ec359f4af49a6dd39fb66cb59107e780c1f63e16013b00129db";
+export const rulesVersion="3396196cc05a1d79c78346bbcf0d33b0859160637ea033dc001f559fea360c07";
