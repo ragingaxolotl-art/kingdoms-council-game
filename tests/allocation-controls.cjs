@@ -7,7 +7,7 @@ let inputs=[],saved;
 const nodes=new Map(),node=id=>{if(!nodes.has(id))nodes.set(id,{textContent:'',innerHTML:''});return nodes.get(id);};
 const panel={set innerHTML(html){inputs=[...html.matchAll(/<input ([^>]*data-dept[^>]*)>/g)].map(([,attributes])=>{const attrs=Object.fromEntries([...attributes.matchAll(/([\w-]+)="([^"]*)"/g)].map(m=>[m[1],m[2]]));return {dataset:{dept:attrs['data-dept'],good:attrs['data-good']},value:attrs.value,max:attrs.max,disabled:attributes.includes('disabled'),validity:{badInput:false}};});},querySelectorAll:()=>inputs};
 nodes.set('decisions',panel);
-const context=vm.createContext({R,state:initial,active:0,$:node,structuredClone,ResourceUI:{icon:()=>'',names:{}},DevelopmentUI:{trades:()=>{}},stockText:()=>'',esc:String,living:()=>[],renderTerritoryPopup:()=>{},save:()=>{saved=JSON.stringify(context.state);}});
+const context=vm.createContext({R,state:initial,active:0,$:node,structuredClone,ResourceUI:{icon:()=>'',names:{}},DevelopmentUI:{trades:()=>{},improvementShop:()=>{}},stockText:()=>'',esc:String,living:()=>[],renderTerritoryPopup:()=>{},save:()=>{saved=JSON.stringify(context.state);}});
 const source=fs.readFileSync(__dirname+'/../dist/regiments-app.js','utf8');
 vm.runInContext(source.slice(source.indexOf('function renderEconomy(){'),source.indexOf('function renderResearch(){')),context);
 const render=()=>vm.runInContext('renderEconomy()',context);
