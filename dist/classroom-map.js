@@ -5,6 +5,7 @@ const ClassroomMap=(()=>{
  function contains(poly,[x,y]){let hit=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])hit=!hit;}return hit;}
  function attach({canvas,layer,intent,status,tools,legend,select,commit,canWrite}){
   let view=null,cells=[],boundaries=[],selected=null,state=null,drag=null,camera={x:0,y:0,w:1200,h:700},preview=false;
+  const images=new Map();
   const ctx=canvas.getContext('2d'),territoryAt=p=>cells.find(c=>c.land&&contains(c.polygon,p))?.territory??null;
   const controller=RegimentMapOrders.attach({canvas,R:{movement:(s,u)=>u.movement??2,route:(s,from,to,country)=>s.units.find(u=>u.country===country&&u.territory===from&&Object.hasOwn(u.legalRoutes||{},to))?.legalRoutes[to]??null},context:()=>({state:state||{units:[],territories:[],phase:'none'},active:view?.assignment.country,role:canWrite()?view?.assignment.role:'observer',intent:intent.value,camera}),territoryAt,preview:d=>{drag=d;draw();},status:message=>status.textContent=message,commit,start:()=>{}});
   function draw(){
@@ -15,7 +16,7 @@ const ClassroomMap=(()=>{
    for(const u of state.units)if(u.order){const path=state.phase==='orders'?u.order.path:null;if(path)route(u,u.order.destination,path);}
    if(drag?.valid)route(drag.unit,drag.target,drag.paths.get(drag.target));
    for(const t of state.territories){ctx.fillStyle='#172b24';ctx.font=`bold ${12/sx}px sans-serif`;ctx.fillText(t.id+1,t.point[0]+6/sx,t.point[1]-7/sx);}
-   for(const token of RegimentMapOrders.tokens(state,camera)){const {u,x,y,r}=token;ctx.beginPath();ctx.roundRect(x-r,y-r,r*2,r*2,4/sx);ctx.fillStyle=view.countries.find(c=>c.id===u.country)?.color||'#fff';ctx.fill();ctx.strokeStyle=u.country===view.country.id?'#fff':'#172b24';ctx.lineWidth=2/sx;ctx.stroke();ctx.font=`bold ${11/sx}px sans-serif`;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#172b24';ctx.lineWidth=3/sx;ctx.strokeText(u.id,x,y+4/sx);ctx.fillText(u.id,x,y+4/sx);ctx.textAlign='left';}
+   for(const token of RegimentMapOrders.tokens(state,camera)){const {u,x,y,r}=token;ctx.beginPath();ctx.roundRect(x-r,y-r,r*2,r*2,4/sx);ctx.fillStyle=view.countries.find(c=>c.id===u.country)?.color||'#fff';ctx.fill();ctx.strokeStyle=u.country===view.country.id?'#fff':'#172b24';ctx.lineWidth=2/sx;ctx.stroke();let image=images.get(u.type);if(!image){image=new Image();images.set(u.type,image);image.onload=draw;image.src='troop-icons/'+(u.type==='cavalry'?'cavalry-cutout':u.type)+'.png';}if(image.complete&&image.naturalWidth)ctx.drawImage(image,x-r,y-r,r*2,r*2);ctx.font=`bold ${11/sx}px sans-serif`;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#172b24';ctx.lineWidth=3/sx;ctx.strokeText(u.id,x,y+r+12/sx);ctx.fillText(u.id,x,y+r+12/sx);MovementView.drawBadge(ctx,u,x+r-5/sx,y-r+6/sx,18/sx);ctx.textAlign='left';}
    MovementView.markers(ctx,state,state.units.filter(u=>u.country===view.country.id),camera.w/1200);ctx.restore();
   }
   canvas.onclick=e=>{if(controller.consumeClick())return;const p=RegimentMapOrders.coordinates(e,canvas,camera);selected=territoryAt(p.world);draw();select(selected);};

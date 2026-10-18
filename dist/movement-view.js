@@ -2,6 +2,11 @@
 const MovementView=(()=>{
  const el=(tag,text,parent)=>{const n=document.createElement(tag);if(text)n.textContent=text;parent?.append(n);return n;};
  function button(parent,text,fn,disabled=false){const b=el('button',text,parent);b.type='button';b.dataset.write='';b.disabled=disabled;b.dataset.movementLocked=String(disabled);b.onclick=fn;return b;}
+ const metals={Copper:'#c6814e',Bronze:'#b29a4c',Iron:'#707d88',Steel:'#d5e5ee'},roman=['I','II','III','IV'];
+ function equipment(u){if(u.type==='artillery')return null;const names=(u.type==='spears'||u.type==='infantry')?['Copper','Bronze','Iron','Steel']:['Copper','Iron','Steel'];const level=Math.max(0,Math.min(names.length-1,u.gear||0));return {name:names[level],roman:roman[level],color:metals[names[level]]};}
+ function troopLabel(u){const name=u.type[0].toUpperCase()+u.type.slice(1),e=equipment(u);return e?`${e.name} ${name} · Level ${e.roman}`:name;}
+ function badge(u){const e=equipment(u);return e?`<span class="equipment-badge" style="--metal:${e.color}" aria-label="${e.name}, Level ${e.roman}">${e.roman} · ${e.name}</span>`:'';}
+ function drawBadge(ctx,u,x,y,size){const e=equipment(u);if(!e)return;ctx.save();ctx.fillStyle=e.color;ctx.strokeStyle='#182d32';ctx.lineWidth=size/14;ctx.beginPath();ctx.roundRect(x-size/2,y-size/2,size,size*.8,size*.12);ctx.fill();ctx.stroke();ctx.fillStyle=e.name==='Iron'?'#fff':'#182d32';ctx.font=`bold ${size*.48}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(e.roman,x,y-size*.1);ctx.restore();}
  const place=(s,id)=>`${id+1} · ${s.territories[id].name}`;
  function editor({host,s,u,range,save,disabled=false}){
   if(!host)return;const path=u.order?.path||[],at=path.at(-1)??u.territory,box=el('section','',host);box.className='route-editor';
@@ -27,7 +32,7 @@ const MovementView=(()=>{
    for(const id of near){const t=s.territories[id],text=document.createElementNS(ns,'text');text.setAttribute('x',t.point[0]);text.setAttribute('y',t.point[1]);text.setAttribute('font-size',Math.max(w/45,5));text.setAttribute('text-anchor','middle');text.setAttribute('paint-order','stroke');text.setAttribute('stroke','#fff9e5');text.setAttribute('stroke-width','2');text.textContent=id+1;svg.append(text);}wrap.append(svg);
   }
   const forces=el('div','',wrap);forces.className='encounter-forces';
-  for(const country of e.countries){const side=el('section','',forces);side.className='encounter-side';side.style.borderColor=s.countries[country].color;el('h4',s.countries[country].name+' · '+s.units.filter(u=>u.hp>0&&u.country===country&&(sites.includes(u.territory)||e.units?.includes(u.id))).length+' regiments',side);const troops=el('div','',side);troops.className='encounter-troops';for(const u of s.units.filter(u=>u.hp>0&&u.country===country&&(sites.includes(u.territory)||e.units?.includes(u.id)))){const card=el('div','',troops);card.className='encounter-troop';const img=el('img','',card);img.src='troop-icons/'+(u.type==='cavalry'?'cavalry-cutout':u.type)+'.png';img.alt=u.type;el('strong',u.type[0].toUpperCase()+u.type.slice(1)+' #'+u.id,card);el('span',u.hp+' health',card);}}
+  for(const country of e.countries){const side=el('section','',forces);side.className='encounter-side';side.style.borderColor=s.countries[country].color;el('h4',s.countries[country].name+' · '+s.units.filter(u=>u.hp>0&&u.country===country&&(sites.includes(u.territory)||e.units?.includes(u.id))).length+' regiments',side);const troops=el('div','',side);troops.className='encounter-troops';for(const u of s.units.filter(u=>u.hp>0&&u.country===country&&(sites.includes(u.territory)||e.units?.includes(u.id)))){const card=el('div','',troops);card.className='encounter-troop';const img=el('img','',card);img.src='troop-icons/'+(u.type==='cavalry'?'cavalry-cutout':u.type)+'.png';img.alt=u.type;card.insertAdjacentHTML('beforeend',badge(u));el('strong',troopLabel(u)+' #'+u.id,card);el('span',u.hp+' health',card);}}
   return wrap;
  }
  function retreatControl(host,s,e,options,retreat,disabled){
@@ -89,5 +94,5 @@ ctx.save();ctx.font=`bold ${10*z}px sans-serif`;ctx.textAlign='center';for(const
   stage.append(svg);
  }
  function reportEvents(s,country,events){const name=s.countries[country].name;return (events||[]).filter(e=>e.startsWith(name+': ')||e.startsWith(name+' captured ')||e.startsWith(name+' besieged ')||/^Regiment (\d+) /.test(e)&&s.units.some(u=>u.country===country&&u.id===Number(e.match(/^Regiment (\d+) /)[1])));}
- return {editor,panel,markers,reportEvents,captures,closeup,decisions};
+ return {editor,panel,markers,reportEvents,captures,closeup,decisions,equipment,troopLabel,badge,drawBadge};
 })();

@@ -25,6 +25,7 @@ jobs:
       - run: node tests/movement-encounters.cjs
       - run: node tests/movement-waves.cjs
       - run: node tests/encounter-choices.cjs
+      - run: node tests/infantry-equipment.cjs
       - run: node tests/map-visibility-captures.cjs
       - run: node tests/regiment-movement.cjs
       - run: node tests/battle-lab.cjs

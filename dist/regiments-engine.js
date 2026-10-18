@@ -2,7 +2,7 @@
 function createRegimentRules(battleLab=false){
 const D=typeof RegimentDevelopment!=='undefined'?RegimentDevelopment:require('./regiments-development.js');
 const M=typeof RegimentObjectives!=='undefined'?RegimentObjectives:require('./regiments-objectives.js');D.bindObjectives(M);
-const types={spears:{movement:2,name:'Spears',icon:'♜',beats:'cavalry'},archers:{movement:3,name:'Archers',icon:'➶',beats:'spears'},cavalry:{movement:4,name:'Cavalry',icon:'♞',beats:'archers'},artillery:{movement:1,name:'Artillery',icon:'◉',beats:null}};
+const types={infantry:{movement:2,name:'Infantry',icon:'⚔',beats:null},spears:{movement:2,name:'Spears',icon:'♜',beats:'cavalry'},archers:{movement:3,name:'Archers',icon:'➶',beats:'spears'},cavalry:{movement:4,name:'Cavalry',icon:'♞',beats:'archers'},artillery:{movement:1,name:'Artillery',icon:'◉',beats:null}};
 const goods=['money','food','wood','metal'];
 const fail=(ok,msg)=>{if(!ok)throw Error(msg);};
 const pair=(a,b)=>[a,b].sort((x,y)=>x-y).join('-');
