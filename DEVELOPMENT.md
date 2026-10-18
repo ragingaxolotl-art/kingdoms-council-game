@@ -1,3 +1,21 @@
+## Owner-oriented battlefield and unfinished orders
+
+Every viewing country now sees its own troops in one horizontal bottom row, with other countries above it. Country colors outline the troop cards; country headers and cards show the uploaded shield, or a colored initial shield when none is available. Attack arrows travel upward from the owner row. Wide armies scroll horizontally without wrapping the owner's troops.
+
+Finish battle orders opens a dialog only for troops without individual orders. Each defaults to Hold (the existing defensive stance, including the spear bonus), with Retreat and a safe destination available. Cancel saves nothing; confirming applies the remaining orders and readiness atomically. Existing attacks are preserved. Invalid destinations or changed unfinished troops reject the entire batch. Online dialogs also reject changed revisions. Public classroom country projections now include shields; ownership checks still derive from the authenticated session. All playable clients share this flow.
+
+Verified: upward pointer dragging, both owner perspectives, country outline colors/shields, Hold defaults, cancel, per-troop retreat, durable reload, mobile width, atomic rollback, two-player readiness/resolution and classroom authorization/projection. Proof: ../verification/tactical-battle/desktop.png and unfinished-orders.png. Development only; not deployed.
+
+## Tactical battlefield orders (development)
+
+The shared battle decision view draws the complete contested territory as its background and groups all present troops by country. Select an owned troop and drag an arrow onto an opposing troop, or use the target selector. Each troop can Attack, Defend, or Retreat to a safe adjacent territory. Defend reduces incoming damage by 25%, or 40% for spears, and distributes one retaliatory damage budget among its actual attackers. Training troops defend at half retaliation strength. Individual attacks use simultaneous damage and target one opposing troop. Retreat clears incoming target orders and all battle readiness so affected players can reconsider; it moves only that troop and detaches an artillery pair if separated.
+
+Sword infantry uses the existing swordsman artwork, movement 2, neutral field matchups, and Copper/Bronze/Iron/Steel equipment. Base recruitment costs are 55 money, 4 food, 10 wood, 35 metal. Existing legacy country-wide targets remain readable and runnable for old saves and campaign APIs. Starting an individual order removes that country's old target; all remaining troops then need an individual decision before confirming.
+
+Local game, solo lab, authenticated classroom and two-player lab share the renderer and rules. The backend derives country/department from the authenticated session, validates troop ownership, and hides opponents' pending individual orders. No database schema change. Browser and server bundles were regenerated together; deploying this combat change requires the matching backend and site rules hash.
+
+Validation: tactical-battle.cjs covers exact damage, spears, training, retreat, stale arrows, readiness, ownership, sword recruitment/equipment and persistence. tactical-multiplayer.mjs covers both client projections and ownership/department authorization. tactical-browser.cjs verifies real arrow dragging, country switching, defense, durable reload, complete territory polygons and mobile width. Screenshots: ../verification/tactical-battle. Development build only; not deployed to the live classroom service.
+
 ## v0.32 automatic civilian food planning
 
 FoodPlan distributes whole resources proportionally by need using largest remainders, covers full needs when affordable and preserves existing draft allocations when completing missing entries. Economy initializes an incomplete food draft through R.feed without confirming or spending. Map pins and dedicated food colors/legend display own territory amounts. Territory clicks open capped food inputs and projected happiness; each saved edit invalidates confirmation and updates markers/totals without replacing the focused input. Confirmation is available above the map and in the decision section; manual redistribution restores an unconfirmed automatic draft. Military supplies, future income and departmental funds remain separate. Existing rules and schema are unchanged.
