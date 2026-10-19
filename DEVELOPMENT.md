@@ -1,3 +1,11 @@
+## Student biome maps and readable resources
+
+Classroom maps now keep biome colors underneath role overlays by default. A Biomes on/off button switches to a simpler base without removing settlements or resource markers. Happiness uses a translucent overlay; country ownership uses colored borders. Public map projections include each cell's biome name, index and color.
+
+Settlement artwork and defense overlays remain clickable in every department. R&D displays larger resource cards on owned and selected territories: 1 card for 1–9 production, 2 for 10–24, and 3 for 25+. Zero production has no card. Clicking opens exact per-round production, owner and happiness; production is distinguished from stored stock. Keyboard buttons support the same inspection. Resource cards keep a fixed readable size while navigating the map.
+
+Verified in the interactive local classroom: biome toggle, visible settlement artwork, village/city selection, resource stacks and exact details, and playable Economy/Military/R&D tabs. tests/student-map-biomes.cjs checks stack boundaries and biome projection. Development only.
+
 ## Owner-oriented battlefield and unfinished orders
 
 Every viewing country now sees its own troops in one horizontal bottom row, with other countries above it. Country colors outline the troop cards; country headers and cards show the uploaded shield, or a colored initial shield when none is available. Attack arrows travel upward from the owner row. Wide armies scroll horizontally without wrapping the owner's troops.

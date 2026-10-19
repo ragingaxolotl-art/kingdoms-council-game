@@ -2,8 +2,8 @@
 (function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.MapNavigation=factory();})(globalThis,()=>{
 'use strict';
 const WIDTH=1200,HEIGHT=700,MIN=250;
-function clamp(c){const w=Math.max(MIN,Math.min(WIDTH,c.w)),h=w*HEIGHT/WIDTH;return {x:Math.max(0,Math.min(WIDTH-w,c.x)),y:Math.max(0,Math.min(HEIGHT-h,c.y)),w,h};}
-function transform(c,from,to,scale=1){const w=Math.max(MIN,Math.min(WIDTH,c.w*scale)),h=w*HEIGHT/WIDTH;return clamp({x:c.x+from[0]*c.w-to[0]*w,y:c.y+from[1]*c.h-to[1]*h,w,h});}
+function clamp(c){const bounds=c.bounds||{x:0,y:0,w:WIDTH,h:HEIGHT},w=Math.max(MIN,Math.min(bounds.w,c.w)),h=w*HEIGHT/WIDTH;return {x:Math.max(bounds.x,Math.min(bounds.x+bounds.w-w,c.x)),y:Math.max(bounds.y,Math.min(bounds.y+bounds.h-h,c.y)),w,h,...(c.bounds?{bounds:c.bounds}:{})};}
+function transform(c,from,to,scale=1){const w=Math.max(MIN,Math.min(c.bounds?.w||WIDTH,c.w*scale)),h=w*HEIGHT/WIDTH;return clamp({...c,x:c.x+from[0]*c.w-to[0]*w,y:c.y+from[1]*c.h-to[1]*h,w,h});}
 const zoom=(c,f,anchor=[.5,.5])=>transform(c,anchor,anchor,f);
 const pan=(c,dx,dy)=>clamp({...c,x:c.x+dx*c.w,y:c.y+dy*c.h});
 function fit(points){if(!points.length)return {x:0,y:0,w:WIDTH,h:HEIGHT};const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),left=Math.min(...xs),right=Math.max(...xs),top=Math.min(...ys),bottom=Math.max(...ys),w=Math.min(WIDTH,Math.max(MIN,right-left+100,(bottom-top+100)*WIDTH/HEIGHT));return clamp({x:(left+right-w)/2,y:(top+bottom-w*HEIGHT/WIDTH)/2,w});}
