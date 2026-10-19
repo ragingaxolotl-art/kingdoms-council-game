@@ -28,6 +28,8 @@ export function command(room,player,action){
   else if(action.type==='order'){fail(!next.setup,'Finish setup before planning movement.');own(a.id);R.order(s,a.id,a.to,a.intent,a.path);}
   else if(action.type==='recruit'){fail(!next.setup,'Use the free setup controls first.');R.recruit(s,player,a.type,a.territory);}
   else if(action.type==='withdrawEncounter'){R.withdrawEncounter(s,player,a.territory,a.to);next.ready=[];}
+  else if(action.type==='finishBattleOrders'){R.finishBattleOrders(s,player,a.orders);if(a.orders.some(o=>o.action==='retreat'))next.ready=[];return command(next,player,{type:'ready'});}
+  else if(action.type==='battleOrder'){own(a.unit);R.battleOrder(s,player,a.unit,a.action,a.target);if(a.action==='retreat')next.ready=[];}
   else if(action.type==='target'){fail(!next.setup,'Finish setup first.');R.target(s,player,a.territory,a.victim);}
   else if(action.type==='retreat'){own(a.id);R.retreat(s,a.id,a.to);}
   else if(action.type==='captureOwner'){R.chooseCaptureOwner(s,player,a.territory,a.recipient);}

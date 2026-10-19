@@ -14,11 +14,18 @@ jobs:
         with:
           node-version: '22'
       - run: node scripts/build-classroom.cjs
+      - run: node tests/tactical-battle.cjs
+      - run: node tests/tactical-multiplayer.mjs
       - run: git diff --exit-code -- classroom/generated supabase/functions/classroom
       - run: node scripts/build-student-demo.cjs
       - run: git diff --exit-code -- dist/classroom-demo.json
       - run: node --check dist/classroom.js
       - run: node --check dist/classroom-map.js
+      - run: node tests/food-plan.cjs
+      - run: node tests/retreat-map.cjs
+      - run: node tests/research-investments.cjs
+      - run: node tests/student-map-biomes.cjs
+      - run: node tests/research-categories.cjs
       - run: node tests/allocation-controls.cjs
       - run: node tests/facility-map.cjs
       - run: node tests/student-site.cjs

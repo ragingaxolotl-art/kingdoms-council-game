@@ -1,3 +1,29 @@
+## Battle Lab — two-player PIN matches
+
+Online two-player mode: https://ragingaxolotl-art.github.io/kingdoms-council-game/battle-lab/battle-online.html. Create a match and share its link and PIN. Each player controls one distant kingdom; both Ready buttons resolve each phase together. See `multiplayer/README.md` for deployment and verification.
+
+## Battle Lab — four-country testing
+
+Open `dist/battle-lab.html` through a local web server (currently http://127.0.0.1:8042/battle-lab.html). This separate version uses the current movement and combat implementation, with its own browser save and checkpoints. It selects four original capitals by maximizing the minimum Euclidean distance among every four-country combination, breaking ties by total pairwise distance. Other countries become unclaimed land.
+
+Choose a country, clear or remove its starting troops, and add any mix of Spears, Archers, Cavalry and Artillery to any territory, with chosen health and equipment. Free setup troops are ready immediately; the six-regiment limit stays. Put opposing countries on the same territory for an immediate comparison. Save test setup / Replay saved setup restores the entire experiment. Normal paid recruitment remains available.
+
+One round of owned land production funds starting Military resources. Round-end income goes directly to Military before army meals. Biomes, deposits and settlement bonuses remain; research/specialty/happiness output bonuses, civilian food, economic decisions and objective victory are disabled. Military supply penalties, movement, diplomacy, battle targets, retreats and siege/capture rules remain. Movement can be selected from 2–4 without research.
+
+Rebuild derived engine, app and HTML with `python3 scripts/build-battle-lab.py`. Only the generated Battle Lab engine changes civilian feeding and income; combat code comes directly from the current engine. Tests: `node tests/battle-lab.cjs` and `node tests/battle-lab-browser.cjs` (local preview on port 8042). Full-game files and archived releases remain unchanged. The isolated online release also includes the four-country solo page.
+
+## v0.32 — Automatic food plans on the map
+
+Economy begins retreat/feeding with an automatically distributed civilian food draft. Full supplies cover each territory; shortages are shared proportionally in whole units. Food icons show assigned/needed amounts with green, orange or red territory colors. Click your land or its marker to adjust within the shared Treasury balance, review projected happiness, and explicitly confirm. Manual edits survive refresh and require renewed confirmation. Food is still consumed only at round-end.
+
+## v0.31 — Choose retreats on the map
+
+Select a retreating troop or its Choose retreat on map button to highlight safe neighboring territories. Click green land or a numbered destination, then confirm. Cancel preserves the old choice; saved destinations show a checkmark and route arrow. Movement still happens when the teacher completes retreats. The existing selector also asks for confirmation.
+
+## v0.30 — Horizontal research categories
+
+R&D discoveries are grouped into eight horizontal, scrollable category rows using the existing artwork and names. Cards show completed, available, current or locked status; missing prerequisites are named and locked choices cannot be selected. Completing all funded progress unlocks the next tier. Research rules, installment prices and technology prerequisites are unchanged.
+
 ## v0.29 — Allocation limits
 
 Economy allocation fields stop at the resources available after the other department’s allocation. Typing or pasting too much is immediately capped; number arrows respect the same limit. Returning resources frees the other department’s allowance, and Treasury reserves stay nonnegative. Includes the v0.28 facility artwork and map markers.

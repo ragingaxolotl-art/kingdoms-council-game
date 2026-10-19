@@ -1,0 +1,22 @@
+const a=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),R=require('../dist/regiments-engine.js'),M=require('../dist/retreat-map.js');
+const world=vm.createContext({console});for(const f of ['vendor/d3-delaunay.min.js','data/gria-template.js','world-core.js'])vm.runInContext(fs.readFileSync(__dirname+'/../dist/'+f,'utf8'),world);
+let s=R.create(structuredClone(vm.runInContext('generateStudentWorld(218,GRIA_TEMPLATE)',world)));
+const place=s.countries[0].capital;s.units=[s.units[0],s.units.find(u=>u.country===1)];s.units[0].type='spears';s.units[1].type='archers';s.units.forEach(u=>{u.territory=place;u.order=null;});
+s=R.advance(s);for(const id of [0,1]){R.target(s,id,place,1-id);R.confirm(s,id);}s=R.advance(s);
+const u=s.units.find(u=>u.country===0);a(u.retreat?.required);a.equal(s.phase,'retreat');
+if(process.argv.includes('--fixture')){fs.mkdirSync('../verification/v0.31',{recursive:true});fs.writeFileSync('../verification/v0.31/retreat-fixture.json',JSON.stringify(s));}
+let active=0,role='military',confirm,message,commits=0;
+const context=()=>({state:s,active,role}),safe=M.choices(R,s,active,role,u.id);a(safe.length>=2);
+const request=to=>M.request({R,context,id:u.id,to,ask:(text,fn)=>{message=text;confirm=fn;},status:text=>message=text,commit:(id,to)=>{R.retreat(s,id,to);commits++;}});
+a(request(safe[0]));a.match(message,/Retreat Spears/);a.equal(u.retreatTo,null);a.equal(u.territory,place);confirm();a.equal(u.retreatTo,safe[0]);a.equal(u.territory,place);a.equal(commits,1);
+request(safe[1]);confirm=null;a.equal(u.retreatTo,safe[0],'Cancel keeps prior choice');
+a(!request(place));a.equal(u.retreatTo,safe[0]);
+request(safe[1]);role='economy';confirm();a.equal(commits,1);role='military';
+request(safe[1]);active=1;confirm();a.equal(commits,1);active=0;
+request(safe[1]);s=R.validate(JSON.parse(JSON.stringify(s)));confirm();a.equal(commits,1,'Stale game cannot commit');
+a.equal(s.units[0].retreatTo,safe[0]);
+const blocked=structuredClone(s);blocked.units[1].territory=safe[1];a(!M.choices(R,blocked,0,'military',u.id).includes(safe[1]));blocked.alliances=['0-1'];a(M.choices(R,blocked,0,'military',u.id).includes(safe[1]),'Allied neighbor remains safe');
+const trapped=structuredClone(s);trapped.units=safe.map((id,index)=>({...s.units[1],id:100+index,territory:id})).concat(s.units[0]);a.equal(M.choices(R,trapped,0,'military',u.id).length,0);
+a.equal(M.unit(s,1,'military',u.id),undefined);a.equal(M.unit({...s,phase:'orders'},0,'military',u.id),null);
+for(const c of s.countries){R.feed(s,c.id,Object.fromEntries(s.territories.filter(t=>t.owner===c.id).map(t=>[t.id,0])));R.confirmFood(s,c.id);}s=R.advance(s);a.equal(s.units[0].territory,safe[0]);a(!s.units[0].retreat.required);
+console.log('PASS: real battle retreats, safe neighbors, confirmation/cancel/revision, no early movement, blocked/allied neighbors, trapped troops, role/country/phase/stale guards and round-end movement.');

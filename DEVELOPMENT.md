@@ -1,3 +1,53 @@
+## Published seasonal department workspaces
+
+Student play is at `student.html`; teacher sessions are managed at `classroom.html`. The root page retains its local host game. Spring includes dedicated Economy tabs, independent per-resource research investments with connected prerequisite chains, and Military tabs with troop inspection and drag-to-city recruitment. Map fit includes edge padding and settlements retain defense bars. Research strips support pointer dragging without intercepting amount inputs.
+
+Release checks cover investment permissions and idempotency, resource conservation, map framing, legacy infantry migration and save compatibility. New research accounts initialize consistently for fresh games and imported saves.
+
+## Student biome maps and readable resources
+
+Classroom maps now keep biome colors underneath role overlays by default. A Biomes on/off button switches to a simpler base without removing settlements or resource markers. Happiness uses a translucent overlay; country ownership uses colored borders. Public map projections include each cell's biome name, index and color.
+
+Settlement artwork and defense overlays remain clickable in every department. R&D displays larger resource cards on owned and selected territories: 1 card for 1–9 production, 2 for 10–24, and 3 for 25+. Zero production has no card. Clicking opens exact per-round production, owner and happiness; production is distinguished from stored stock. Keyboard buttons support the same inspection. Resource cards keep a fixed readable size while navigating the map.
+
+Verified in the interactive local classroom: biome toggle, visible settlement artwork, village/city selection, resource stacks and exact details, and playable Economy/Military/R&D tabs. tests/student-map-biomes.cjs checks stack boundaries and biome projection. Development only.
+
+## Owner-oriented battlefield and unfinished orders
+
+Every viewing country now sees its own troops in one horizontal bottom row, with other countries above it. Country colors outline the troop cards; country headers and cards show the uploaded shield, or a colored initial shield when none is available. Attack arrows travel upward from the owner row. Wide armies scroll horizontally without wrapping the owner's troops.
+
+Finish battle orders opens a dialog only for troops without individual orders. Each defaults to Hold (the existing defensive stance, including the spear bonus), with Retreat and a safe destination available. Cancel saves nothing; confirming applies the remaining orders and readiness atomically. Existing attacks are preserved. Invalid destinations or changed unfinished troops reject the entire batch. Online dialogs also reject changed revisions. Public classroom country projections now include shields; ownership checks still derive from the authenticated session. All playable clients share this flow.
+
+Verified: upward pointer dragging, both owner perspectives, country outline colors/shields, Hold defaults, cancel, per-troop retreat, durable reload, mobile width, atomic rollback, two-player readiness/resolution and classroom authorization/projection. Proof: ../verification/tactical-battle/desktop.png and unfinished-orders.png. Development only; not deployed.
+
+## Tactical battlefield orders (development)
+
+The shared battle decision view draws the complete contested territory as its background and groups all present troops by country. Select an owned troop and drag an arrow onto an opposing troop, or use the target selector. Each troop can Attack, Defend, or Retreat to a safe adjacent territory. Defend reduces incoming damage by 25%, or 40% for spears, and distributes one retaliatory damage budget among its actual attackers. Training troops defend at half retaliation strength. Individual attacks use simultaneous damage and target one opposing troop. Retreat clears incoming target orders and all battle readiness so affected players can reconsider; it moves only that troop and detaches an artillery pair if separated.
+
+Sword infantry uses the existing swordsman artwork, movement 2, neutral field matchups, and Copper/Bronze/Iron/Steel equipment. Base recruitment costs are 55 money, 4 food, 10 wood, 35 metal. Existing legacy country-wide targets remain readable and runnable for old saves and campaign APIs. Starting an individual order removes that country's old target; all remaining troops then need an individual decision before confirming.
+
+Local game, solo lab, authenticated classroom and two-player lab share the renderer and rules. The backend derives country/department from the authenticated session, validates troop ownership, and hides opponents' pending individual orders. No database schema change. Browser and server bundles were regenerated together; deploying this combat change requires the matching backend and site rules hash.
+
+Validation: tactical-battle.cjs covers exact damage, spears, training, retreat, stale arrows, readiness, ownership, sword recruitment/equipment and persistence. tactical-multiplayer.mjs covers both client projections and ownership/department authorization. tactical-browser.cjs verifies real arrow dragging, country switching, defense, durable reload, complete territory polygons and mobile width. Screenshots: ../verification/tactical-battle. Development build only; not deployed to the live classroom service.
+
+## v0.32 automatic civilian food planning
+
+FoodPlan distributes whole resources proportionally by need using largest remainders, covers full needs when affordable and preserves existing draft allocations when completing missing entries. Economy initializes an incomplete food draft through R.feed without confirming or spending. Map pins and dedicated food colors/legend display own territory amounts. Territory clicks open capped food inputs and projected happiness; each saved edit invalidates confirmation and updates markers/totals without replacing the focused input. Confirmation is available above the map and in the decision section; manual redistribution restores an unconfirmed automatic draft. Military supplies, future income and departmental funds remain separate. Existing rules and schema are unchanged.
+
+Validation: tests cover abundant/short/zero supplies, whole-unit conservation, proportional shares, existing drafts, capped edits, confirmation invalidation, reload, exact happiness and delayed Treasury spending. Existing happiness suite and 30-round campaigns pass. Browser verified 3 food across 8 need, reallocation from one territory to another, overflow cap, direct land and marker clicks, confirmation, refresh, editing a confirmed plan, country separation, full-supply case, redistribution and no console errors. Proof/fixture: verification/v0.32. Other game work remains idle. Saved in development; live publishing approval remains pending and student authentication stays paused.
+
+## v0.31 map retreat selection
+
+Added RetreatMap eligibility and confirmation guards using the engine’s existing retreatOptions. Military can select its required-retreat troop directly or frame its safe neighbors from the regiment card. Green territory fills, numbered keyboard/touch buttons, an origin ring and saved route identify choices. Confirmation names the troop and destination; cancel changes nothing. Confirm rechecks role, country, phase, safe choices and the exact state snapshot before invoking the normal engine/save path. Country/role/layer changes remove the choice mode. The existing retreat selector now shares confirmation. General dialog labels reset for each use; military planning help is hidden during retreats. No engine rules or schema changes.
+
+Validation: regression uses a real losing battle and checks legal/allied/blocked/trapped neighbors, confirm/cancel/revision, stale state and role/country/phase guards, persistence and delayed round-end movement. Existing regiment and camera gesture suites pass. Browser verified real troop-icon selection, safe markers, direct land click, confirm/cancel, revising then cancelling a saved destination, checkmark/route, reload, country switch and no console errors. Proof/fixture are in verification/v0.31. Other game chats remain idle. Development only; previous publishing approval remains pending and student authentication stays paused.
+
+## v0.30 research category rows
+
+Replaced the flat discovery picker and hidden catalog with horizontal cards per existing branch. Includes starting discoveries; future tiers have readable lock states and explicit missing prerequisites. Cards select available projects, while one shared funding control retains installments and phase/funding locks. Funding is disabled when the delivered account cannot cover the installment. Graph and city/diplomacy controls remain below the catalog. Rows scroll independently with touch/trackpad or focused keyboard arrows. No invented dependencies between independent technologies.
+
+Tests exercise the rendered catalog with real funded Bronze/Iron/Steel and Recurved/Longbow completion, incomplete installments, multiple requirements, country isolation, phase locks and reload. Existing full development suite passes. Browser verified row grouping, locked disabled buttons, Bronze selection, insufficient funds, saved selection after reload, keyboard scrolling and no console errors. Other game chats idle; student authentication remains paused. Saved in development pending publishing approval.
+
 ## v0.29 bounded allocation controls
 
 Added dynamic maximums to Military and Research allocations for every resource. Each edited amount is clamped to a nonnegative whole number within the shared pool, preserving the other department’s amount. The real engine remains the final validation boundary. Changes save without replacing focused controls; sibling maximums and reserve displays update together. No rules or schema changes.
