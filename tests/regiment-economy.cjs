@@ -29,7 +29,7 @@ console.log('PASS: delayed conserved allocations, phase locks, no automatic mili
 // A training-only ally cannot boost another country's offensive attack.
 s=fresh();s.units=s.units.slice(0,3);s.units.forEach((u,i)=>{u.country=i;u.territory=s.countries[0].capital;u.type='spears';});s.units[1].readyTurn=2;s.alliances=['0-1'];s=advance(s);for(const [c,t]of [[0,2],[1,2],[2,null]]){R.target(s,c,s.units[0].territory,t);R.confirm(s,c);}s=advance(s);a.equal(s.units[2].hp,70);
 // Existing noncapital settlements can recruit after capture; empty regions cannot.
-s=fresh();const t=s.territories.find(t=>t.owner===-1);s.sites.push({id:s.sites.length,name:'River Town',kind:'town',territory:t.id});t.owner=0;t.settlementLevel=3;t.foodNeed=Math.max(3,t.baseFoodNeed);t.defenseHp=R.maxDefense(t);s.countries[0].accounts.military={money:50,food:20,wood:10,metal:30};R.recruit(s,0,'spears',t.id);a.equal(s.units.at(-1).territory,t.id);
+s=fresh();const t=s.territories.find(t=>t.owner===-1);s.sites.push({id:s.sites.length,name:'River Town',kind:'town',territory:t.id});t.owner=0;t.settlementLevel=3;t.foodNeed=(3+t.baseFoodNeed);t.defenseHp=R.maxDefense(t);s.countries[0].accounts.military={money:50,food:20,wood:10,metal:30};R.recruit(s,0,'spears',t.id);a.equal(s.units.at(-1).territory,t.id);
 console.log('PASS: no offensive training coordination and recruitment at an existing captured town.');
 
 function advance(s){if(s.phase==='retreat'){s=structuredClone(s);for(const c of s.countries){R.feed(s,c.id,Object.fromEntries(s.territories.filter(t=>t.owner===c.id).map(t=>[t.id,0])));R.confirmFood(s,c.id);}}return R.advance(s);}

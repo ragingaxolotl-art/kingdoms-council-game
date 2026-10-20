@@ -4,11 +4,12 @@
 const names={money:'Money',food:'Food',wood:'Wood',metal:'Metal'},goods=Object.keys(names);
 const icon=g=>`<img class="resource-icon" src="resource-icons/${g}.png" alt="" width="32" height="32">`;
 const label=g=>`<span class="resource-label">${icon(g)}<span>${names[g]}</span></span>`;
-const baseline=(R,t)=>R.output({...t,happiness:50});
+// Resource geography shows potential yields; actual income uses current happiness.
+const baseline=(R,t)=>Object.fromEntries(R.goods.map(g=>[g,Math.round(t.production[g]*(1+R.productionBonus[t.settlementLevel||0])*(R.mode==='battle-lab'?1:1+(t.researchBonus?.[g]||0)))]));
 function attachMap({canvas,host,tooltip,R}){
  let markers=[];
  const hide=()=>{tooltip.hidden=true;};
- function show(button,t,g,n){tooltip.replaceChildren();const title=document.createElement('strong');title.textContent=t.name;const detail=document.createElement('div');detail.textContent=`${names[g]} · ${n} per round`;tooltip.append(title,detail);tooltip.hidden=false;const b=button.getBoundingClientRect(),box=tooltip.getBoundingClientRect();tooltip.style.left=Math.max(8,Math.min(innerWidth-box.width-8,b.left+b.width/2-box.width/2))+'px';tooltip.style.top=(b.bottom+box.height+12<innerHeight?b.bottom+8:Math.max(8,b.top-box.height-8))+'px';}
+ function show(button,t,g,n){tooltip.replaceChildren();const title=document.createElement('strong');title.textContent=t.name;const detail=document.createElement('div');detail.textContent=`${names[g]} · ${n} potential per round before happiness`;tooltip.append(title,detail);tooltip.hidden=false;const b=button.getBoundingClientRect(),box=tooltip.getBoundingClientRect();tooltip.style.left=Math.max(8,Math.min(innerWidth-box.width-8,b.left+b.width/2-box.width/2))+'px';tooltip.style.top=(b.bottom+box.height+12<innerHeight?b.bottom+8:Math.max(8,b.top-box.height-8))+'px';}
  function update(territories,camera,filter,enabled){hide();host.replaceChildren();markers=[];host.hidden=!enabled;if(!enabled)return;
   for(const t of territories){const x=(t.point[0]-camera.x)/camera.w,y=(t.point[1]-camera.y)/camera.h;if(x<.015||x>.985||y<.015||y>.97)continue;const stock=baseline(R,t),shown=goods.filter(g=>(filter==='all'||g===filter)&&stock[g]>0);if(!shown.length)continue;const row=document.createElement('div');row.className='resource-marker';row.style.left=(x*100)+'%';row.style.top=(y*100)+'%';
    for(const g of shown){const b=document.createElement('button');b.type='button';b.className='resource-pin';b.innerHTML=icon(g);b.setAttribute('aria-label',`${t.name}: ${stock[g]} ${names[g]} per round`);b.setAttribute('aria-describedby',tooltip.id);b.onpointerenter=()=>show(b,t,g,stock[g]);b.onpointerleave=()=>{if(document.activeElement!==b)hide();};b.onfocus=()=>show(b,t,g,stock[g]);b.onblur=hide;b.onclick=()=>show(b,t,g,stock[g]);row.append(b);markers.push(b);}

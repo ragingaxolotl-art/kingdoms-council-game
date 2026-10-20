@@ -1,3 +1,9 @@
+## Settlement food and happiness balance
+
+Food costs add territory base need and settlement level (Village +1 through Great City +5). Existing saves migrate once, preserve stock/draft meals and reopen food confirmation. Settlement production bonuses scale by happiness / 60 below 60, with full bonuses at 60 or above; base happiness production scaling remains. Battle Lab retains its existing no-civilian-food/no-happiness production rules. Construction and classroom details explain the bonus, and geography resource markers remain potential yields before happiness.
+
+Validation: release workflow rule suites pass, including migration, capture, food confirmation, 30-round balance, classroom authorization and both battle modes. Browser verifies 60/30/0 bonus text and output, additive food breakdown, saved reload, mobile layout and student details. New endpoint and actual-round hunger/recovery tests run in CI.
+
 ## Published seasonal department workspaces
 
 Student play is at `student.html`; teacher sessions are managed at `classroom.html`. The root page retains its local host game. Spring includes dedicated Economy tabs, independent per-resource research investments with connected prerequisite chains, and Military tabs with troop inspection and drag-to-city recruitment. Map fit includes edge padding and settlements retain defense bars. Research strips support pointer dragging without intercepting amount inputs.

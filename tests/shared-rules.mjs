@@ -5,3 +5,6 @@ const router=gameRouter({classroom:()=>new Response('classroom auth'),battle:()=
 a.equal(await router(new Request('https://test/functions/v1/classroom')).text(),'classroom auth');a.equal(await router(new Request('https://test/functions/v1/classroom/battle')).text(),'battle auth');a.deepEqual(await router(new Request('https://test/functions/v1/classroom/rules')).json(),{rulesVersion:'test'});
 for(const f of ['battle-online.html','battle-lab.html']){const html=fs.readFileSync(new URL('../dist/battle-lab/'+f,import.meta.url),'utf8');a.match(html,/src="\.\.\/regiments-engine.js\?rules=/);a.match(html,/src="battle-lab-engine.js\?rules=/);}
 console.log('PASS: browser, classroom and Battle Lab share one rule source; routing retains separate authentication; published pages load shared scripts.');
+
+for(const happiness of [0,30,59,60,100]){const t={production:{money:100,food:100,wood:100,metal:0},researchBonus:{},settlementLevel:5,happiness};a.deepEqual(Student.output(t),Browser.output(t));a.equal(Battle.output(t).money,250);}
+console.log('PASS: generated server and browser match happiness-scaled output; Battle Lab keeps full bonuses.');

@@ -8,7 +8,7 @@ R.development.install(s,0,t.id,'hospital');a.deepEqual(Art.built(t),['hospital']
 a.throws(()=>R.development.install(s,0,t.id,'academy'));a.deepEqual(Art.built(t),['hospital']);
 s=R.validate(JSON.parse(JSON.stringify(s)));a.deepEqual(Art.built(s.territories[c.capital]),['hospital']);
 // A real capture retains only the buildings that fit the surviving settlement.
-t=s.territories[s.countries[1].capital];const id=t.id;Object.assign(t,{settlementLevel:5,facilities:['hospital','academy','civic','workshop','granary'],defenseHp:50,foodNeed:5});
+t=s.territories[s.countries[1].capital];const id=t.id;Object.assign(t,{settlementLevel:5,facilities:['hospital','academy','civic','workshop','granary'],defenseHp:50,foodNeed:t.baseFoodNeed+5});
 s.units=s.units.slice(0,2);for(const u of s.units){u.country=0;u.type='spears';u.territory=id;R.order(s,u.id,id,'capture');}
 function advance(s){if(s.phase==='decisions'){for(const x of s.conflicts)for(const c of x.countries)R.target(s,c,x.territory,null);for(const c of new Set(s.conflicts.flatMap(x=>x.countries)))R.confirm(s,c);}if(s.phase==='retreat')for(const c of s.countries){R.feed(s,c.id,Object.fromEntries(s.territories.filter(t=>t.owner===c.id).map(t=>[t.id,0])));R.confirmFood(s,c.id);}return R.advance(s);}
 s=advance(advance(advance(s)));t=s.territories[id];a.equal(t.owner,0);a.equal(t.settlementLevel,3);a.deepEqual(Art.built(t),['hospital','academy','civic']);a.doesNotMatch(UI.facilityStrip(t),/data-facility="(?:workshop|granary)"/);a.equal(UI.facilityStrip({...t,settlementLevel:0}),'');
