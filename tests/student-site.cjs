@@ -10,3 +10,6 @@ u.readyTurn=s.game.turn+1;assert.deepEqual(routeView().legalRoutes,{});u.readyTu
 assert.equal(MapView.heat(0),'rgb(128,0,32)');assert.equal(MapView.heat(100),'rgb(0,132,255)');assert(MapView.contains([[0,0],[10,0],[10,10],[0,10]],[5,5]));assert(!MapView.contains([[0,0],[10,0],[10,10],[0,10]],[12,5]));
 const html=fs.readFileSync('dist/student.html','utf8');assert(html.includes('data-student="true"'));for(const [,file] of html.matchAll(/(?:src|href)="([^"?#]+\.(?:js|css))"/g))assert(fs.existsSync('dist/'+file),file);
 console.log('PASS student role/phase examples, final supplies, private projections, legal route permissions, training/rest locks, heat map and entry assets');
+
+for(const role of C.roles)for(const phase of ['orders','movement','decisions','retreat','results']){const v=demo.teacherViews[role][phase];assert(v.teacher);assert.equal(v.assignment.role,role);assert.equal(v.phase,phase);assert.equal(v.roster.length,3);assert(v.roster.every(m=>m.id.startsWith('preview-')&&m.label.startsWith('Sample ')));assert(Array.isArray(v.blockers));assert(!JSON.stringify(v).match(/pinHash|refresh_token|access_token/));}
+console.log('PASS synthetic teacher demos include role previews, roster and blockers across every phase.');
