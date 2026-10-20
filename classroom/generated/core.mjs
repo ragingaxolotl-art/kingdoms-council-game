@@ -13,7 +13,7 @@ function create(game, name) {
   return { schema: 1, name: name.trim(), revision: 0, game: valid, members: [], ready: {}, receipts: [], summaries: [], closed: false };
 }
 function assignment(session, actor) {
-  if (actor.teacher) return { id: 'teacher', country: actor.country ?? 0, role: actor.role ?? 'economy' };
+  if (actor.teacher) return { id: (session.teacherCountries||[]).includes(actor.country??0)?'teacher-'+(actor.country??0)+'-'+(actor.role??'economy'):'teacher', country: actor.country ?? 0, role: actor.role ?? 'economy' };
   const m = session.members.find(m => m.id === actor.id && !m.disabled);
   check(m, 'Your assignment is no longer active. Ask your teacher for a new PIN.', 401);
   return m;
@@ -26,9 +26,22 @@ function required(session, member) {
   if (s.phase === 'retreat') return member.role === 'economy' && s.territories.some(t => t.owner === c) || member.role === 'military' && (s.units.some(u => u.country === c && u.hp > 0 && u.retreat?.required) || R.sharedCaptures(s).some(p => p.claimants.includes(c)));
   return false;
 }
+function neutralCountries(session){return session.neutralMode?session.game.countries.filter(c=>!(session.teacherCountries||[]).includes(c.id)&&!session.members.some(m=>!m.disabled&&m.country===c.id)).map(c=>c.id):[];}
+function teacherMembers(session){return (session.teacherCountries||[]).flatMap(country=>roles.map(role=>({id:'teacher-'+country+'-'+role,country,role,label:'Teacher · '+session.game.countries[country].name})));}
+function neutralDefaults(session){
+ const s=session.game,ids=neutralCountries(session);
+ if(s.phase==='orders')for(const u of s.units.filter(u=>ids.includes(u.country)))u.order=null;
+ if(s.phase==='movement')for(const e of [...s.march.encounters])for(const c of e.countries.filter(c=>ids.includes(c)))if(s.march.encounters.includes(e))R.encounter(s,c,'hold',e.territory);
+ if(s.phase==='decisions')for(const c of ids){for(const u of s.units.filter(u=>u.hp>0&&u.country===c&&s.conflicts.some(e=>e.territory===u.territory&&e.countries.includes(c))))R.battleOrder(s,c,u.id,'defend',null);R.confirm(s,c);}
+ if(s.phase==='retreat'){
+  for(const c of ids){const owned=s.territories.filter(t=>t.owner===c),need=owned.reduce((n,t)=>n+t.foodNeed,0),stock=s.countries[c].stock.food,ratio=need?Math.min(1,stock/need):1,plan=Object.fromEntries(owned.map(t=>[t.id,Math.floor(t.foodNeed*ratio)]));let left=Math.min(stock,need)-Object.values(plan).reduce((a,b)=>a+b,0);for(const t of owned)if(left>0&&plan[t.id]<t.foodNeed){plan[t.id]++;left--;}R.feed(s,c,plan);R.confirmFood(s,c);}
+  for(const u of s.units.filter(u=>u.hp>0&&ids.includes(u.country)&&u.retreat?.required)){const options=R.retreatOptions(s,u);if(options.length)R.retreat(s,u.id,options[0]);}
+  for(const p of R.sharedCaptures(s))for(const c of p.claimants.filter(c=>ids.includes(c)))R.chooseCaptureOwner(s,c,p.territory,-1);
+ }
+}
 function blockers(session) {
-  const s = session.game, out = [];
-  for (const m of session.members.filter(m => !m.disabled && required(session, m))) {
+  const s = session.neutralMode?clone(session.game):session.game, out = [];if(session.neutralMode)neutralDefaults({...session,game:s});
+  for (const m of [...session.members,...teacherMembers(session)].filter(m => !m.disabled && required(session, m))) {
     if (session.ready[m.id] !== phaseKey(session)) out.push({ member: m.id, country: m.country, text: m.label + ' · ' + labels[m.role] + ' is not ready' });
   }
   if (s.phase === 'movement' && s.march.pending) out.push({text:'Resolve Attack or Pass at '+s.territories[s.march.pending.territory].name});
@@ -79,21 +92,24 @@ function execute(session, actor, request) {
     check(actor.teacher, 'Only your teacher assigns students.', 403);
     check(typeof a.id === 'string' && /^[a-zA-Z0-9-]{8,80}$/.test(a.id) && s.countries[a.country] && roles.includes(a.role) && typeof a.label === 'string' && a.label.trim().length > 0 && a.label.length <= 60, 'Check the student label, country and department.');
     check(next.members.length < 200 || next.members.some(m => m.id === a.id), 'A class can have up to 200 students.');
+    check(a.disabled || !(next.teacherCountries||[]).includes(a.country),'Release teacher control before assigning students to this country.');
     const existing = next.members.find(m => m.id === a.id), entry = { id: a.id, label: a.label.trim(), country: a.country, role: a.role, disabled: !!a.disabled };
     if (existing) { affected.push(existing.country); Object.assign(existing, entry); } else next.members.push(entry);
     affected.push(a.country);
+  } else if(type==='neutralMode') {check(actor.teacher,'Only the teacher changes country participation.',403);check(typeof a.enabled==='boolean','Choose a neutral-country setting.');next.neutralMode=a.enabled;affected=[];
+  } else if(type==='teacherCountry') {check(actor.teacher,'Only the teacher takes control of a country.',403);check(s.countries[a.country]&&typeof a.controlled==='boolean','Choose a country.');check(s.phase==='orders','Change country control during Spring planning.');check(!next.members.some(m=>!m.disabled&&m.country===a.country),'This country already has students assigned.');next.teacherCountries=(next.teacherCountries||[]).filter(c=>c!==a.country);if(a.controlled)next.teacherCountries.push(a.country);affected=[a.country];
   } else if (type === 'close') { check(actor.teacher, 'Only your teacher closes the class.', 403); next.closed = !!a.closed;
   } else if (type === 'ready') {
     if (a.ready) {
       if (s.phase === 'decisions' && role === 'military') R.confirm(s, c);
       if (s.phase === 'retreat' && role === 'economy') check(s.countries[c].foodConfirmed || !s.territories.some(t => t.owner === c), 'Confirm your food plan first.');
-      if (s.phase === 'retreat' && role === 'military') check(!blockers({ ...next, members: [] }).some(b => b.country === c && !b.text.includes('civilian food')), 'Finish your retreats and ownership decisions first.');
+      if (s.phase === 'retreat' && role === 'military') check(!blockers({ ...next, members: [], neutralMode:false, teacherCountries:[] }).some(b => b.country === c && !b.text.includes('civilian food')), 'Finish your retreats and ownership decisions first.');
       next.ready[member.id] = phaseKey(next);
     } else delete next.ready[member.id];
     affected = [];
   } else if (type === 'advance') {
     check(actor.teacher, 'Only your teacher advances the class.', 403);
-    const pending = blockers(next);
+    neutralDefaults(next);const pending = blockers(next);
     // A deliberate teacher override bypasses readiness only, never missing game decisions.
     check(!pending.length || a.overrideReadiness === true && pending.every(b => b.member), pending.map(b => b.text).join('; '));
     next.game = s.phase === 'orders' ? R.startMovement(s) : R.advance(s);
@@ -137,7 +153,7 @@ function execute(session, actor, request) {
     if (type === 'exchangeAccept') D.accept(s, c, a.offer); else D.cancel(s, c, a.offer);
     affected.push(offer.from, offer.to);
   } else check(false, 'Unknown classroom action.');
-  if (type !== 'ready') for (const m of next.members) if (affected.includes(m.country)) delete next.ready[m.id];
+  if (type !== 'ready') for (const m of [...next.members,...teacherMembers(next)]) if (affected.includes(m.country)) delete next.ready[m.id];
   R.validate(next.game);
   next.revision++;
   next.receipts.push(receipt); next.receipts = next.receipts.slice(-4000);
@@ -160,9 +176,9 @@ function project(session, actor, includeMap = false) {
   for(const role of roles)tasks[role].movement=role==='military'?['Answer Attack or Pass when your troops meet.', 'The teacher advances everyone one step after all encounters are settled.', 'Combat waits until all other movement finishes.']:['Watch movement and discuss encounters with your Military department.'];
   const units = R.visibleUnits(s,c.id).filter(u => u.hp > 0).map(u => ({ id: u.id, country: u.country, type: u.type, hp: u.hp, territory: u.territory, readyTurn: u.readyTurn, gear: u.gear, ...(u.country === c.id && m.role === 'military' ? { battleOrder:u.battleOrder,movement:R.movement(s,u),pairedWith:u.pairedWith,pairOptions:R.pairOptions(s,u), order: u.order, supportTurn:u.supportTurn, legalRoutes:s.phase === 'orders' && u.readyTurn <= s.turn && u.supportTurn !== s.turn && !s.units.some(v=>v.id===u.pairedWith&&(v.readyTurn>s.turn||v.supportTurn===s.turn)) ? Object.fromEntries(s.territories.map(t=>[t.id,R.route(s,u.territory,t.id,u.country,true)]).filter(([id,path])=>path && path.length<=R.movement(s,u))) : {}, retreat: u.retreat, retreatTo: u.retreatTo, retreatOptions: R.retreatOptions(s, u), equipCost: D.equipCost(c,u) } : {}) }));
   const own = clone(c); if (m.role !== 'research') delete own.capturedKnowledge;
-  const result = { name: session.name, revision: session.revision, year: s.turn, phase: s.phase, phaseTitle: phases[s.phase][0], phaseHelp: phases[s.phase][1], teacher: !!actor.teacher, assignment: { id: m.id, country: c.id, role: m.role, label: m.label || 'Teacher view' }, country: own, countries: s.countries.map(x => ({ id: x.id, name: x.name, color: x.color, shield:x.shield, specialty: x.specialty })), territories, units, tasks: tasks[m.role][s.phase], required: required(session,m), ready: session.ready[m.id] === phaseKey(session), closed: session.closed, march: actor.teacher && s.march ? {...clone(s.march),encounters:s.march.encounters.map(e=>({...e,retreatOptions:R.encounterRetreatOptions(s,c.id,e.territory)}))} : R.movementView(s,c.id), moves: s.moves.filter(x=>x.country===c.id), battles: s.battles.filter(b=>b.records.some(u=>u.country===c.id)), conflicts: s.conflicts.filter(x=>x.countries.includes(c.id)).map(x=>({...x,retreatOptions:R.encounterRetreatOptions(s,c.id,x.territory)})), choices: Object.fromEntries(Object.entries(s.choices).filter(([key])=>Number(key.split(':')[1])===c.id)), alliances:s.alliances, allianceOffers:s.offers.filter(o=>o.to===c.id||o.from===c.id), exchanges:s.exchangeOffers.filter(o=>(o.to===c.id||o.from===c.id)&&(m.role==='economy'?o.kind==='trade':m.role==='research'?o.kind!=='trade':false)), partnerships:s.partnerships.filter(p=>p.a===c.id||p.b===c.id), disruptions:(s.diplomaticDisruptions||[]).filter(x=>(x.a===c.id||x.b===c.id)&&x.lastAttack>=s.turn-1).map(x=>({country:x.a===c.id?x.b:x.a,resumeYear:x.lastAttack+2})), captures:R.sharedCaptures(s).filter(p=>p.claimants.includes(c.id)).map(p=>({territory:p.territory,claimants:p.claimants,votes:s.captureAgreements[p.territory]?.votes||{}})), summary:session.summaries.find(y=>y.year===(s.phase==='results'?s.turn:s.turn-1))?.countries.find(x=>x.country===c.id)||null, objectives:R.objectives?R.objectives.rows(s,c.id,R.output):[], recruitSites:R.recruitmentSites(s,c.id).map(x=>x.territory), recruitCosts:Object.fromEntries(Object.keys(R.types).map(k=>[k,{cost:D.recruitCost(c,k),unlocked:D.unlocked(c,k)}])), researchCost:D.researchCost(c) };
+  const result = { neutralMode:!!session.neutralMode, teacherCountries:session.teacherCountries||[], neutralCountries:neutralCountries(session), name: session.name, revision: session.revision, year: s.turn, phase: s.phase, phaseTitle: phases[s.phase][0], phaseHelp: phases[s.phase][1], teacher: !!actor.teacher, assignment: { id: m.id, country: c.id, role: m.role, label: m.label || 'Teacher view' }, country: own, countries: s.countries.map(x => ({ id: x.id, name: x.name, color: x.color, shield:x.shield, specialty: x.specialty })), territories, units, tasks: tasks[m.role][s.phase], required: required(session,m), ready: session.ready[m.id] === phaseKey(session), closed: session.closed, march: actor.teacher && s.march ? {...clone(s.march),encounters:s.march.encounters.map(e=>({...e,retreatOptions:R.encounterRetreatOptions(s,c.id,e.territory)}))} : R.movementView(s,c.id), moves: s.moves.filter(x=>x.country===c.id), battles: s.battles.filter(b=>b.records.some(u=>u.country===c.id)), conflicts: s.conflicts.filter(x=>x.countries.includes(c.id)).map(x=>({...x,retreatOptions:R.encounterRetreatOptions(s,c.id,x.territory)})), choices: Object.fromEntries(Object.entries(s.choices).filter(([key])=>Number(key.split(':')[1])===c.id)), alliances:s.alliances, allianceOffers:s.offers.filter(o=>o.to===c.id||o.from===c.id), exchanges:s.exchangeOffers.filter(o=>(o.to===c.id||o.from===c.id)&&(m.role==='economy'?o.kind==='trade':m.role==='research'?o.kind!=='trade':false)), partnerships:s.partnerships.filter(p=>p.a===c.id||p.b===c.id), disruptions:(s.diplomaticDisruptions||[]).filter(x=>(x.a===c.id||x.b===c.id)&&x.lastAttack>=s.turn-1).map(x=>({country:x.a===c.id?x.b:x.a,resumeYear:x.lastAttack+2})), captures:R.sharedCaptures(s).filter(p=>p.claimants.includes(c.id)).map(p=>({territory:p.territory,claimants:p.claimants,votes:s.captureAgreements[p.territory]?.votes||{}})), summary:session.summaries.find(y=>y.year===(s.phase==='results'?s.turn:s.turn-1))?.countries.find(x=>x.country===c.id)||null, objectives:R.objectives?R.objectives.rows(s,c.id,R.output):[], recruitSites:R.recruitmentSites(s,c.id).map(x=>x.territory), recruitCosts:Object.fromEntries(Object.keys(R.types).map(k=>[k,{cost:D.recruitCost(c,k),unlocked:D.unlocked(c,k)}])), researchCost:D.researchCost(c) };
   if (includeMap) result.cells = s.cells.map(x=>({polygon:x.polygon,territory:x.territory,land:x.land,biome:x.biome?{i:x.biome.i,name:x.biome.name,color:x.biome.color}:null}));
   if (actor.teacher) { result.roster = session.members.map(x=>({...x,ready:session.ready[x.id]===phaseKey(session),required:required(session,x)})); result.blockers=blockers(session); }
   return clone(result);
 }
-export default { R, D, roles, labels, goods, check, create, assignment, required, blockers, command, project, yearSummary };
+export default { R, D, roles, labels, goods, check, create, assignment, required, blockers, command, project, yearSummary, neutralCountries, neutralDefaults };

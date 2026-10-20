@@ -59,6 +59,7 @@ jobs:
       - run: node tests/releases.cjs
       - run: node scripts/build-classroom.cjs
       - run: node tests/classroom-session.cjs
+      - run: node tests/classroom-neutral.cjs
       - run: node tests/classroom-outbox.cjs
       - run: node tests/classroom-api.mjs
       - run: node tests/classroom-storage.mjs
