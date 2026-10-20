@@ -25,6 +25,12 @@ const ClassroomMap=(()=>{
     ctx.restore();
    }
   }
+  function drawShield(nation,x,y,size){
+   if(!nation)return;ctx.save();
+   if(/^data:image\/(png|jpeg|webp);base64,/.test(nation.shield||'')){let img=images.get('shield:'+nation.id);if(!img){img=new Image();images.set('shield:'+nation.id,img);img.onload=draw;img.src=nation.shield;}if(img.complete&&img.naturalWidth)ctx.drawImage(img,x,y,size,size);}
+   else{ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+size,y);ctx.lineTo(x+size,y+size*.6);ctx.lineTo(x+size/2,y+size);ctx.lineTo(x,y+size*.6);ctx.closePath();ctx.fillStyle=nation.color||'#203d35';ctx.fill();ctx.strokeStyle='#fffbed';ctx.lineWidth=size/12;ctx.stroke();ctx.fillStyle='#fff';ctx.strokeStyle='#20352d';ctx.lineWidth=size/18;ctx.textAlign='center';ctx.font='bold '+size*.6+'px sans-serif';ctx.strokeText(nation.name.slice(0,1),x+size/2,y+size*.7);ctx.fillText(nation.name.slice(0,1),x+size/2,y+size*.7);}
+   ctx.restore();
+  }
   function drawPins(){
    const parent=canvas.parentElement;parent.style.position='relative';if(pins.parentElement!==parent)parent.append(pins);pins.style.left=canvas.offsetLeft+'px';pins.style.top=canvas.offsetTop+'px';pins.style.width=canvas.clientWidth+'px';pins.style.height=canvas.clientHeight+'px';pins.replaceChildren();
    for(const t of state.territories){const x=(t.point[0]-camera.x)/camera.w*100,y=(t.point[1]-camera.y)/camera.h*100;if(x<0||x>100||y<0||y>100)continue;
@@ -45,7 +51,7 @@ const ClassroomMap=(()=>{
    for(const u of state.units)if(u.order){const path=state.phase==='orders'?u.order.path:null;if(path)route(u,u.order.destination,path);}
    if(drag?.valid)route(drag.unit,drag.target,drag.paths.get(drag.target));
    for(const t of state.territories){ctx.fillStyle='#172b24';ctx.font=`bold ${12/sx}px sans-serif`;ctx.fillText(t.id+1,t.point[0]+6/sx,t.point[1]-7/sx);}
-   for(const token of troopTokens()){const u=token.u,r=token.r;const [x,y]=drag?.unit.id===u.id&&drag.moved?drag.point:[token.x,token.y];ctx.beginPath();ctx.roundRect(x-r,y-r,r*2,r*2,4/sx);ctx.fillStyle=view.countries.find(c=>c.id===u.country)?.color||'#fff';ctx.fill();ctx.strokeStyle=u.country===view.country.id?'#fff':'#172b24';ctx.lineWidth=2/sx;ctx.stroke();let image=images.get(u.type);if(!image){image=new Image();images.set(u.type,image);image.onload=draw;image.src='troop-icons/'+(u.type==='cavalry'?'cavalry-cutout':u.type)+'.png';}if(image.complete&&image.naturalWidth)ctx.drawImage(image,x-r,y-r,r*2,r*2);ctx.font=`bold ${11/sx}px sans-serif`;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#172b24';ctx.lineWidth=3/sx;ctx.strokeText(u.id,x,y+r+12/sx);ctx.fillText(u.id,x,y+r+12/sx);MovementView.drawBadge(ctx,u,x+r-5/sx,y-r+6/sx,18/sx);ctx.textAlign='left';}
+   for(const token of troopTokens()){const u=token.u,r=token.r;const [x,y]=drag?.unit.id===u.id&&drag.moved?drag.point:[token.x,token.y];ctx.beginPath();ctx.roundRect(x-r,y-r,r*2,r*2,4/sx);ctx.fillStyle=view.countries.find(c=>c.id===u.country)?.color||'#fff';ctx.fill();ctx.strokeStyle=u.country===view.country.id?'#fff':'#172b24';ctx.lineWidth=2/sx;ctx.stroke();let image=images.get(u.type);if(!image){image=new Image();images.set(u.type,image);image.onload=draw;image.src='troop-icons/'+(u.type==='cavalry'?'cavalry-cutout':u.type)+'.png';}if(image.complete&&image.naturalWidth)ctx.drawImage(image,x-r,y-r,r*2,r*2);ctx.font=`bold ${11/sx}px sans-serif`;ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#172b24';ctx.lineWidth=3/sx;ctx.strokeText(u.id,x,y+r+12/sx);ctx.fillText(u.id,x,y+r+12/sx);MovementView.drawBadge(ctx,u,x+r-5/sx,y-r+6/sx,18/sx);drawShield(view.countries.find(c=>c.id===u.country),x-r-5/sx,y+r-12/sx,17/sx);ctx.textAlign='left';}
    for(const t of state.territories){const tokens=t.improvements||[];if(tokens.length){ctx.font=`${18/sx}px sans-serif`;ctx.fillStyle='#fffbe5';ctx.fillRect(t.point[0]-4/sx,t.point[1]-35/sx,tokens.length*23/sx,24/sx);ctx.fillStyle='#173329';ctx.fillText(tokens.map(k=>RegimentGame.development.improvements[k].icon).join(' '),t.point[0],t.point[1]-16/sx);}}
    MovementView.markers(ctx,state,state.units.filter(u=>u.country===view.country.id),camera.w/1200);ctx.restore();drawPins();
   }
